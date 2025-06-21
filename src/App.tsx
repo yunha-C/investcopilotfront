@@ -10,13 +10,8 @@ import { PortfolioDetails } from './components/PortfolioDetails';
 import { Home } from './components/Home';
 
 function App() {
-<<<<<<< Updated upstream
-  const { currentStep, updatePortfolioBalance } = useInvestmentStore();
-  const { isAuthenticated, checkAuthStatus } = useAuthStore();
-=======
   const { currentStep, updatePortfolioBalance, setCurrentStep } = useInvestmentStore();
   const { isAuthenticated, checkAuthStatus, user } = useAuthStore();
->>>>>>> Stashed changes
 
   // Check authentication status on app load
   useEffect(() => {
@@ -70,18 +65,10 @@ function App() {
     <div className="min-h-screen bg-surface-100">
       <Header />
       
-<<<<<<< Updated upstream
-      {currentStep === 'home' && <Home />}
-      {currentStep === 'questionnaire' && <Questionnaire />}
-      {currentStep === 'results' && <PortfolioResults />}
-      {currentStep === 'dashboard' && <Dashboard />}
-      {currentStep === 'portfolio-details' && <PortfolioDetails />}
-=======
       {currentStep === 'questionnaire' && <Questionnaire key="questionnaire" />}
       {currentStep === 'results' && <PortfolioResults key="results" />}
       {currentStep === 'dashboard' && <Dashboard key="dashboard" />}
       {currentStep === 'portfolio-details' && <PortfolioDetails key="portfolio-details" />}
->>>>>>> Stashed changes
     </div>
   );
 }
