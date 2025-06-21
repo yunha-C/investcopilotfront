@@ -68,8 +68,10 @@ export const useInvestmentStore = create<InvestmentState>((set, get) => ({
   setQuestionnaireAnswers: (answers) => set({ questionnaire: answers }),
   
   generatePortfolio: (answers) => {
+    console.log('generatePortfolio called, setting currentStep to results');
     const portfolio = generatePortfolioFromAnswers(answers);
     set({ portfolio, currentStep: 'results' });
+    console.log('Portfolio generated and currentStep set to results');
   },
   
   addInsight: (url) => {

@@ -10,13 +10,40 @@ import { PortfolioDetails } from './components/PortfolioDetails';
 import { Home } from './components/Home';
 
 function App() {
+<<<<<<< Updated upstream
   const { currentStep, updatePortfolioBalance } = useInvestmentStore();
   const { isAuthenticated, checkAuthStatus } = useAuthStore();
+=======
+  const { currentStep, updatePortfolioBalance, setCurrentStep } = useInvestmentStore();
+  const { isAuthenticated, checkAuthStatus, user } = useAuthStore();
+>>>>>>> Stashed changes
 
   // Check authentication status on app load
   useEffect(() => {
     checkAuthStatus();
   }, [checkAuthStatus]);
+
+  // Check if user has completed investment profile and handle initial routing
+  useEffect(() => {
+    console.log('App useEffect triggered:', {
+      isAuthenticated,
+      hasCompletedProfile: user?.hasCompletedInvestmentProfile,
+      currentStep
+    });
+    
+    if (isAuthenticated && user) {
+      if (user.hasCompletedInvestmentProfile && currentStep === 'questionnaire') {
+        // User has already completed the questionnaire, go directly to dashboard
+        console.log('User has completed investment profile, skipping questionnaire');
+        setCurrentStep('dashboard');
+      } else if (!user.hasCompletedInvestmentProfile && currentStep !== 'questionnaire' && currentStep !== 'results') {
+        // User hasn't completed questionnaire but is not on questionnaire or results step
+        // Allow results step to show after questionnaire completion
+        console.log('User needs to complete investment profile, showing questionnaire');
+        setCurrentStep('questionnaire');
+      }
+    }
+  }, [isAuthenticated, user, currentStep, setCurrentStep]);
 
   // Simulate portfolio growth over time
   useEffect(() => {
@@ -43,11 +70,18 @@ function App() {
     <div className="min-h-screen bg-surface-100">
       <Header />
       
+<<<<<<< Updated upstream
       {currentStep === 'home' && <Home />}
       {currentStep === 'questionnaire' && <Questionnaire />}
       {currentStep === 'results' && <PortfolioResults />}
       {currentStep === 'dashboard' && <Dashboard />}
       {currentStep === 'portfolio-details' && <PortfolioDetails />}
+=======
+      {currentStep === 'questionnaire' && <Questionnaire key="questionnaire" />}
+      {currentStep === 'results' && <PortfolioResults key="results" />}
+      {currentStep === 'dashboard' && <Dashboard key="dashboard" />}
+      {currentStep === 'portfolio-details' && <PortfolioDetails key="portfolio-details" />}
+>>>>>>> Stashed changes
     </div>
   );
 }

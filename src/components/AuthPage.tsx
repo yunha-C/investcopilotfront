@@ -18,6 +18,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
     confirmPassword: '',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [registrationSuccess, setRegistrationSuccess] = useState(false);
   
   const { login, register, isLoading, error, clearError, isAuthenticated } = useAuthStore();
 
@@ -39,18 +40,47 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
   };
 
   const validatePassword = (password: string) => {
-    return password.length >= 8;
+    return {
+      isValid: password.length >= 8 && 
+               /[A-Z]/.test(password) && 
+               /[a-z]/.test(password) && 
+               /\d/.test(password),
+      errors: {
+        length: password.length < 8,
+        uppercase: !/[A-Z]/.test(password),
+        lowercase: !/[a-z]/.test(password),
+        number: !/\d/.test(password),
+      }
+    };
   };
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    
     // Clear error when user starts typing
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
+    
     // Clear auth error when user starts typing
     if (error) {
       clearError();
+    }
+    
+    // Real-time validation for password confirmation
+    if (field === 'confirmPassword' && !isLogin) {
+      if (value && formData.password && value !== formData.password) {
+        setErrors(prev => ({ ...prev, confirmPassword: 'Passwords do not match' }));
+      } else if (errors.confirmPassword) {
+        setErrors(prev => ({ ...prev, confirmPassword: '' }));
+      }
+    }
+    
+    // Clear confirm password error when main password changes
+    if (field === 'password' && !isLogin && errors.confirmPassword && formData.confirmPassword) {
+      if (value === formData.confirmPassword) {
+        setErrors(prev => ({ ...prev, confirmPassword: '' }));
+      }
     }
   };
 
@@ -74,8 +104,17 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
 
     if (!formData.password) {
       newErrors.password = 'Password is required';
-    } else if (!isLogin && !validatePassword(formData.password)) {
-      newErrors.password = 'Password must be at least 8 characters long';
+    } else if (!isLogin) {
+      const passwordValidation = validatePassword(formData.password);
+      if (!passwordValidation.isValid) {
+        const errorMessages = [];
+        if (passwordValidation.errors.length) errorMessages.push('at least 8 characters');
+        if (passwordValidation.errors.uppercase) errorMessages.push('one uppercase letter');
+        if (passwordValidation.errors.lowercase) errorMessages.push('one lowercase letter');
+        if (passwordValidation.errors.number) errorMessages.push('one number');
+        
+        newErrors.password = `Password must contain ${errorMessages.join(', ')}`;
+      }
     }
 
     if (!isLogin && formData.password !== formData.confirmPassword) {
@@ -97,12 +136,34 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
       if (isLogin) {
         await login(formData.email, formData.password);
       } else {
+        const currentEmail = formData.email;
+        const currentPassword = formData.password;
         await register(formData.firstName, formData.lastName, formData.email, formData.password);
+        
+        // If registration was successful but didn't auto-authenticate, 
+        // switch to login mode and pre-fill the email
+        if (error && error.includes('Account created successfully')) {
+          setRegistrationSuccess(true);
+          setIsLogin(true);
+          setFormData(prev => ({
+            ...prev,
+            email: currentEmail,
+            password: '', // Clear password for security
+            firstName: '',
+            lastName: '',
+            confirmPassword: ''
+          }));
+        }
       }
       // onAuthenticated will be called via useEffect when isAuthenticated changes
     } catch (error) {
       // Error is handled by the store and displayed via the error state
       console.error('Authentication error:', error);
+      
+      // If it's a password validation error from backend, also show it in field validation
+      if (error instanceof Error && error.message.toLowerCase().includes('password')) {
+        setErrors(prev => ({ ...prev, password: error.message }));
+      }
     }
   };
 
@@ -144,10 +205,31 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
             </p>
           </div>
 
-          {error && (
+          {registrationSuccess && (
+            <div className="mb-6 p-4 bg-positive/10 border border-positive/20 rounded-lg flex items-start gap-3">
+              <div className="w-5 h-5 rounded-full bg-positive flex items-center justify-center flex-shrink-0 mt-0.5">
+                <span className="text-white text-xs">✓</span>
+              </div>
+              <div className="flex-1">
+                <p className="text-body-small text-positive font-medium">Account created successfully!</p>
+                <p className="text-body-small text-neutral-600 mt-1">
+                  Please sign in with your email and password.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {error && !error.includes('Account created successfully') && (
             <div className="mb-6 p-4 bg-negative/10 border border-negative/20 rounded-lg flex items-start gap-3">
               <AlertCircle className="w-5 h-5 text-negative flex-shrink-0 mt-0.5" />
-              <p className="text-body-small text-negative">{error}</p>
+              <div className="flex-1">
+                <p className="text-body-small text-negative">{error}</p>
+                {isLogin && formData.email && (
+                  <p className="text-body-small text-neutral-500 mt-1">
+                    Attempted login with: {formData.email}
+                  </p>
+                )}
+              </div>
             </div>
           )}
 
@@ -277,9 +359,27 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
                 </button>
               </div>
               {!isLogin && !errors.password && (
-                <p id="password-help" className="mt-2 text-body-small text-neutral-600">
-                  Password must be at least 8 characters long
-                </p>
+                <div id="password-help" className="mt-2 space-y-1">
+                  <p className="text-body-small text-neutral-600 font-medium">Password requirements:</p>
+                  <ul className="text-body-small text-neutral-600 space-y-1">
+                    <li className="flex items-center gap-2">
+                      <span className={`w-2 h-2 rounded-full ${formData.password.length >= 8 ? 'bg-positive' : 'bg-neutral-300'}`}></span>
+                      At least 8 characters
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className={`w-2 h-2 rounded-full ${/[A-Z]/.test(formData.password) ? 'bg-positive' : 'bg-neutral-300'}`}></span>
+                      One uppercase letter
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className={`w-2 h-2 rounded-full ${/[a-z]/.test(formData.password) ? 'bg-positive' : 'bg-neutral-300'}`}></span>
+                      One lowercase letter
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className={`w-2 h-2 rounded-full ${/\d/.test(formData.password) ? 'bg-positive' : 'bg-neutral-300'}`}></span>
+                      One number
+                    </li>
+                  </ul>
+                </div>
               )}
               {errors.password && (
                 <p id="password-error" className="mt-2 text-body-small text-negative" role="alert">

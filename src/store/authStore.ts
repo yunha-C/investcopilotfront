@@ -2,12 +2,17 @@ import { create } from 'zustand';
 import { authService, AuthResponse } from '../services/authService';
 
 interface User {
-  id: number;
+  id: string;
   firstName: string;
   lastName: string;
   email: string;
   createdAt: string;
   updatedAt: string;
+  fullName?: string;
+  status?: string;
+  kycStatus?: string;
+  isVerified?: boolean;
+  hasCompletedInvestmentProfile?: boolean;
 }
 
 interface AuthState {
@@ -22,6 +27,7 @@ interface AuthState {
   logout: () => void;
   checkAuthStatus: () => Promise<void>;
   clearError: () => void;
+  updateInvestmentProfileStatus: (completed: boolean) => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>((set, get) => ({
@@ -36,14 +42,36 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     try {
       const response = await authService.login({ email, password });
       
-      const userData: User = {
-        id: response.user.id,
-        firstName: response.user.firstName,
-        lastName: response.user.lastName,
-        email: response.user.email,
-        createdAt: response.user.createdAt,
-        updatedAt: response.user.updatedAt,
-      };
+      // Debug: Log the response structure
+      console.log('Auth Store - Login response:', response);
+      
+      // Handle different possible response structures
+      let userData: User;
+      
+      if (response.user) {
+        // Expected structure with user object
+        userData = {
+          id: response.user.id,
+          firstName: response.user.firstName,
+          lastName: response.user.lastName,
+          email: response.user.email,
+          createdAt: response.user.createdAt,
+          updatedAt: response.user.updatedAt,
+        };
+      } else if (response.id) {
+        // Response structure where user data is at root level
+        userData = {
+          id: response.id,
+          firstName: response.firstName || '',
+          lastName: response.lastName || '',
+          email: response.email || email,
+          createdAt: response.createdAt || new Date().toISOString(),
+          updatedAt: response.updatedAt || new Date().toISOString(),
+          hasCompletedInvestmentProfile: response.hasCompletedInvestmentProfile || false,
+        };
+      } else {
+        throw new Error('Invalid response structure from login API');
+      }
       
       // Store user data
       localStorage.setItem('investcopilot_user', JSON.stringify(userData));
@@ -72,14 +100,64 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     try {
       const response = await authService.register({ firstName, lastName, email, password });
       
-      const userData: User = {
-        id: response.user.id,
-        firstName: response.user.firstName,
-        lastName: response.user.lastName,
-        email: response.user.email,
-        createdAt: response.user.createdAt,
-        updatedAt: response.user.updatedAt,
-      };
+      // Debug: Log the response structure
+      console.log('Auth Store - Register response:', response);
+      
+      // Handle different possible response structures
+      let userData: User;
+      
+      if (response.user) {
+        // Expected structure with user object
+        userData = {
+          id: response.user.id,
+          firstName: response.user.firstName,
+          lastName: response.user.lastName,
+          email: response.user.email,
+          createdAt: response.user.createdAt,
+          updatedAt: response.user.updatedAt,
+        };
+      } else if (response.id) {
+        // Response structure where user data is at root level (your API format)
+        userData = {
+          id: response.id,
+          firstName: response.firstName || firstName,
+          lastName: response.lastName || lastName,
+          email: response.email || email,
+          createdAt: response.createdAt || new Date().toISOString(),
+          updatedAt: response.updatedAt || new Date().toISOString(),
+          fullName: response.fullName,
+          status: response.status,
+          kycStatus: response.kycStatus,
+          isVerified: response.isVerified,
+          hasCompletedInvestmentProfile: response.hasCompletedInvestmentProfile || false,
+        };
+      } else {
+        // Fallback: create minimal user data
+        console.warn('Unexpected response structure, creating fallback user data');
+        userData = {
+          id: `temp_${Date.now()}`, // Temporary ID
+          firstName: firstName,
+          lastName: lastName,
+          email: email,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+      }
+      
+      // Check if we have a token from registration
+      const token = authService.getStoredToken();
+      
+      if (!token) {
+        // No token from registration, user will need to login manually
+        console.log('No token from registration, registration successful - user needs to login');
+        set({ 
+          isLoading: false,
+          error: 'Account created successfully! Please sign in with your email and password.',
+          isAuthenticated: false,
+          user: null 
+        });
+        return;
+      }
       
       // Store user data
       localStorage.setItem('investcopilot_user', JSON.stringify(userData));
@@ -176,5 +254,25 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   clearError: () => {
     set({ error: null });
+  },
+
+  updateInvestmentProfileStatus: async (completed: boolean) => {
+    try {
+      await authService.updateInvestmentProfileStatus(completed);
+      
+      // Update the user state
+      const currentUser = get().user;
+      if (currentUser) {
+        set({ 
+          user: { 
+            ...currentUser, 
+            hasCompletedInvestmentProfile: completed 
+          } 
+        });
+      }
+    } catch (error) {
+      console.error('Failed to update investment profile status:', error);
+      throw error;
+    }
   },
 }));

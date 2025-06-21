@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ChevronRight, Target, Clock, TrendingUp, User, Brain, Briefcase, DollarSign, Shield, AlertTriangle, BookOpen, Home, Check } from 'lucide-react';
 import { useInvestmentStore, QuestionnaireAnswers } from '../store/investmentStore';
+import { useAuthStore } from '../store/authStore';
 import { ProgressIndicator } from './ProgressIndicator';
 
 const questions = [
@@ -137,6 +138,7 @@ export const Questionnaire: React.FC = () => {
   const [showRestrictions, setShowRestrictions] = useState(false);
   
   const { generatePortfolio } = useInvestmentStore();
+  const { updateInvestmentProfileStatus } = useAuthStore();
 
   const handleAnswer = (questionId: string, value: string) => {
     const newAnswers = { ...answers, [questionId]: value };
@@ -193,7 +195,7 @@ export const Questionnaire: React.FC = () => {
     setShowRestrictions(true);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const finalAnswers: QuestionnaireAnswers = {
       goal: answers.goal!,
       timeHorizon: answers.timeHorizon!,
@@ -206,7 +208,23 @@ export const Questionnaire: React.FC = () => {
       sectors: sectors.length > 0 ? sectors : undefined,
       restrictions: restrictions.length > 0 ? restrictions : undefined,
     };
+    
+    console.log('Questionnaire completed, generating portfolio...');
+    
+    // Generate portfolio first (this sets currentStep to 'results')
     generatePortfolio(finalAnswers);
+    
+    // Update the user's investment profile completion status in the background
+    // Use setTimeout to ensure this happens after the state update
+    setTimeout(async () => {
+      try {
+        await updateInvestmentProfileStatus(true);
+        console.log('Investment profile marked as completed');
+      } catch (error) {
+        console.error('Failed to update investment profile status:', error);
+        // Don't block the user flow even if this fails
+      }
+    }, 100);
   };
 
   const currentQ = questions[currentQuestion];
