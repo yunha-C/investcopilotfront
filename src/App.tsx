@@ -7,10 +7,11 @@ import { Questionnaire } from './components/Questionnaire';
 import { PortfolioResults } from './components/PortfolioResults';
 import { Dashboard } from './components/Dashboard';
 import { PortfolioDetails } from './components/PortfolioDetails';
+import { Home } from './components/Home';
 
 function App() {
   const { currentStep, updatePortfolioBalance } = useInvestmentStore();
-  const { isAuthenticated, checkAuthStatus, login } = useAuthStore();
+  const { isAuthenticated, checkAuthStatus } = useAuthStore();
 
   // Check authentication status on app load
   useEffect(() => {
@@ -42,6 +43,7 @@ function App() {
     <div className="min-h-screen bg-surface-100">
       <Header />
       
+      {currentStep === 'home' && <Home />}
       {currentStep === 'questionnaire' && <Questionnaire />}
       {currentStep === 'results' && <PortfolioResults />}
       {currentStep === 'dashboard' && <Dashboard />}

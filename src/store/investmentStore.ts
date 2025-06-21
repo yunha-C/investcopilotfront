@@ -44,7 +44,7 @@ export interface Insight {
 }
 
 interface InvestmentState {
-  currentStep: 'questionnaire' | 'results' | 'dashboard' | 'portfolio-details';
+  currentStep: 'home' | 'questionnaire' | 'results' | 'dashboard' | 'portfolio-details';
   questionnaire: QuestionnaireAnswers | null;
   portfolio: Portfolio | null;
   insights: Insight[];
@@ -58,7 +58,7 @@ interface InvestmentState {
 }
 
 export const useInvestmentStore = create<InvestmentState>((set, get) => ({
-  currentStep: 'questionnaire',
+  currentStep: 'home',
   questionnaire: null,
   portfolio: null,
   insights: [],
