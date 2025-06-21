@@ -106,7 +106,7 @@ class AuthService {
         body: JSON.stringify({
           first_name: userData.firstName,  // Changed to snake_case
           last_name: userData.lastName,    // Changed to snake_case
-          email: userData.email,
+          username: userData.email,        // Changed from 'email' to 'username' to match login endpoint
           password: userData.password,
         }),
       });
