@@ -72,7 +72,7 @@ class AuthService {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: new URLSearchParams({
-          username: credentials.email,
+          email: credentials.email,
           password: credentials.password,
         }),
       });
