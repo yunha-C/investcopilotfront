@@ -39,6 +39,31 @@ class AuthService {
     };
   }
 
+  private async handleErrorResponse(response: Response, defaultMessage: string): Promise<never> {
+    let errorMessage = defaultMessage;
+    
+    try {
+      // First try to parse as JSON
+      const errorData = await response.json();
+      errorMessage = errorData.detail || errorData.message || defaultMessage;
+    } catch {
+      // If JSON parsing fails, try to get text content
+      try {
+        const errorText = await response.text();
+        if (errorText.trim()) {
+          errorMessage = `${defaultMessage} (Status: ${response.status}) - ${errorText}`;
+        } else {
+          errorMessage = `${defaultMessage} (Status: ${response.status})`;
+        }
+      } catch {
+        // If all else fails, include status code
+        errorMessage = `${defaultMessage} (Status: ${response.status})`;
+      }
+    }
+    
+    throw new Error(errorMessage);
+  }
+
   async login(credentials: LoginRequest): Promise<AuthResponse> {
     const response = await fetch(`${API_BASE_URL}/auth/login`, {
       method: 'POST',
@@ -52,8 +77,7 @@ class AuthService {
     });
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ detail: 'Login failed' }));
-      throw new Error(errorData.detail || 'Login failed');
+      await this.handleErrorResponse(response, 'Login failed');
     }
 
     const data = await response.json();
@@ -79,8 +103,7 @@ class AuthService {
     });
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ detail: 'Registration failed' }));
-      throw new Error(errorData.detail || 'Registration failed');
+      await this.handleErrorResponse(response, 'Registration failed');
     }
 
     const data = await response.json();
@@ -98,8 +121,7 @@ class AuthService {
     });
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ detail: 'Failed to get user info' }));
-      throw new Error(errorData.detail || 'Failed to get user info');
+      await this.handleErrorResponse(response, 'Failed to get user info');
     }
 
     return response.json();
@@ -112,8 +134,7 @@ class AuthService {
     });
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ detail: 'Token refresh failed' }));
-      throw new Error(errorData.detail || 'Token refresh failed');
+      await this.handleErrorResponse(response, 'Token refresh failed');
     }
 
     const data = await response.json();
