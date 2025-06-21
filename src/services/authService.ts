@@ -65,53 +65,69 @@ class AuthService {
   }
 
   async login(credentials: LoginRequest): Promise<AuthResponse> {
-    const response = await fetch(`${API_BASE_URL}/auth/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: new URLSearchParams({
-        username: credentials.email,
-        password: credentials.password,
-      }),
-    });
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+          username: credentials.email,
+          password: credentials.password,
+        }),
+      });
 
-    if (!response.ok) {
-      await this.handleErrorResponse(response, 'Login failed');
+      if (!response.ok) {
+        await this.handleErrorResponse(response, 'Invalid email or password');
+      }
+
+      const data = await response.json();
+      
+      // Store the token
+      localStorage.setItem('investcopilot_token', data.access_token);
+      
+      return data;
+    } catch (error) {
+      // If it's a network error or other issue, provide more context
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new Error('Unable to connect to server. Please check your internet connection.');
+      }
+      throw error;
     }
-
-    const data = await response.json();
-    
-    // Store the token
-    localStorage.setItem('investcopilot_token', data.access_token);
-    
-    return data;
   }
 
   async register(userData: RegisterRequest): Promise<AuthResponse> {
-    const response = await fetch(`${API_BASE_URL}/auth/register`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        firstName: userData.firstName,
-        lastName: userData.lastName,
-        email: userData.email,
-        password: userData.password,
-      }),
-    });
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          first_name: userData.firstName,  // Changed to snake_case
+          last_name: userData.lastName,    // Changed to snake_case
+          email: userData.email,
+          password: userData.password,
+        }),
+      });
 
-    if (!response.ok) {
-      await this.handleErrorResponse(response, 'Registration failed');
+      if (!response.ok) {
+        await this.handleErrorResponse(response, 'Registration failed');
+      }
+
+      const data = await response.json();
+      
+      // Store the token
+      localStorage.setItem('investcopilot_token', data.access_token);
+      
+      return data;
+    } catch (error) {
+      // If it's a network error or other issue, provide more context
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new Error('Unable to connect to server. Please check your internet connection.');
+      }
+      throw error;
     }
-
-    const data = await response.json();
-    
-    // Store the token
-    localStorage.setItem('investcopilot_token', data.access_token);
-    
-    return data;
   }
 
   async getCurrentUser(): Promise<AuthResponse['user']> {
