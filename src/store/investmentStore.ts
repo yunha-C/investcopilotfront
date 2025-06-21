@@ -68,10 +68,8 @@ export const useInvestmentStore = create<InvestmentState>((set, get) => ({
   setQuestionnaireAnswers: (answers) => set({ questionnaire: answers }),
   
   generatePortfolio: (answers) => {
-    console.log('generatePortfolio called, setting currentStep to results');
     const portfolio = generatePortfolioFromAnswers(answers);
     set({ portfolio, currentStep: 'results' });
-    console.log('Portfolio generated and currentStep set to results');
   },
   
   addInsight: (url) => {
@@ -95,7 +93,8 @@ export const useInvestmentStore = create<InvestmentState>((set, get) => ({
     const { portfolio } = get();
     if (portfolio) {
       const monthlyFee = (balance * 0.0001) / 12; // 0.01% annually, charged monthly
-      set({ portfolio: { ...portfolio, balance, monthlyFee } });
+      const growth = balance > 10000 ? ((balance - 10000) / 10000 * 100).toFixed(1) : '0.0';
+      set({ portfolio: { ...portfolio, balance, monthlyFee, growth: parseFloat(growth) } });
     }
   },
 }));

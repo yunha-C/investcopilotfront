@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TrendingUp, Plus, ExternalLink, ChevronRight, Calculator } from 'lucide-react';
+import { TrendingUp, Plus, ExternalLink, ChevronRight, Calculator, ArrowLeft } from 'lucide-react';
 import { useInvestmentStore } from '../store/investmentStore';
 import { PortfolioChart } from './PortfolioChart';
 
@@ -7,6 +7,8 @@ export const Dashboard: React.FC = () => {
   const { portfolio, insights, addInsight, setCurrentStep } = useInvestmentStore();
   const [showInsightForm, setShowInsightForm] = useState(false);
   const [insightUrl, setInsightUrl] = useState('');
+  const [portfolioValue, setPortfolioValue] = useState('');
+  const [showAddValueForm, setShowAddValueForm] = useState(false);
 
   if (!portfolio) return null;
 
@@ -23,10 +25,36 @@ export const Dashboard: React.FC = () => {
     setCurrentStep('portfolio-details');
   };
 
+  const handleBackToHome = () => {
+    setCurrentStep('home');
+  };
+
+  const handleAddValue = (e: React.FormEvent) => {
+    e.preventDefault();
+    const value = parseFloat(portfolioValue.replace(/[,$]/g, ''));
+    if (value && value > 0) {
+      // Update portfolio balance with the new value
+      const { updatePortfolioBalance } = useInvestmentStore.getState();
+      updatePortfolioBalance(value);
+      setPortfolioValue('');
+      setShowAddValueForm(false);
+    }
+  };
+
+  const hasValue = portfolio.balance > 0;
+
   return (
     <div className="min-h-screen bg-surface-100 px-4 py-8">
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
+          <button
+            onClick={handleBackToHome}
+            className="flex items-center gap-2 text-neutral-900 hover:text-neutral-700 mb-4 transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span className="text-body-medium">Back to Home</span>
+          </button>
+          
           <h1 className="text-headline-large font-headline font-semi-bold text-neutral-900 mb-2">
             Investment Dashboard
           </h1>
@@ -51,14 +79,31 @@ export const Dashboard: React.FC = () => {
             <div className="grid md:grid-cols-2 gap-6">
               <div>
                 <div className="mb-4">
-                  <p className="text-headline-small font-headline font-semi-bold text-neutral-900">
-                    ${portfolio.balance.toLocaleString()}
-                  </p>
-                  <div className="flex items-center gap-2 mt-2">
-                    <TrendingUp className="w-4 h-4 text-positive" />
-                    <span className="text-positive text-label-large font-medium">+{portfolio.growth}%</span>
-                    <span className="text-neutral-500 text-body-small">+$320.00</span>
-                  </div>
+                  {hasValue ? (
+                    <>
+                      <p className="text-headline-small font-headline font-semi-bold text-neutral-900">
+                        ${portfolio.balance.toLocaleString()}
+                      </p>
+                      <div className="flex items-center gap-2 mt-2">
+                        <TrendingUp className="w-4 h-4 text-positive" />
+                        <span className="text-positive text-label-large font-medium">+{portfolio.growth}%</span>
+                        <span className="text-neutral-500 text-body-small">+$320.00</span>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="text-center py-8">
+                      <p className="text-body-medium text-neutral-600 mb-4">No portfolio value set</p>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowAddValueForm(true);
+                        }}
+                        className="bg-neutral-900 text-white px-6 py-3 rounded-lg text-label-large font-medium hover:bg-neutral-800 transition-colors"
+                      >
+                        Add Portfolio Value
+                      </button>
+                    </div>
+                  )}
                 </div>
                 
                 <div className="space-y-3">
@@ -165,6 +210,57 @@ export const Dashboard: React.FC = () => {
           </div>
         </div>
 
+        {/* Add Value Modal */}
+        {showAddValueForm && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+            <div className="bg-surface-50 rounded-lg p-6 w-full max-w-md shadow-elevation-3">
+              <h3 className="text-title-large font-headline font-semi-bold text-neutral-900 mb-4">
+                Add Portfolio Value
+              </h3>
+              <form onSubmit={handleAddValue}>
+                <div className="mb-4">
+                  <label className="block text-label-large font-medium text-neutral-700 mb-2">
+                    Initial Investment Amount
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-500">$</span>
+                    <input
+                      type="text"
+                      value={portfolioValue}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/[^0-9.]/g, '');
+                        setPortfolioValue(value);
+                      }}
+                      placeholder="10,000"
+                      className="w-full pl-8 pr-4 p-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-transparent text-body-medium"
+                      required
+                    />
+                  </div>
+                  <p className="text-body-small text-neutral-500 mt-1">
+                    Enter the amount you want to invest in this portfolio
+                  </p>
+                </div>
+                <div className="flex gap-3">
+                  <button
+                    type="submit"
+                    className="flex-1 bg-neutral-900 text-white py-3 px-4 rounded-lg text-label-large font-medium hover:bg-neutral-800 transition-colors"
+                  >
+                    Add Value
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowAddValueForm(false)}
+                    className="px-4 py-3 border border-neutral-300 rounded-lg hover:bg-neutral-100 transition-colors text-label-large"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Add Insight Modal */}
         {showInsightForm && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
             <div className="bg-surface-50 rounded-lg p-6 w-full max-w-md shadow-elevation-3">

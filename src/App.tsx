@@ -10,7 +10,7 @@ import { PortfolioDetails } from './components/PortfolioDetails';
 import { Home } from './components/Home';
 
 function App() {
-  const { currentStep, updatePortfolioBalance, setCurrentStep } = useInvestmentStore();
+  const { currentStep, updatePortfolioBalance, setCurrentStep, portfolio } = useInvestmentStore();
   const { isAuthenticated, checkAuthStatus, user } = useAuthStore();
 
   // Check authentication status on app load
@@ -18,31 +18,24 @@ function App() {
     checkAuthStatus();
   }, [checkAuthStatus]);
 
-  // Check if user has completed investment profile and handle initial routing
+  // Handle initial routing after authentication
   useEffect(() => {
-    console.log('App useEffect triggered:', {
-      isAuthenticated,
-      hasCompletedProfile: user?.hasCompletedInvestmentProfile,
-      currentStep
-    });
-    
     if (isAuthenticated && user) {
-      if (user.hasCompletedInvestmentProfile && currentStep === 'questionnaire') {
-        // User has already completed the questionnaire, go directly to dashboard
-        console.log('User has completed investment profile, skipping questionnaire');
-        setCurrentStep('dashboard');
-      } else if (!user.hasCompletedInvestmentProfile && currentStep !== 'questionnaire' && currentStep !== 'results') {
-        // User hasn't completed questionnaire but is not on questionnaire or results step
-        // Allow results step to show after questionnaire completion
-        console.log('User needs to complete investment profile, showing questionnaire');
-        setCurrentStep('questionnaire');
+      // Always start at home page after login
+      if (currentStep === 'questionnaire' && !portfolio) {
+        // Only redirect to home if user is on questionnaire but has no portfolio
+        // This prevents interrupting the questionnaire flow
+        setCurrentStep('home');
+      } else if (currentStep === 'questionnaire' && portfolio) {
+        // User has portfolio but somehow ended up on questionnaire, go to home
+        setCurrentStep('home');
       }
     }
-  }, [isAuthenticated, user, currentStep, setCurrentStep]);
+  }, [isAuthenticated, user, currentStep, portfolio, setCurrentStep]);
 
   // Simulate portfolio growth over time
   useEffect(() => {
-    if (!isAuthenticated) return;
+    if (!isAuthenticated || !portfolio) return;
 
     const interval = setInterval(() => {
       const randomGrowth = Math.random() * 0.1 - 0.05; // Random growth between -0.05% and +0.05%
@@ -50,11 +43,13 @@ function App() {
     }, 30000); // Update every 30 seconds
 
     return () => clearInterval(interval);
-  }, [updatePortfolioBalance, isAuthenticated]);
+  }, [updatePortfolioBalance, isAuthenticated, portfolio]);
 
   const handleAuthenticated = () => {
     // Re-check auth status after successful authentication
     checkAuthStatus();
+    // Set to home page after successful authentication
+    setCurrentStep('home');
   };
 
   if (!isAuthenticated) {
@@ -65,10 +60,11 @@ function App() {
     <div className="min-h-screen bg-surface-100">
       <Header />
       
-      {currentStep === 'questionnaire' && <Questionnaire key="questionnaire" />}
-      {currentStep === 'results' && <PortfolioResults key="results" />}
-      {currentStep === 'dashboard' && <Dashboard key="dashboard" />}
-      {currentStep === 'portfolio-details' && <PortfolioDetails key="portfolio-details" />}
+      {currentStep === 'home' && <Home />}
+      {currentStep === 'questionnaire' && <Questionnaire />}
+      {currentStep === 'results' && <PortfolioResults />}
+      {currentStep === 'dashboard' && <Dashboard />}
+      {currentStep === 'portfolio-details' && <PortfolioDetails />}
     </div>
   );
 }
