@@ -58,7 +58,6 @@ class AuthService {
     };
   }
 
-<<<<<<< Updated upstream
   private async handleErrorResponse(response: Response, defaultMessage: string): Promise<never> {
     let errorMessage = defaultMessage;
     
@@ -79,7 +78,11 @@ class AuthService {
         // If all else fails, include status code
         errorMessage = `${defaultMessage} (Status: ${response.status})`;
       }
-=======
+    }
+    
+    throw new Error(errorMessage);
+  }
+
   // Helper method to wait for a specified time
   private wait(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -112,80 +115,80 @@ class AuthService {
   }
 
   async login(credentials: LoginRequest): Promise<AuthResponse> {
-    // Debug: Log the credentials being sent (without password)
-    console.log('=== LOGIN ATTEMPT DEBUG ===');
-    console.log('Login attempt with email:', credentials.email);
-    console.log('Email length:', credentials.email.length);
-    console.log('Email trimmed:', credentials.email.trim());
-    console.log('Password length:', credentials.password.length);
-    console.log('Login API URL:', `${API_BASE_URL}/auth/login`);
-    
-    const formData = new URLSearchParams({
-      email: credentials.email.trim(), // Changed from username to email
-      password: credentials.password,
-    });
-    
-    // Debug: Log the form data being sent (without password)
-    console.log('Form data keys:', Array.from(formData.keys()));
-    console.log('Email being sent:', formData.get('email'));
-    console.log('Form data string length:', formData.toString().length);
-    
-    const response = await fetch(`${API_BASE_URL}/auth/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: formData,
-    });
-
-    // Debug: Log response details
-    console.log('Login response status:', response.status);
-    console.log('Login response headers:', Object.fromEntries(response.headers.entries()));
-    
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ detail: 'Login failed' }));
-      
-      // Debug: Log the error response
-      console.log('Login error response:', errorData);
-      
-      // Handle your API's error format
-      if (response.status === 401 && errorData.message) {
-        if (errorData.message.toLowerCase().includes('invalid email or password')) {
-          throw new Error(`Invalid email or password. Please check your credentials and try again. (Email: ${credentials.email})`);
-        }
-        throw new Error(errorData.message);
-      }
-      
-      // Fallback to original error handling
-      throw new Error(errorData.detail || errorData.message || 'Login failed');
->>>>>>> Stashed changes
-    }
-    
-    throw new Error(errorMessage);
-  }
-
-<<<<<<< Updated upstream
-  async login(credentials: LoginRequest): Promise<AuthResponse> {
     try {
+      // Debug: Log the credentials being sent (without password)
+      console.log('=== LOGIN ATTEMPT DEBUG ===');
+      console.log('Login attempt with email:', credentials.email);
+      console.log('Email length:', credentials.email.length);
+      console.log('Email trimmed:', credentials.email.trim());
+      console.log('Password length:', credentials.password.length);
+      console.log('Login API URL:', `${API_BASE_URL}/auth/login`);
+      
+      const formData = new URLSearchParams({
+        email: credentials.email.trim(), // Changed from username to email
+        password: credentials.password,
+      });
+      
+      // Debug: Log the form data being sent (without password)
+      console.log('Form data keys:', Array.from(formData.keys()));
+      console.log('Email being sent:', formData.get('email'));
+      console.log('Form data string length:', formData.toString().length);
+      
       const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: new URLSearchParams({
-          email: credentials.email,
-          password: credentials.password,
-        }),
+        body: formData,
       });
 
+      // Debug: Log response details
+      console.log('Login response status:', response.status);
+      console.log('Login response headers:', Object.fromEntries(response.headers.entries()));
+      
       if (!response.ok) {
-        await this.handleErrorResponse(response, 'Invalid email or password');
+        const errorData = await response.json().catch(() => ({ detail: 'Login failed' }));
+        
+        // Debug: Log the error response
+        console.log('Login error response:', errorData);
+        
+        // Handle your API's error format
+        if (response.status === 401 && errorData.message) {
+          if (errorData.message.toLowerCase().includes('invalid email or password')) {
+            throw new Error(`Invalid email or password. Please check your credentials and try again. (Email: ${credentials.email})`);
+          }
+          throw new Error(errorData.message);
+        }
+        
+        // Fallback to original error handling
+        throw new Error(errorData.detail || errorData.message || 'Login failed');
       }
 
       const data = await response.json();
       
-      // Store the token
-      localStorage.setItem('investcopilot_token', data.access_token);
+      // Debug: Log the actual response structure
+      console.log('Login API Response:', data);
+      
+      // Store the token - handle both old and new token formats
+      let tokenToStore = null;
+      if (data.token && data.token.accessToken) {
+        // New token structure
+        tokenToStore = data.token.accessToken;
+        // Also store token expiry
+        const expiresAt = Date.now() + (data.token.expiresIn * 1000);
+        localStorage.setItem('investcopilot_token_expires', expiresAt.toString());
+        localStorage.setItem('investcopilot_token_type', data.token.tokenType);
+      } else if (data.access_token) {
+        // Old token structure
+        tokenToStore = data.access_token;
+      }
+      
+      if (tokenToStore) {
+        localStorage.setItem('investcopilot_token', tokenToStore);
+        console.log('Token stored successfully');
+      } else {
+        console.warn('No token found in login response');
+      }
       
       return data;
     } catch (error) {
@@ -199,27 +202,83 @@ class AuthService {
 
   async register(userData: RegisterRequest): Promise<AuthResponse> {
     try {
+      // Debug: Log the registration data being sent (without password)
+      console.log('=== REGISTRATION ATTEMPT DEBUG ===');
+      console.log('Register email:', userData.email);
+      console.log('Register email length:', userData.email.length);
+      console.log('Register password length:', userData.password.length);
+      console.log('Register API URL:', `${API_BASE_URL}/auth/register`);
+      
+      const requestBody = {
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        email: userData.email.trim(),
+        password: userData.password,
+      };
+      
+      console.log('Register request body keys:', Object.keys(requestBody));
+      
       const response = await fetch(`${API_BASE_URL}/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          first_name: userData.firstName,  // Changed to snake_case
-          last_name: userData.lastName,    // Changed to snake_case
-          username: userData.email,        // Changed from 'email' to 'username' to match login endpoint
-          password: userData.password,
-        }),
+        body: JSON.stringify(requestBody),
       });
 
       if (!response.ok) {
-        await this.handleErrorResponse(response, 'Registration failed');
+        const errorData = await response.json().catch(() => ({ detail: 'Registration failed' }));
+        
+        // Handle specific validation errors
+        if (response.status === 422 && errorData.detail) {
+          // FastAPI validation errors
+          if (Array.isArray(errorData.detail)) {
+            const passwordErrors = errorData.detail.filter((err: any) => 
+              err.loc && err.loc.includes('password')
+            );
+            if (passwordErrors.length > 0) {
+              const passwordError = passwordErrors[0];
+              throw new Error(passwordError.msg || 'Password validation failed');
+            }
+          }
+          // Single validation error message
+          if (typeof errorData.detail === 'string' && errorData.detail.toLowerCase().includes('password')) {
+            throw new Error(errorData.detail);
+          }
+        }
+        
+        // Handle other specific errors
+        if (response.status === 400) {
+          // Handle the specific response format from your API
+          if (errorData.message && errorData.message.toLowerCase().includes('user with this email already exists')) {
+            throw new Error('An account with this email address already exists. Please sign in instead.');
+          }
+          if (errorData.detail && errorData.detail.toLowerCase().includes('email')) {
+            throw new Error('Email address is already registered');
+          }
+          if (errorData.detail && errorData.detail.toLowerCase().includes('password')) {
+            throw new Error(errorData.detail);
+          }
+          // Generic 400 error with message field
+          if (errorData.message) {
+            throw new Error(errorData.message);
+          }
+        }
+        
+        throw new Error(errorData.detail || 'Registration failed');
       }
 
       const data = await response.json();
       
-      // Store the token
-      localStorage.setItem('investcopilot_token', data.access_token);
+      // Debug: Log the actual response structure
+      console.log('Register API Response:', data);
+      
+      // Store the token if present
+      if (data.access_token) {
+        localStorage.setItem('investcopilot_token', data.access_token);
+      } else {
+        console.warn('No access_token in registration response - user may need to login separately');
+      }
       
       return data;
     } catch (error) {
@@ -229,117 +288,6 @@ class AuthService {
       }
       throw error;
     }
-=======
-    const data = await response.json();
-    
-    // Debug: Log the actual response structure
-    console.log('Login API Response:', data);
-    
-    // Store the token - handle both old and new token formats
-    let tokenToStore = null;
-    if (data.token && data.token.accessToken) {
-      // New token structure
-      tokenToStore = data.token.accessToken;
-      // Also store token expiry
-      const expiresAt = Date.now() + (data.token.expiresIn * 1000);
-      localStorage.setItem('investcopilot_token_expires', expiresAt.toString());
-      localStorage.setItem('investcopilot_token_type', data.token.tokenType);
-    } else if (data.access_token) {
-      // Old token structure
-      tokenToStore = data.access_token;
-    }
-    
-    if (tokenToStore) {
-      localStorage.setItem('investcopilot_token', tokenToStore);
-      console.log('Token stored successfully');
-    } else {
-      console.warn('No token found in login response');
-    }
-    
-    return data;
-  }
-
-  async register(userData: RegisterRequest): Promise<AuthResponse> {
-    // Debug: Log the registration data being sent (without password)
-    console.log('=== REGISTRATION ATTEMPT DEBUG ===');
-    console.log('Register email:', userData.email);
-    console.log('Register email length:', userData.email.length);
-    console.log('Register password length:', userData.password.length);
-    console.log('Register API URL:', `${API_BASE_URL}/auth/register`);
-    
-    const requestBody = {
-      firstName: userData.firstName,
-      lastName: userData.lastName,
-      email: userData.email.trim(),
-      password: userData.password,
-    };
-    
-    console.log('Register request body keys:', Object.keys(requestBody));
-    
-    const response = await fetch(`${API_BASE_URL}/auth/register`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(requestBody),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ detail: 'Registration failed' }));
-      
-      // Handle specific validation errors
-      if (response.status === 422 && errorData.detail) {
-        // FastAPI validation errors
-        if (Array.isArray(errorData.detail)) {
-          const passwordErrors = errorData.detail.filter((err: any) => 
-            err.loc && err.loc.includes('password')
-          );
-          if (passwordErrors.length > 0) {
-            const passwordError = passwordErrors[0];
-            throw new Error(passwordError.msg || 'Password validation failed');
-          }
-        }
-        // Single validation error message
-        if (typeof errorData.detail === 'string' && errorData.detail.toLowerCase().includes('password')) {
-          throw new Error(errorData.detail);
-        }
-      }
-      
-      // Handle other specific errors
-      if (response.status === 400) {
-        // Handle the specific response format from your API
-        if (errorData.message && errorData.message.toLowerCase().includes('user with this email already exists')) {
-          throw new Error('An account with this email address already exists. Please sign in instead.');
-        }
-        if (errorData.detail && errorData.detail.toLowerCase().includes('email')) {
-          throw new Error('Email address is already registered');
-        }
-        if (errorData.detail && errorData.detail.toLowerCase().includes('password')) {
-          throw new Error(errorData.detail);
-        }
-        // Generic 400 error with message field
-        if (errorData.message) {
-          throw new Error(errorData.message);
-        }
-      }
-      
-      throw new Error(errorData.detail || 'Registration failed');
-    }
-
-    const data = await response.json();
-    
-    // Debug: Log the actual response structure
-    console.log('Register API Response:', data);
-    
-    // Store the token if present
-    if (data.access_token) {
-      localStorage.setItem('investcopilot_token', data.access_token);
-    } else {
-      console.warn('No access_token in registration response - user may need to login separately');
-    }
-    
-    return data;
->>>>>>> Stashed changes
   }
 
   async getCurrentUser(): Promise<AuthResponse['user']> {
