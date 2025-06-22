@@ -10,13 +10,22 @@ import { PortfolioDetails } from './components/PortfolioDetails';
 import { Home } from './components/Home';
 
 function App() {
-  const { currentStep, updatePortfolioBalance, setCurrentStep, portfolio } = useInvestmentStore();
+  const { currentStep, updatePortfolioBalance, setCurrentStep, portfolio, loadUserPortfolios } = useInvestmentStore();
   const { isAuthenticated, checkAuthStatus, user } = useAuthStore();
 
   // Check authentication status on app load
   useEffect(() => {
     checkAuthStatus();
   }, [checkAuthStatus]);
+
+  // Load user portfolios when authenticated
+  useEffect(() => {
+    if (isAuthenticated && user?.id) {
+      console.log('=== LOADING USER PORTFOLIOS ===');
+      console.log('User authenticated, loading portfolios for user:', user.id);
+      loadUserPortfolios(user.id);
+    }
+  }, [isAuthenticated, user?.id, loadUserPortfolios]);
 
   // Handle initial routing after authentication
   useEffect(() => {

@@ -1,11 +1,22 @@
-import React from 'react';
-import { Plus, TrendingUp, BarChart3, ArrowRight } from 'lucide-react';
+import React, { useEffect } from 'react';
+import { Plus, TrendingUp, BarChart3, ArrowRight, AlertCircle } from 'lucide-react';
 import { useInvestmentStore } from '../store/investmentStore';
 import { useAuthStore } from '../store/authStore';
 
 export const Home: React.FC = () => {
-  const { setCurrentStep, portfolio } = useInvestmentStore();
+  const { setCurrentStep, portfolio, portfolios, isLoading, error, clearError } = useInvestmentStore();
   const { user } = useAuthStore();
+
+  // Clear any errors when component mounts
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => {
+        clearError();
+      }, 5000); // Clear error after 5 seconds
+      
+      return () => clearTimeout(timer);
+    }
+  }, [error, clearError]);
 
   const handleCreatePortfolio = () => {
     console.log('=== PORTFOLIO CREATION DEBUG ===');
@@ -42,9 +53,39 @@ export const Home: React.FC = () => {
             </p>
           </div>
 
+          {/* Error Display */}
+          {error && (
+            <div className="max-w-4xl mx-auto mb-8">
+              <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <p className="text-orange-800 text-body-medium">{error}</p>
+                  <button
+                    onClick={clearError}
+                    className="text-orange-600 hover:text-orange-800 text-body-small underline mt-1"
+                  >
+                    Dismiss
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Loading State */}
+          {isLoading && (
+            <div className="max-w-4xl mx-auto mb-8">
+              <div className="bg-white border border-neutral-200 rounded-lg p-6 text-center">
+                <div className="flex items-center justify-center gap-3">
+                  <div className="w-5 h-5 border-2 border-neutral-300 border-t-neutral-900 rounded-full animate-spin" />
+                  <span className="text-body-medium text-neutral-600">Loading your portfolios...</span>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Portfolio Cards */}
           <div className="max-w-4xl mx-auto">
-            {portfolio ? (
+            {portfolio || portfolios.length > 0 ? (
               <div className="grid md:grid-cols-2 gap-6">
                 {/* Existing Portfolio Card */}
                 <button 
@@ -57,21 +98,25 @@ export const Home: React.FC = () => {
                         <BarChart3 className="w-5 h-5 text-positive" />
                       </div>
                       <div>
-                        <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900">{portfolio.name}</h3>
-                        <p className="text-body-small text-neutral-600">Active Portfolio</p>
+                        <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900">
+                          {portfolio?.name || portfolios[0]?.name || 'Your Portfolio'}
+                        </h3>
+                        <p className="text-body-small text-neutral-600">
+                          {portfolios.length > 1 ? `Active Portfolio (${portfolios.length} total)` : 'Active Portfolio'}
+                        </p>
                       </div>
                     </div>
                     <ArrowRight className="w-5 h-5 text-neutral-400 group-hover:text-neutral-600 transition-colors" />
                   </div>
                   
-                  {portfolio.balance > 0 ? (
+                  {(portfolio?.balance || 0) > 0 ? (
                     <div>
                       <p className="text-headline-small font-headline font-semi-bold text-neutral-900">
-                        ${portfolio.balance.toLocaleString()}
+                        ${(portfolio?.balance || 0).toLocaleString()}
                       </p>
                       <div className="flex items-center gap-2 mt-1">
                         <TrendingUp className="w-4 h-4 text-positive" />
-                        <span className="text-positive text-label-large font-medium">+{portfolio.growth}%</span>
+                        <span className="text-positive text-label-large font-medium">+{portfolio?.growth || 0}%</span>
                       </div>
                     </div>
                   ) : (
