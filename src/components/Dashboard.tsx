@@ -44,7 +44,7 @@ export const Dashboard: React.FC = () => {
   const hasValue = portfolio.balance > 0;
 
   return (
-    <div className="min-h-screen bg-[#FCFDFD] px-4 py-8">
+    <div className="min-h-screen px-4 py-8">
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
           <button

@@ -29,9 +29,9 @@ export const Home: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#FCFDFD]">
+    <div className="min-h-screen">
       {/* Hero Section - Light background */}
-      <div className="bg-gradient-to-br from-[#FCFDFD] via-[#FCFDFD] to-[#F8F9FA]">
+      <div className="bg-gradient-to-br from-white/50 via-white/30 to-white/20">
         <div className="max-w-6xl mx-auto px-4 py-16">
           <div className="text-center mb-12">
             <h1 className="text-display-medium font-headline font-semi-bold mb-6 text-neutral-900">

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronRight, Target, Clock, TrendingUp, User, Brain, Briefcase, DollarSign, Shield, AlertTriangle, BookOpen, Home, Check } from 'lucide-react';
+import { ChevronRight, Target, Clock, TrendingUp, User, Brain, Briefcase, DollarSign, Shield, AlertTriangle, BookOpen, Home, Check, ArrowLeft } from 'lucide-react';
 import { useInvestmentStore, QuestionnaireAnswers } from '../store/investmentStore';
 import { useAuthStore } from '../store/authStore';
 import { ProgressIndicator } from './ProgressIndicator';
@@ -137,7 +137,7 @@ export const Questionnaire: React.FC = () => {
   const [showSectors, setShowSectors] = useState(false);
   const [showRestrictions, setShowRestrictions] = useState(false);
   
-  const { generatePortfolio } = useInvestmentStore();
+  const { generatePortfolio, setCurrentStep } = useInvestmentStore();
   const { updateInvestmentProfileStatus } = useAuthStore();
 
   const handleAnswer = (questionId: string, value: string) => {
@@ -227,6 +227,10 @@ export const Questionnaire: React.FC = () => {
     }, 100);
   };
 
+  const handleExitQuestionnaire = () => {
+    setCurrentStep('home');
+  };
+
   const currentQ = questions[currentQuestion];
   const currentAnswer = answers[currentQ?.id];
 
@@ -238,8 +242,8 @@ export const Questionnaire: React.FC = () => {
 
   if (showRestrictions) {
     return (
-      <div className="min-h-screen bg-[#FCFDFD]">
-        <div className="bg-[#FCFDFD] px-4 pt-4 pb-3">
+      <div className="min-h-screen">
+        <div className="px-4 pt-4 pb-3">
           <div className="max-w-3xl mx-auto">
             <ProgressIndicator
               currentStep={9}
@@ -252,18 +256,27 @@ export const Questionnaire: React.FC = () => {
         <div className="px-4 pb-8">
           <div className="max-w-3xl mx-auto">
             <div className="bg-white rounded-lg shadow-elevation-1 border border-neutral-300 p-6">
-              <div className="mb-4">
-                <h2 className="text-headline-medium font-headline font-semi-bold text-neutral-900">
-                  Investment Restrictions
-                </h2>
-                <p className="text-body-medium text-neutral-600 mt-1">
-                  Optional: Select up to 3 investment restrictions you prefer
-                  {restrictions.filter(r => r !== 'none').length > 0 && (
-                    <span className="ml-2 text-neutral-500">
-                      ({restrictions.filter(r => r !== 'none').length}/3 selected)
-                    </span>
-                  )}
-                </p>
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h2 className="text-headline-medium font-headline font-semi-bold text-neutral-900">
+                    Investment Restrictions
+                  </h2>
+                  <p className="text-body-medium text-neutral-600 mt-1">
+                    Optional: Select up to 3 investment restrictions you prefer
+                    {restrictions.filter(r => r !== 'none').length > 0 && (
+                      <span className="ml-2 text-neutral-500">
+                        ({restrictions.filter(r => r !== 'none').length}/3 selected)
+                      </span>
+                    )}
+                  </p>
+                </div>
+                <button
+                  onClick={handleExitQuestionnaire}
+                  className="p-2 text-neutral-600 hover:text-neutral-800 hover:bg-neutral-100 rounded-lg transition-colors"
+                  aria-label="Exit questionnaire"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                </button>
               </div>
 
               <div className="space-y-2 mb-6">
@@ -353,8 +366,8 @@ export const Questionnaire: React.FC = () => {
 
   if (showSectors) {
     return (
-      <div className="min-h-screen bg-[#FCFDFD]">
-        <div className="bg-[#FCFDFD] px-4 pt-4 pb-3">
+      <div className="min-h-screen">
+        <div className="px-4 pt-4 pb-3">
           <div className="max-w-3xl mx-auto">
             <ProgressIndicator
               currentStep={8}
@@ -367,18 +380,27 @@ export const Questionnaire: React.FC = () => {
         <div className="px-4 pb-8">
           <div className="max-w-3xl mx-auto">
             <div className="bg-white rounded-lg shadow-elevation-1 border border-neutral-300 p-6">
-              <div className="mb-4">
-                <h2 className="text-headline-medium font-headline font-semi-bold text-neutral-900">
-                  Sector Preferences
-                </h2>
-                <p className="text-body-medium text-neutral-600 mt-1">
-                  Optional: Select up to 2 sectors you'd like to focus on
-                  {sectors.filter(s => s !== 'none').length > 0 && (
-                    <span className="ml-2 text-neutral-500">
-                      ({sectors.filter(s => s !== 'none').length}/2 selected)
-                    </span>
-                  )}
-                </p>
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h2 className="text-headline-medium font-headline font-semi-bold text-neutral-900">
+                    Sector Preferences
+                  </h2>
+                  <p className="text-body-medium text-neutral-600 mt-1">
+                    Optional: Select up to 2 sectors you'd like to focus on
+                    {sectors.filter(s => s !== 'none').length > 0 && (
+                      <span className="ml-2 text-neutral-500">
+                        ({sectors.filter(s => s !== 'none').length}/2 selected)
+                      </span>
+                    )}
+                  </p>
+                </div>
+                <button
+                  onClick={handleExitQuestionnaire}
+                  className="p-2 text-neutral-600 hover:text-neutral-800 hover:bg-neutral-100 rounded-lg transition-colors"
+                  aria-label="Exit questionnaire"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                </button>
               </div>
 
               <div className="space-y-2 mb-6">
@@ -464,8 +486,8 @@ export const Questionnaire: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#FCFDFD]">
-      <div className="bg-[#FCFDFD] px-4 pt-4 pb-3">
+    <div className="min-h-screen">
+      <div className="px-4 pt-4 pb-3">
         <div className="max-w-3xl mx-auto">
           <ProgressIndicator
             currentStep={currentQuestion}
@@ -478,13 +500,22 @@ export const Questionnaire: React.FC = () => {
       <div className="px-4 pb-8">
         <div className="max-w-3xl mx-auto">
           <div className="bg-white rounded-lg shadow-elevation-1 border border-neutral-300 p-6">
-            <div className="mb-5">
-              <div className="text-label-medium font-medium text-neutral-600 mb-1">
-                {currentQ.category}
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex-1">
+                <div className="text-label-medium font-medium text-neutral-600 mb-1">
+                  {currentQ.category}
+                </div>
+                <h2 className="text-headline-medium font-headline font-semi-bold text-neutral-900">
+                  {currentQ.title}
+                </h2>
               </div>
-              <h2 className="text-headline-medium font-headline font-semi-bold text-neutral-900">
-                {currentQ.title}
-              </h2>
+              <button
+                onClick={handleExitQuestionnaire}
+                className="p-2 text-neutral-600 hover:text-neutral-800 hover:bg-neutral-100 rounded-lg transition-colors ml-4"
+                aria-label="Exit questionnaire"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </button>
             </div>
 
             <div className="space-y-2 mb-5">

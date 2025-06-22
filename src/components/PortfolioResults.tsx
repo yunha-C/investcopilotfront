@@ -32,7 +32,7 @@ export const PortfolioResults: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#FCFDFD] px-4 py-8">
+    <div className="min-h-screen px-4 py-8">
       <div className="max-w-5xl mx-auto">
         <button
           onClick={() => setCurrentStep('questionnaire')}
