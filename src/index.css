@@ -7,30 +7,30 @@
   @apply w-full min-h-screen relative bg-white overflow-hidden;
 }
 
-/* First radial gradient circle - responsive positioning */
+/* First radial gradient circle - fully responsive sizing */
 .svg-background::before {
   content: '';
   @apply absolute rounded-full;
-  /* Responsive sizing - scales with viewport */
-  width: min(130vw, 1567px);
-  height: min(130vw, 1567px);
+  /* Responsive sizing - scales directly with viewport dimensions */
+  width: 150vw;
+  height: 150vw;
   /* Responsive positioning - maintains proportional placement */
-  left: min(-45vw, -544px);
-  top: min(-85vh, -1027px);
+  left: -50vw;
+  top: -95vh;
   background: radial-gradient(ellipse 50.00% 50.00% at 50.00% 50.00%, #CBD3D4 0%, rgba(221, 226, 227, 0.90) 16%, rgba(221, 226, 227, 0) 100%);
   z-index: 1;
 }
 
-/* Second radial gradient circle - responsive positioning */
+/* Second radial gradient circle - fully responsive sizing */
 .svg-background::after {
   content: '';
   @apply absolute rounded-full;
-  /* Responsive sizing - scales with viewport */
-  width: min(130vw, 1568px);
-  height: min(130vw, 1568px);
+  /* Responsive sizing - scales directly with viewport dimensions */
+  width: 150vw;
+  height: 150vw;
   /* Responsive positioning - maintains proportional placement */
-  left: min(24vw, 288px);
-  top: min(34vh, 367px);
+  left: 25vw;
+  top: 35vh;
   background: radial-gradient(ellipse 50.00% 50.00% at 50.00% 50.00%, #BAC3C4 0%, rgba(221, 226, 227, 0.90) 7%, rgba(221, 226, 227, 0) 100%);
   z-index: 2;
 }
@@ -40,7 +40,7 @@
   @apply w-full h-full absolute opacity-50 bg-neutral-50;
   left: 0;
   top: 0;
-  filter: blur(min(20px, 2vw));
+  filter: blur(20px);
   z-index: 3;
 }
 
@@ -50,19 +50,19 @@
   z-index: 4;
 }
 
-/* Mobile optimizations */
+/* Mobile optimizations - larger circles for better coverage */
 @media (max-width: 768px) {
   .svg-background::before {
-    width: 180vw;
-    height: 180vw;
-    left: -60vw;
-    top: -100vh;
+    width: 200vw;
+    height: 200vw;
+    left: -70vw;
+    top: -120vh;
   }
   
   .svg-background::after {
-    width: 180vw;
-    height: 180vw;
-    left: 20vw;
+    width: 200vw;
+    height: 200vw;
+    left: 15vw;
     top: 40vh;
   }
   
@@ -71,36 +71,87 @@
   }
 }
 
-/* Large screen optimizations */
-@media (min-width: 1400px) {
+/* Tablet optimizations */
+@media (min-width: 769px) and (max-width: 1024px) {
   .svg-background::before {
-    width: 1800px;
-    height: 1800px;
-    left: -600px;
-    top: -1200px;
+    width: 170vw;
+    height: 170vw;
+    left: -60vw;
+    top: -100vh;
   }
   
   .svg-background::after {
-    width: 1800px;
-    height: 1800px;
-    left: 400px;
-    top: 500px;
+    width: 170vw;
+    height: 170vw;
+    left: 20vw;
+    top: 38vh;
+  }
+}
+
+/* Desktop optimizations */
+@media (min-width: 1025px) and (max-width: 1440px) {
+  .svg-background::before {
+    width: 140vw;
+    height: 140vw;
+    left: -45vw;
+    top: -90vh;
+  }
+  
+  .svg-background::after {
+    width: 140vw;
+    height: 140vw;
+    left: 28vw;
+    top: 32vh;
+  }
+}
+
+/* Large desktop optimizations */
+@media (min-width: 1441px) and (max-width: 1920px) {
+  .svg-background::before {
+    width: 130vw;
+    height: 130vw;
+    left: -40vw;
+    top: -85vh;
+  }
+  
+  .svg-background::after {
+    width: 130vw;
+    height: 130vw;
+    left: 30vw;
+    top: 30vh;
   }
 }
 
 /* Ultra-wide screen optimizations */
-@media (min-width: 1920px) {
+@media (min-width: 1921px) {
   .svg-background::before {
-    width: 2200px;
-    height: 2200px;
-    left: -800px;
-    top: -1400px;
+    width: 120vw;
+    height: 120vw;
+    left: -35vw;
+    top: -80vh;
   }
   
   .svg-background::after {
-    width: 2200px;
-    height: 2200px;
-    left: 600px;
-    top: 600px;
+    width: 120vw;
+    height: 120vw;
+    left: 32vw;
+    top: 28vh;
+  }
+}
+
+/* Landscape mobile optimizations */
+@media (max-width: 768px) and (orientation: landscape) {
+  .svg-background::before {
+    width: 180vh;
+    height: 180vh;
+    left: -60vh;
+    top: -90vh;
+  }
+  
+  .svg-background::after {
+    width: 180vh;
+    height: 180vh;
+    left: 20vh;
+    top: 30vh;
   }
 }
