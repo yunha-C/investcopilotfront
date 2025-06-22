@@ -17,7 +17,7 @@ export const PortfolioDetails: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-surface-100 px-4 py-8">
+    <div className="min-h-screen bg-[#FCFDFD] px-4 py-8">
       <div className="max-w-6xl mx-auto">
         <button
           onClick={handleBack}
@@ -27,7 +27,7 @@ export const PortfolioDetails: React.FC = () => {
           <span className="text-body-medium">Back to Dashboard</span>
         </button>
 
-        <div className="bg-surface-50 rounded-lg shadow-elevation-1 border border-neutral-200 overflow-hidden">
+        <div className="bg-white rounded-lg shadow-elevation-1 border border-neutral-200 overflow-hidden">
           <div className="p-8 border-b border-neutral-200">
             <div className="flex items-center justify-between">
               <div>
@@ -129,7 +129,7 @@ export const PortfolioDetails: React.FC = () => {
                   <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-4">Asset Breakdown</h3>
                   <div className="space-y-3">
                     {portfolio.allocation.map((asset, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 bg-surface-50 rounded-lg">
+                      <div key={index} className="flex items-center justify-between p-3 bg-white rounded-lg">
                         <div className="flex items-center gap-3">
                           <div 
                             className="w-4 h-4 rounded-full" 
@@ -172,7 +172,7 @@ export const PortfolioDetails: React.FC = () => {
                 ) : (
                   <div className="space-y-4 max-h-96 overflow-y-auto">
                     {insights.map((insight) => (
-                      <div key={insight.id} className="bg-surface-50 border border-neutral-200 rounded-lg p-4">
+                      <div key={insight.id} className="bg-white border border-neutral-200 rounded-lg p-4">
                         <div className="flex items-start justify-between mb-3">
                           <h4 className="text-label-large font-medium text-neutral-900">{insight.title}</h4>
                           <div className="flex items-center gap-1 text-body-small text-neutral-500">

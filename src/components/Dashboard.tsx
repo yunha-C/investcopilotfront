@@ -44,7 +44,7 @@ export const Dashboard: React.FC = () => {
   const hasValue = portfolio.balance > 0;
 
   return (
-    <div className="min-h-screen bg-surface-100 px-4 py-8">
+    <div className="min-h-screen bg-[#FCFDFD] px-4 py-8">
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
           <button
@@ -65,7 +65,7 @@ export const Dashboard: React.FC = () => {
 
         <div className="grid lg:grid-cols-3 gap-6 mb-8">
           <div 
-            className="lg:col-span-2 bg-surface-50 rounded-lg shadow-elevation-1 border border-neutral-200 p-6 cursor-pointer hover:shadow-elevation-2 transition-shadow group"
+            className="lg:col-span-2 bg-white rounded-lg shadow-elevation-1 border border-neutral-200 p-6 cursor-pointer hover:shadow-elevation-2 transition-shadow group"
             onClick={handleViewPortfolio}
           >
             <div className="flex items-center justify-between mb-6">
@@ -133,7 +133,7 @@ export const Dashboard: React.FC = () => {
           </div>
 
           <div className="space-y-6">
-            <div className="bg-surface-50 rounded-lg shadow-elevation-1 border border-neutral-200 p-6">
+            <div className="bg-white rounded-lg shadow-elevation-1 border border-neutral-200 p-6">
               <div className="flex items-center gap-3 mb-4">
                 <Calculator className="w-5 h-5 text-neutral-700" />
                 <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900">Fee Breakdown</h3>
@@ -159,7 +159,7 @@ export const Dashboard: React.FC = () => {
               </div>
             </div>
 
-            <div className="bg-surface-50 rounded-lg shadow-elevation-1 border border-neutral-200 p-6">
+            <div className="bg-white rounded-lg shadow-elevation-1 border border-neutral-200 p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900">Market Insights</h3>
                 <button
@@ -213,7 +213,7 @@ export const Dashboard: React.FC = () => {
         {/* Add Value Modal */}
         {showAddValueForm && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-            <div className="bg-surface-50 rounded-lg p-6 w-full max-w-md shadow-elevation-3">
+            <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-elevation-3">
               <h3 className="text-title-large font-headline font-semi-bold text-neutral-900 mb-4">
                 Add Portfolio Value
               </h3>
@@ -263,7 +263,7 @@ export const Dashboard: React.FC = () => {
         {/* Add Insight Modal */}
         {showInsightForm && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-            <div className="bg-surface-50 rounded-lg p-6 w-full max-w-md shadow-elevation-3">
+            <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-elevation-3">
               <h3 className="text-title-large font-headline font-semi-bold text-neutral-900 mb-4">
                 Add Market Insight
               </h3>

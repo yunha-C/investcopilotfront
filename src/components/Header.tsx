@@ -12,7 +12,7 @@ export const Header: React.FC = () => {
   };
 
   return (
-    <header className="bg-neutral-200 border-b border-neutral-300 px-4 py-2 shadow-elevation-1">
+    <header className="bg-[#FCFDFD] border-b border-neutral-300 px-4 py-2 shadow-elevation-1">
       <div className="max-w-6xl mx-auto flex items-center justify-between">
         <div className="flex items-center">
           <h1 className="text-title-large font-headline font-semi-bold text-neutral-900">InvestCopilot</h1>

@@ -67,7 +67,7 @@ function App() {
   console.log('Rendering component for step:', currentStep);
 
   return (
-    <div className="min-h-screen bg-surface-100">
+    <div className="min-h-screen bg-[#FCFDFD]">
       <Header />
       
       {currentStep === 'home' && <Home />}

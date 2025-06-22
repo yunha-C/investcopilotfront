@@ -238,8 +238,8 @@ export const Questionnaire: React.FC = () => {
 
   if (showRestrictions) {
     return (
-      <div className="min-h-screen bg-neutral-200">
-        <div className="bg-neutral-200 px-4 pt-4 pb-3">
+      <div className="min-h-screen bg-[#FCFDFD]">
+        <div className="bg-[#FCFDFD] px-4 pt-4 pb-3">
           <div className="max-w-3xl mx-auto">
             <ProgressIndicator
               currentStep={9}
@@ -353,8 +353,8 @@ export const Questionnaire: React.FC = () => {
 
   if (showSectors) {
     return (
-      <div className="min-h-screen bg-neutral-200">
-        <div className="bg-neutral-200 px-4 pt-4 pb-3">
+      <div className="min-h-screen bg-[#FCFDFD]">
+        <div className="bg-[#FCFDFD] px-4 pt-4 pb-3">
           <div className="max-w-3xl mx-auto">
             <ProgressIndicator
               currentStep={8}
@@ -464,8 +464,8 @@ export const Questionnaire: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-200">
-      <div className="bg-neutral-200 px-4 pt-4 pb-3">
+    <div className="min-h-screen bg-[#FCFDFD]">
+      <div className="bg-[#FCFDFD] px-4 pt-4 pb-3">
         <div className="max-w-3xl mx-auto">
           <ProgressIndicator
             currentStep={currentQuestion}

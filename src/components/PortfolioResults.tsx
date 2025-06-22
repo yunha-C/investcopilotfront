@@ -32,7 +32,7 @@ export const PortfolioResults: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-surface-100 px-4 py-8">
+    <div className="min-h-screen bg-[#FCFDFD] px-4 py-8">
       <div className="max-w-5xl mx-auto">
         <button
           onClick={() => setCurrentStep('questionnaire')}
@@ -42,7 +42,7 @@ export const PortfolioResults: React.FC = () => {
           <span className="text-body-medium">Back to Questionnaire</span>
         </button>
 
-        <div className="bg-surface-50 rounded-lg shadow-elevation-1 border border-neutral-200 overflow-hidden">
+        <div className="bg-white rounded-lg shadow-elevation-1 border border-neutral-200 overflow-hidden">
           <div className="p-8 border-b border-neutral-200">
             <div className="flex items-center justify-between mb-4">
               <div>
