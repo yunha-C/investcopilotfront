@@ -21,17 +21,22 @@ function App() {
   // Handle initial routing after authentication
   useEffect(() => {
     if (isAuthenticated && user) {
-      // Always start at home page after login
+      console.log('=== APP ROUTING DEBUG ===');
+      console.log('User authenticated:', user.firstName);
+      console.log('Current step:', currentStep);
+      console.log('Has portfolio:', !!portfolio);
+      
+      // Only redirect to home if user is not actively using the app
       if (currentStep === 'questionnaire' && !portfolio) {
-        // Only redirect to home if user is on questionnaire but has no portfolio
-        // This prevents interrupting the questionnaire flow
-        setCurrentStep('home');
+        // User is starting questionnaire without portfolio - this is normal, don't redirect
+        console.log('User starting questionnaire - allowing to continue');
       } else if (currentStep === 'questionnaire' && portfolio) {
         // User has portfolio but somehow ended up on questionnaire, go to home
+        console.log('User has portfolio but on questionnaire - redirecting to home');
         setCurrentStep('home');
       }
     }
-  }, [isAuthenticated, user, currentStep, portfolio, setCurrentStep]);
+  }, [isAuthenticated, user, setCurrentStep]); // Removed currentStep and portfolio from deps to prevent loops
 
   // Simulate portfolio growth over time
   useEffect(() => {
@@ -46,6 +51,7 @@ function App() {
   }, [updatePortfolioBalance, isAuthenticated, portfolio]);
 
   const handleAuthenticated = () => {
+    console.log('=== AUTHENTICATION SUCCESS ===');
     // Re-check auth status after successful authentication
     checkAuthStatus();
     // Set to home page after successful authentication
@@ -55,6 +61,10 @@ function App() {
   if (!isAuthenticated) {
     return <AuthPage onAuthenticated={handleAuthenticated} />;
   }
+
+  console.log('=== APP RENDER DEBUG ===');
+  console.log('Current step:', currentStep);
+  console.log('Rendering component for step:', currentStep);
 
   return (
     <div className="min-h-screen bg-surface-100">

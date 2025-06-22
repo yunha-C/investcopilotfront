@@ -8,10 +8,19 @@ export const Home: React.FC = () => {
   const { user } = useAuthStore();
 
   const handleCreatePortfolio = () => {
-    console.log('Creating portfolio - navigating to questionnaire');
+    console.log('=== PORTFOLIO CREATION DEBUG ===');
+    console.log('Button clicked - Creating portfolio');
     console.log('Current step before:', useInvestmentStore.getState().currentStep);
+    console.log('Portfolio exists:', !!portfolio);
+    console.log('User:', user?.firstName);
+    
+    // Force navigation to questionnaire
     setCurrentStep('questionnaire');
-    console.log('Current step after:', useInvestmentStore.getState().currentStep);
+    
+    // Verify the state change
+    setTimeout(() => {
+      console.log('Current step after:', useInvestmentStore.getState().currentStep);
+    }, 100);
   };
 
   const handleViewPortfolio = () => {
@@ -38,9 +47,9 @@ export const Home: React.FC = () => {
             {portfolio ? (
               <div className="grid md:grid-cols-2 gap-6">
                 {/* Existing Portfolio Card */}
-                <div 
+                <button 
                   onClick={handleViewPortfolio}
-                  className="bg-white border border-neutral-200 rounded-lg p-6 cursor-pointer hover:shadow-elevation-2 transition-all hover:scale-[1.02] group shadow-elevation-1"
+                  className="bg-white border border-neutral-200 rounded-lg p-6 cursor-pointer hover:shadow-elevation-2 transition-all hover:scale-[1.02] group shadow-elevation-1 w-full text-left"
                 >
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
@@ -71,7 +80,7 @@ export const Home: React.FC = () => {
                       <p className="text-body-small text-neutral-500">Add value to start tracking</p>
                     </div>
                   )}
-                </div>
+                </button>
 
                 {/* Add Portfolio Card - Simplified */}
                 <button 
