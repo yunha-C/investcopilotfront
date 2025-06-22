@@ -5,25 +5,40 @@
 /* Exact SVG Background Implementation */
 .svg-background {
   position: relative;
-  background: #FCFDFD;
+  background: white;
   overflow: hidden;
 }
 
+/* First radial gradient circle */
 .svg-background::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: 
-    radial-gradient(133px circle at 55px -21px, #CBD3D4 0%, rgba(221, 226, 227, 0.9) 15.8654%, rgba(221, 226, 227, 0) 100%),
-    radial-gradient(133px circle at 181px 204px, #BAC3C4 0%, rgba(221, 226, 227, 0.9) 6.73077%, rgba(221, 226, 227, 0) 100%);
+  top: -21px;
+  left: 55px;
+  width: 266px;
+  height: 266px;
+  background: radial-gradient(circle, #CBD3D4 0%, rgba(221, 226, 227, 0.9) 15.8654%, rgba(221, 226, 227, 0) 100%);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
   z-index: 1;
 }
 
+/* Second radial gradient circle */
 .svg-background::after {
   content: '';
+  position: absolute;
+  top: 204px;
+  left: 181px;
+  width: 266px;
+  height: 266px;
+  background: radial-gradient(circle, #BAC3C4 0%, rgba(221, 226, 227, 0.9) 6.73077%, rgba(221, 226, 227, 0) 100%);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+}
+
+/* Blur overlay with noise texture */
+.svg-background > .blur-overlay {
   position: absolute;
   top: -40px;
   left: -40px;
@@ -32,12 +47,25 @@
   background: #FCFDFD;
   opacity: 0.5;
   filter: blur(20px);
-  z-index: 2;
+  z-index: 3;
   background-image: 
-    url("data:image/svg+xml,%3Csvg width='280' height='280' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='10 10' stitchTiles='stitch' numOctaves='3' seed='4694'/%3E%3CfeColorMatrix type='luminanceToAlpha'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='discrete' tableValues='0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0'/%3E%3C/feComponentTransfer%3E%3CfeFlood flood-color='rgba(166, 174, 175, 0.4)'/%3E%3CfeComposite operator='in'/%3E%3C/filter%3E%3Crect width='280' height='280' filter='url(%23noise)' fill='%23FCFDFD'/%3E%3C/svg%3E");
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(166, 174, 175, 0.1) 2px,
+      rgba(166, 174, 175, 0.1) 4px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 2px,
+      rgba(166, 174, 175, 0.1) 2px,
+      rgba(166, 174, 175, 0.1) 4px
+    );
 }
 
-.svg-background > * {
+.svg-background > *:not(.blur-overlay) {
   position: relative;
-  z-index: 3;
+  z-index: 4;
 }

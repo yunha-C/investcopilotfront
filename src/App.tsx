@@ -68,6 +68,7 @@ function App() {
 
   return (
     <div className="min-h-screen svg-background">
+      <div className="blur-overlay"></div>
       <Header />
       
       {currentStep === 'home' && <Home />}
