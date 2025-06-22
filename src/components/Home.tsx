@@ -29,84 +29,73 @@ export const Home: React.FC = () => {
             </p>
           </div>
 
-          {/* Action Cards */}
-          <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+          {/* Portfolio Cards */}
+          <div className="max-w-4xl mx-auto">
             {portfolio ? (
-              <>
+              <div className="grid md:grid-cols-2 gap-6">
+                {/* Existing Portfolio Card */}
                 <div 
                   onClick={handleViewPortfolio}
-                  className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg p-8 cursor-pointer hover:bg-white/15 transition-all hover:scale-[1.02] group"
+                  className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg p-6 cursor-pointer hover:bg-white/15 transition-all hover:scale-[1.02] group"
                 >
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="p-3 bg-positive/20 rounded-lg">
-                      <BarChart3 className="w-6 h-6 text-positive" />
-                    </div>
-                    <div>
-                      <h3 className="text-title-large font-headline font-semi-bold">View Portfolio</h3>
-                      <p className="text-body-medium text-neutral-300">{portfolio.name}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      {portfolio.balance > 0 ? (
-                        <>
-                          <p className="text-headline-small font-headline font-semi-bold">
-                            ${portfolio.balance.toLocaleString()}
-                          </p>
-                          <div className="flex items-center gap-2 mt-1">
-                            <TrendingUp className="w-4 h-4 text-positive" />
-                            <span className="text-positive text-label-large font-medium">+{portfolio.growth}%</span>
-                          </div>
-                        </>
-                      ) : (
-                        <div>
-                          <p className="text-body-medium text-neutral-300">Portfolio created</p>
-                          <p className="text-body-small text-neutral-400">Add value to start tracking</p>
-                        </div>
-                      )}
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-positive/20 rounded-lg">
+                        <BarChart3 className="w-5 h-5 text-positive" />
+                      </div>
+                      <div>
+                        <h3 className="text-title-medium font-headline font-semi-bold">{portfolio.name}</h3>
+                        <p className="text-body-small text-neutral-300">Active Portfolio</p>
+                      </div>
                     </div>
                     <ArrowRight className="w-5 h-5 text-neutral-400 group-hover:text-white transition-colors" />
                   </div>
+                  
+                  {portfolio.balance > 0 ? (
+                    <div>
+                      <p className="text-headline-small font-headline font-semi-bold">
+                        ${portfolio.balance.toLocaleString()}
+                      </p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <TrendingUp className="w-4 h-4 text-positive" />
+                        <span className="text-positive text-label-large font-medium">+{portfolio.growth}%</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div>
+                      <p className="text-body-medium text-neutral-300">Portfolio created</p>
+                      <p className="text-body-small text-neutral-400">Add value to start tracking</p>
+                    </div>
+                  )}
                 </div>
 
+                {/* Add Portfolio Card - Simplified */}
                 <div 
                   onClick={handleCreatePortfolio}
-                  className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg p-8 cursor-pointer hover:bg-white/15 transition-all hover:scale-[1.02] group"
+                  className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg p-6 cursor-pointer hover:bg-white/15 transition-all hover:scale-[1.02] group flex items-center justify-center"
                 >
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="p-3 bg-primary-500/20 rounded-lg">
-                      <Plus className="w-6 h-6 text-primary-300" />
+                  <div className="text-center">
+                    <div className="p-4 bg-primary-500/20 rounded-full w-fit mx-auto mb-3 group-hover:bg-primary-500/30 transition-colors">
+                      <Plus className="w-8 h-8 text-primary-300 group-hover:text-primary-200 transition-colors" />
                     </div>
-                    <div>
-                      <h3 className="text-title-large font-headline font-semi-bold">Create New Portfolio</h3>
-                      <p className="text-body-medium text-neutral-300">Build another investment strategy</p>
-                    </div>
+                    <h3 className="text-title-medium font-headline font-semi-bold">Add Portfolio</h3>
                   </div>
-                  <p className="text-body-medium text-neutral-400">
-                    Create additional portfolios for different investment goals and strategies.
-                  </p>
-                  <ArrowRight className="w-5 h-5 text-neutral-400 group-hover:text-white transition-colors mt-4" />
                 </div>
-              </>
+              </div>
             ) : (
-              <div className="md:col-span-2">
+              /* First Portfolio Card - Simplified */
+              <div className="max-w-md mx-auto">
                 <div 
                   onClick={handleCreatePortfolio}
                   className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg p-8 cursor-pointer hover:bg-white/15 transition-all hover:scale-[1.02] group text-center"
                 >
-                  <div className="flex justify-center mb-6">
-                    <div className="p-4 bg-primary-500/20 rounded-full">
-                      <Plus className="w-8 h-8 text-primary-300" />
-                    </div>
+                  <div className="p-4 bg-primary-500/20 rounded-full w-fit mx-auto mb-4 group-hover:bg-primary-500/30 transition-colors">
+                    <Plus className="w-8 h-8 text-primary-300 group-hover:text-primary-200 transition-colors" />
                   </div>
-                  <h3 className="text-headline-medium font-headline font-semi-bold mb-4">Create Your First Portfolio</h3>
-                  <p className="text-body-large text-neutral-300 mb-6 max-w-2xl mx-auto">
-                    Answer a few questions to create a personalized investment portfolio tailored to your goals and risk tolerance.
+                  <h3 className="text-headline-medium font-headline font-semi-bold mb-3">Create Your First Portfolio</h3>
+                  <p className="text-body-medium text-neutral-300">
+                    Start building your personalized investment strategy
                   </p>
-                  <div className="flex items-center justify-center gap-2 text-primary-300 group-hover:text-white transition-colors">
-                    <span className="text-label-large font-medium">Start Building</span>
-                    <ArrowRight className="w-5 h-5" />
-                  </div>
                 </div>
               </div>
             )}
