@@ -76,16 +76,25 @@ function App() {
   console.log('Rendering component for step:', currentStep);
 
   return (
-    <div className="min-h-screen svg-background">
-      <div className="blur-overlay"></div>
-      <Header />
+    <>
+      {/* Global Background */}
+      <div className="background-wrapper">
+        <div className="bg-circle-1"></div>
+        <div className="bg-circle-2"></div>
+        <div className="background-overlay"></div>
+      </div>
       
-      {currentStep === 'home' && <Home />}
-      {currentStep === 'questionnaire' && <Questionnaire />}
-      {currentStep === 'results' && <PortfolioResults />}
-      {currentStep === 'dashboard' && <Dashboard />}
-      {currentStep === 'portfolio-details' && <PortfolioDetails />}
-    </div>
+      {/* Main Content */}
+      <div className="min-h-screen">
+        <Header />
+        
+        {currentStep === 'home' && <Home />}
+        {currentStep === 'questionnaire' && <Questionnaire />}
+        {currentStep === 'results' && <PortfolioResults />}
+        {currentStep === 'dashboard' && <Dashboard />}
+        {currentStep === 'portfolio-details' && <PortfolioDetails />}
+      </div>
+    </>
   );
 }
 
