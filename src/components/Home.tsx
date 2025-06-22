@@ -9,10 +9,13 @@ export const Home: React.FC = () => {
 
   const handleCreatePortfolio = () => {
     console.log('Creating portfolio - navigating to questionnaire');
+    console.log('Current step before:', useInvestmentStore.getState().currentStep);
     setCurrentStep('questionnaire');
+    console.log('Current step after:', useInvestmentStore.getState().currentStep);
   };
 
   const handleViewPortfolio = () => {
+    console.log('Viewing portfolio - navigating to dashboard');
     setCurrentStep('dashboard');
   };
 
@@ -71,9 +74,9 @@ export const Home: React.FC = () => {
                 </div>
 
                 {/* Add Portfolio Card - Simplified */}
-                <div 
+                <button 
                   onClick={handleCreatePortfolio}
-                  className="bg-white border border-neutral-200 rounded-lg p-6 cursor-pointer hover:shadow-elevation-2 transition-all hover:scale-[1.02] group flex items-center justify-center shadow-elevation-1"
+                  className="bg-white border border-neutral-200 rounded-lg p-6 cursor-pointer hover:shadow-elevation-2 transition-all hover:scale-[1.02] group flex items-center justify-center shadow-elevation-1 w-full"
                 >
                   <div className="text-center">
                     <div className="p-4 bg-primary-500/10 rounded-full w-fit mx-auto mb-3 group-hover:bg-primary-500/20 transition-colors">
@@ -81,14 +84,14 @@ export const Home: React.FC = () => {
                     </div>
                     <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900">Add Portfolio</h3>
                   </div>
-                </div>
+                </button>
               </div>
             ) : (
               /* First Portfolio Card - Simplified */
               <div className="max-w-md mx-auto">
-                <div 
+                <button 
                   onClick={handleCreatePortfolio}
-                  className="bg-white border border-neutral-200 rounded-lg p-8 cursor-pointer hover:shadow-elevation-2 transition-all hover:scale-[1.02] group text-center shadow-elevation-1"
+                  className="bg-white border border-neutral-200 rounded-lg p-8 cursor-pointer hover:shadow-elevation-2 transition-all hover:scale-[1.02] group text-center shadow-elevation-1 w-full"
                 >
                   <div className="p-4 bg-primary-500/10 rounded-full w-fit mx-auto mb-4 group-hover:bg-primary-500/20 transition-colors">
                     <Plus className="w-8 h-8 text-primary-600 group-hover:text-primary-700 transition-colors" />
@@ -97,7 +100,7 @@ export const Home: React.FC = () => {
                   <p className="text-body-medium text-neutral-600">
                     Start building your personalized investment strategy
                   </p>
-                </div>
+                </button>
               </div>
             )}
           </div>
