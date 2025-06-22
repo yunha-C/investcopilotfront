@@ -2,39 +2,105 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Exact SVG Background Implementation using Tailwind classes */
+/* Responsive SVG Background Implementation */
 .svg-background {
-  @apply w-full h-full relative bg-white overflow-hidden;
+  @apply w-full min-h-screen relative bg-white overflow-hidden;
 }
 
-/* First radial gradient circle */
+/* First radial gradient circle - responsive positioning */
 .svg-background::before {
   content: '';
-  @apply w-[1567px] h-[1567px] absolute rounded-full;
-  left: -544px;
-  top: -1027px;
+  @apply absolute rounded-full;
+  /* Responsive sizing - scales with viewport */
+  width: min(130vw, 1567px);
+  height: min(130vw, 1567px);
+  /* Responsive positioning - maintains proportional placement */
+  left: min(-45vw, -544px);
+  top: min(-85vh, -1027px);
   background: radial-gradient(ellipse 50.00% 50.00% at 50.00% 50.00%, #CBD3D4 0%, rgba(221, 226, 227, 0.90) 16%, rgba(221, 226, 227, 0) 100%);
+  z-index: 1;
 }
 
-/* Second radial gradient circle */
+/* Second radial gradient circle - responsive positioning */
 .svg-background::after {
   content: '';
-  @apply w-[1568px] h-[1568px] absolute rounded-full;
-  left: 288px;
-  top: 367px;
+  @apply absolute rounded-full;
+  /* Responsive sizing - scales with viewport */
+  width: min(130vw, 1568px);
+  height: min(130vw, 1568px);
+  /* Responsive positioning - maintains proportional placement */
+  left: min(24vw, 288px);
+  top: min(34vh, 367px);
   background: radial-gradient(ellipse 50.00% 50.00% at 50.00% 50.00%, #BAC3C4 0%, rgba(221, 226, 227, 0.90) 7%, rgba(221, 226, 227, 0) 100%);
+  z-index: 2;
 }
 
-/* Blur overlay */
+/* Blur overlay - responsive */
 .blur-overlay {
   @apply w-full h-full absolute opacity-50 bg-neutral-50;
   left: 0;
   top: 0;
-  filter: blur(20px);
+  filter: blur(min(20px, 2vw));
   z-index: 3;
 }
 
+/* Ensure content appears above background */
 .svg-background > *:not(.blur-overlay) {
   position: relative;
   z-index: 4;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .svg-background::before {
+    width: 180vw;
+    height: 180vw;
+    left: -60vw;
+    top: -100vh;
+  }
+  
+  .svg-background::after {
+    width: 180vw;
+    height: 180vw;
+    left: 20vw;
+    top: 40vh;
+  }
+  
+  .blur-overlay {
+    filter: blur(15px);
+  }
+}
+
+/* Large screen optimizations */
+@media (min-width: 1400px) {
+  .svg-background::before {
+    width: 1800px;
+    height: 1800px;
+    left: -600px;
+    top: -1200px;
+  }
+  
+  .svg-background::after {
+    width: 1800px;
+    height: 1800px;
+    left: 400px;
+    top: 500px;
+  }
+}
+
+/* Ultra-wide screen optimizations */
+@media (min-width: 1920px) {
+  .svg-background::before {
+    width: 2200px;
+    height: 2200px;
+    left: -800px;
+    top: -1400px;
+  }
+  
+  .svg-background::after {
+    width: 2200px;
+    height: 2200px;
+    left: 600px;
+    top: 600px;
+  }
 }
