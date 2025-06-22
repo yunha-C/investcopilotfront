@@ -8,6 +8,7 @@ export const Home: React.FC = () => {
   const { user } = useAuthStore();
 
   const handleCreatePortfolio = () => {
+    console.log('Creating portfolio - navigating to questionnaire');
     setCurrentStep('questionnaire');
   };
 
@@ -17,14 +18,14 @@ export const Home: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-surface-100">
-      {/* Hero Section */}
-      <div className="bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-700 text-white">
+      {/* Hero Section - Light background */}
+      <div className="bg-gradient-to-br from-neutral-100 via-surface-100 to-neutral-200">
         <div className="max-w-6xl mx-auto px-4 py-16">
           <div className="text-center mb-12">
-            <h1 className="text-display-medium font-headline font-semi-bold mb-6">
+            <h1 className="text-display-medium font-headline font-semi-bold mb-6 text-neutral-900">
               Welcome back, {user?.firstName}
             </h1>
-            <p className="text-title-large text-neutral-200 mb-8 max-w-3xl mx-auto">
+            <p className="text-title-large text-neutral-600 mb-8 max-w-3xl mx-auto">
               Your AI-powered investment management platform
             </p>
           </div>
@@ -36,24 +37,24 @@ export const Home: React.FC = () => {
                 {/* Existing Portfolio Card */}
                 <div 
                   onClick={handleViewPortfolio}
-                  className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg p-6 cursor-pointer hover:bg-white/15 transition-all hover:scale-[1.02] group"
+                  className="bg-white border border-neutral-200 rounded-lg p-6 cursor-pointer hover:shadow-elevation-2 transition-all hover:scale-[1.02] group shadow-elevation-1"
                 >
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
-                      <div className="p-2 bg-positive/20 rounded-lg">
+                      <div className="p-2 bg-positive/10 rounded-lg">
                         <BarChart3 className="w-5 h-5 text-positive" />
                       </div>
                       <div>
-                        <h3 className="text-title-medium font-headline font-semi-bold">{portfolio.name}</h3>
-                        <p className="text-body-small text-neutral-300">Active Portfolio</p>
+                        <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900">{portfolio.name}</h3>
+                        <p className="text-body-small text-neutral-600">Active Portfolio</p>
                       </div>
                     </div>
-                    <ArrowRight className="w-5 h-5 text-neutral-400 group-hover:text-white transition-colors" />
+                    <ArrowRight className="w-5 h-5 text-neutral-400 group-hover:text-neutral-600 transition-colors" />
                   </div>
                   
                   {portfolio.balance > 0 ? (
                     <div>
-                      <p className="text-headline-small font-headline font-semi-bold">
+                      <p className="text-headline-small font-headline font-semi-bold text-neutral-900">
                         ${portfolio.balance.toLocaleString()}
                       </p>
                       <div className="flex items-center gap-2 mt-1">
@@ -63,8 +64,8 @@ export const Home: React.FC = () => {
                     </div>
                   ) : (
                     <div>
-                      <p className="text-body-medium text-neutral-300">Portfolio created</p>
-                      <p className="text-body-small text-neutral-400">Add value to start tracking</p>
+                      <p className="text-body-medium text-neutral-700">Portfolio created</p>
+                      <p className="text-body-small text-neutral-500">Add value to start tracking</p>
                     </div>
                   )}
                 </div>
@@ -72,13 +73,13 @@ export const Home: React.FC = () => {
                 {/* Add Portfolio Card - Simplified */}
                 <div 
                   onClick={handleCreatePortfolio}
-                  className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg p-6 cursor-pointer hover:bg-white/15 transition-all hover:scale-[1.02] group flex items-center justify-center"
+                  className="bg-white border border-neutral-200 rounded-lg p-6 cursor-pointer hover:shadow-elevation-2 transition-all hover:scale-[1.02] group flex items-center justify-center shadow-elevation-1"
                 >
                   <div className="text-center">
-                    <div className="p-4 bg-primary-500/20 rounded-full w-fit mx-auto mb-3 group-hover:bg-primary-500/30 transition-colors">
-                      <Plus className="w-8 h-8 text-primary-300 group-hover:text-primary-200 transition-colors" />
+                    <div className="p-4 bg-primary-500/10 rounded-full w-fit mx-auto mb-3 group-hover:bg-primary-500/20 transition-colors">
+                      <Plus className="w-8 h-8 text-primary-600 group-hover:text-primary-700 transition-colors" />
                     </div>
-                    <h3 className="text-title-medium font-headline font-semi-bold">Add Portfolio</h3>
+                    <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900">Add Portfolio</h3>
                   </div>
                 </div>
               </div>
@@ -87,13 +88,13 @@ export const Home: React.FC = () => {
               <div className="max-w-md mx-auto">
                 <div 
                   onClick={handleCreatePortfolio}
-                  className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg p-8 cursor-pointer hover:bg-white/15 transition-all hover:scale-[1.02] group text-center"
+                  className="bg-white border border-neutral-200 rounded-lg p-8 cursor-pointer hover:shadow-elevation-2 transition-all hover:scale-[1.02] group text-center shadow-elevation-1"
                 >
-                  <div className="p-4 bg-primary-500/20 rounded-full w-fit mx-auto mb-4 group-hover:bg-primary-500/30 transition-colors">
-                    <Plus className="w-8 h-8 text-primary-300 group-hover:text-primary-200 transition-colors" />
+                  <div className="p-4 bg-primary-500/10 rounded-full w-fit mx-auto mb-4 group-hover:bg-primary-500/20 transition-colors">
+                    <Plus className="w-8 h-8 text-primary-600 group-hover:text-primary-700 transition-colors" />
                   </div>
-                  <h3 className="text-headline-medium font-headline font-semi-bold mb-3">Create Your First Portfolio</h3>
-                  <p className="text-body-medium text-neutral-300">
+                  <h3 className="text-headline-medium font-headline font-semi-bold mb-3 text-neutral-900">Add a Portfolio</h3>
+                  <p className="text-body-medium text-neutral-600">
                     Start building your personalized investment strategy
                   </p>
                 </div>
