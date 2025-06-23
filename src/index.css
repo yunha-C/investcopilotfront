@@ -2,97 +2,68 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Global Background Styles */
+/* Responsive Gradient Background using CSS pseudo-elements */
 body {
   margin: 0;
   padding: 0;
-  position: relative;
-  background-color: #ffffff;
   min-height: 100vh;
+  background-color: #ffffff;
+  position: relative;
   overflow-x: hidden;
 }
 
-.background-wrapper {
+body::before,
+body::after {
+  content: "";
   position: fixed;
-  inset: 0;
-  z-index: -1;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.gradient-circle-1,
-.gradient-circle-2 {
-  position: absolute;
   width: 200vw;
   height: 200vw;
   border-radius: 50%;
-  will-change: transform;
+  z-index: -2;
+  pointer-events: none;
 }
 
-.gradient-circle-1 {
-  top: -100vw;
+body::before {
+  top: -100vh;
   left: -100vw;
   background: radial-gradient(
-    ellipse 50% 50% at 50% 50%,
-    #CBD3D4 0%,
-    rgba(221, 226, 227, 0.9) 16%,
-    rgba(221, 226, 227, 0) 100%
-  );
-  /* Fallback for older browsers */
-  background: -webkit-radial-gradient(
-    ellipse 50% 50% at 50% 50%,
+    ellipse at center,
     #CBD3D4 0%,
     rgba(221, 226, 227, 0.9) 16%,
     rgba(221, 226, 227, 0) 100%
   );
 }
 
-.gradient-circle-2 {
+body::after {
   top: 30vh;
   left: 30vw;
   background: radial-gradient(
-    ellipse 50% 50% at 50% 50%,
-    #BAC3C4 0%,
-    rgba(221, 226, 227, 0.9) 7%,
-    rgba(221, 226, 227, 0) 100%
-  );
-  /* Fallback for older browsers */
-  background: -webkit-radial-gradient(
-    ellipse 50% 50% at 50% 50%,
+    ellipse at center,
     #BAC3C4 0%,
     rgba(221, 226, 227, 0.9) 7%,
     rgba(221, 226, 227, 0) 100%
   );
 }
 
-.blur-overlay {
-  position: absolute;
+/* Optional Blur Layer */
+.blur-layer {
+  position: fixed;
   inset: 0;
   background: rgba(250, 250, 250, 0.5);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
+  z-index: -1;
 }
 
 /* Ensure backdrop-filter support detection */
 @supports (backdrop-filter: blur(20px)) {
-  .blur-overlay {
+  .blur-layer {
     backdrop-filter: blur(20px);
   }
 }
 
 @supports (-webkit-backdrop-filter: blur(20px)) {
-  .blur-overlay {
+  .blur-layer {
     -webkit-backdrop-filter: blur(20px);
   }
-}
-
-/* Debug styles - remove these after confirming gradients work */
-.gradient-circle-1 {
-  /* Temporary border to see if circles are positioned correctly */
-  /* border: 2px solid red; */
-}
-
-.gradient-circle-2 {
-  /* Temporary border to see if circles are positioned correctly */
-  /* border: 2px solid blue; */
 }

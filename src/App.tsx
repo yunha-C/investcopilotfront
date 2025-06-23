@@ -77,12 +77,8 @@ function App() {
 
   return (
     <>
-      {/* Global Background - Always Present */}
-      <div className="background-wrapper">
-        <div className="gradient-circle-1"></div>
-        <div className="gradient-circle-2"></div>
-        <div className="blur-overlay"></div>
-      </div>
+      {/* Optional Blur Layer - Add this if you want the blur effect */}
+      <div className="blur-layer"></div>
       
       {/* Main Content */}
       <div className="min-h-screen relative z-10">

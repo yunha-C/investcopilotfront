@@ -129,7 +129,7 @@ export const PortfolioDetails: React.FC = () => {
                   <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-4">Asset Breakdown</h3>
                   <div className="space-y-3">
                     {portfolio.allocation.map((asset, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 bg-white rounded-lg">
+                      <div key={index} className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <div 
                             className="w-4 h-4 rounded-full" 
