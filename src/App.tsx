@@ -79,9 +79,9 @@ function App() {
     <>
       {/* Global Background */}
       <div className="background-wrapper">
-        <div className="bg-circle-1"></div>
-        <div className="bg-circle-2"></div>
-        <div className="background-overlay"></div>
+        <div className="gradient-circle-1"></div>
+        <div className="gradient-circle-2"></div>
+        <div className="blur-overlay"></div>
       </div>
       
       {/* Main Content */}
