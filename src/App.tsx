@@ -77,7 +77,7 @@ function App() {
 
   return (
     <>
-      {/* Global Background */}
+      {/* Global Background - Always Present */}
       <div className="background-wrapper">
         <div className="gradient-circle-1"></div>
         <div className="gradient-circle-2"></div>
@@ -85,7 +85,7 @@ function App() {
       </div>
       
       {/* Main Content */}
-      <div className="min-h-screen">
+      <div className="min-h-screen relative z-10">
         <Header />
         
         {currentStep === 'home' && <Home />}
