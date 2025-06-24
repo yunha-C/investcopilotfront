@@ -283,7 +283,7 @@ function generatePortfolioName(answers: QuestionnaireAnswers): string {
   const goalName = goalNames[answers.goal as keyof typeof goalNames] || 'Custom Portfolio';
   const riskLevel = riskLevels[answers.riskTolerance as keyof typeof riskLevels] || 'Balanced';
   
-  // Return clean portfolio name without timestamp
+  // Return clean portfolio name without any timestamp or random numbers
   return `${riskLevel} ${goalName}`;
 }
 
@@ -320,7 +320,7 @@ function convertApiResponseToPortfolio(apiResponse: PortfolioResponse, answers?:
   return {
     id: `local_${apiResponse.id}`,
     apiId: apiResponse.id,
-    name: apiResponse.name,
+    name: apiResponse.name, // Use the clean name from API
     allocation,
     reasoning,
     expectedReturn: apiResponse.expectedReturn || 6.5,
