@@ -74,7 +74,7 @@ function App() {
         <div className="background-container">
           <div className="circle-1"></div>
           <div className="circle-2"></div>
-          <div className="blur-overlay"></div>
+          <div className="blur-overlay bg-neutral-50 blur-[20px]"></div>
         </div>
         
         <AuthPage onAuthenticated={handleAuthenticated} />
@@ -92,7 +92,7 @@ function App() {
       <div className="background-container">
         <div className="circle-1"></div>
         <div className="circle-2"></div>
-        <div className="blur-overlay"></div>
+        <div className="blur-overlay bg-neutral-50 blur-[20px]"></div>
       </div>
       
       {/* Main Content */}
