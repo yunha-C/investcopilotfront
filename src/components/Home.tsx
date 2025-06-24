@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Plus, TrendingUp, BarChart3, ArrowRight, AlertCircle } from 'lucide-react';
+import { Plus, TrendingUp, BarChart3, ArrowRight, AlertCircle, Activity, Zap } from 'lucide-react';
 import { useInvestmentStore } from '../store/investmentStore';
 import { useAuthStore } from '../store/authStore';
 
@@ -48,14 +48,36 @@ export const Home: React.FC = () => {
           <div className="text-center mb-12">
             {portfolio && portfolio.balance > 0 ? (
               <div>
-                <div className="mb-4">
-                  <p className="text-display-medium font-headline font-semi-bold text-neutral-900 mb-2">
+                <div className="mb-6">
+                  <p className="text-display-medium font-headline font-semi-bold text-neutral-900 mb-3">
                     ${portfolio.balance.toLocaleString()}
                   </p>
-                  <div className="flex items-center justify-center gap-2">
+                  <div className="flex items-center justify-center gap-2 mb-4">
                     <TrendingUp className="w-6 h-6 text-positive" />
                     <span className="text-positive text-title-large font-medium">+{portfolio.growth}%</span>
                     <span className="text-neutral-500 text-body-large">+$320.00</span>
+                  </div>
+                  
+                  {/* Simple Growth Chart Visualization */}
+                  <div className="max-w-md mx-auto mb-4">
+                    <div className="h-24 bg-neutral-100 rounded-lg p-4 flex items-end justify-between">
+                      {/* Simulated chart bars */}
+                      {[65, 72, 68, 75, 82, 78, 85, 90, 88, 95, 100].map((height, index) => (
+                        <div
+                          key={index}
+                          className="bg-positive rounded-sm transition-all duration-300 hover:bg-positive/80"
+                          style={{ 
+                            height: `${height}%`, 
+                            width: '6px',
+                            opacity: index === 10 ? 1 : 0.7 - (10 - index) * 0.05
+                          }}
+                        />
+                      ))}
+                    </div>
+                    <div className="flex justify-between text-body-small text-neutral-500 mt-2">
+                      <span>30 days ago</span>
+                      <span>Today</span>
+                    </div>
                   </div>
                 </div>
                 <p className="text-body-large text-neutral-600">
@@ -115,7 +137,7 @@ export const Home: React.FC = () => {
                 >
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
-                      <div className="p-2 bg-positive/10 rounded-lg">
+                      <div className="p-2 border border-positive rounded-lg">
                         <BarChart3 className="w-5 h-5 text-positive" />
                       </div>
                       <div>
@@ -154,7 +176,7 @@ export const Home: React.FC = () => {
                   className="bg-white border border-neutral-200 rounded-lg p-6 cursor-pointer hover:shadow-elevation-2 transition-all hover:scale-[1.02] group flex items-center justify-center shadow-elevation-1 w-full"
                 >
                   <div className="text-center">
-                    <div className="p-4 bg-primary-500/10 rounded-full w-fit mx-auto mb-3 group-hover:bg-primary-500/20 transition-colors">
+                    <div className="p-4 border border-primary-600 rounded-full w-fit mx-auto mb-3 group-hover:border-primary-700 transition-colors">
                       <Plus className="w-8 h-8 text-primary-600 group-hover:text-primary-700 transition-colors" />
                     </div>
                     <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900">Add Portfolio</h3>
@@ -168,7 +190,7 @@ export const Home: React.FC = () => {
                   onClick={handleCreatePortfolio}
                   className="bg-white border border-neutral-200 rounded-lg p-8 cursor-pointer hover:shadow-elevation-2 transition-all hover:scale-[1.02] group text-center shadow-elevation-1 w-full"
                 >
-                  <div className="p-4 bg-primary-500/10 rounded-full w-fit mx-auto mb-4 group-hover:bg-primary-500/20 transition-colors">
+                  <div className="p-4 border border-primary-600 rounded-full w-fit mx-auto mb-4 group-hover:border-primary-700 transition-colors">
                     <Plus className="w-8 h-8 text-primary-600 group-hover:text-primary-700 transition-colors" />
                   </div>
                   <h3 className="text-headline-medium font-headline font-semi-bold mb-3 text-neutral-900">Add a Portfolio</h3>
@@ -186,7 +208,7 @@ export const Home: React.FC = () => {
       <div className="max-w-6xl mx-auto px-4 py-16">
         <div className="grid md:grid-cols-3 gap-8">
           <div className="text-center">
-            <div className="p-4 bg-neutral-100 rounded-full w-fit mx-auto mb-4">
+            <div className="p-4 border border-neutral-700 rounded-full w-fit mx-auto mb-4">
               <BarChart3 className="w-8 h-8 text-neutral-700" />
             </div>
             <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-3">
@@ -198,8 +220,8 @@ export const Home: React.FC = () => {
           </div>
 
           <div className="text-center">
-            <div className="p-4 bg-neutral-100 rounded-full w-fit mx-auto mb-4">
-              <TrendingUp className="w-8 h-8 text-neutral-700" />
+            <div className="p-4 border border-neutral-700 rounded-full w-fit mx-auto mb-4">
+              <Activity className="w-8 h-8 text-neutral-700" />
             </div>
             <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-3">
               Performance Tracking
@@ -210,14 +232,14 @@ export const Home: React.FC = () => {
           </div>
 
           <div className="text-center">
-            <div className="p-4 bg-neutral-100 rounded-full w-fit mx-auto mb-4">
-              <Plus className="w-8 h-8 text-neutral-700" />
+            <div className="p-4 border border-neutral-700 rounded-full w-fit mx-auto mb-4">
+              <Zap className="w-8 h-8 text-neutral-700" />
             </div>
             <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-3">
-              Easy Setup
+              AI Simulation
             </h3>
             <p className="text-body-medium text-neutral-600">
-              Quick questionnaire to understand your investment goals and risk tolerance.
+              Advanced AI algorithms simulate market conditions and optimize your investment strategy.
             </p>
           </div>
         </div>
