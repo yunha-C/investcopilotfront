@@ -245,17 +245,20 @@ export const Home: React.FC = () => {
         </div>
       </div>
 
-      {/* Simple Features Section */}
+      {/* Features Section with Material Design 3 Icons */}
       <div className="max-w-6xl mx-auto px-4 py-16">
         <div className="grid md:grid-cols-3 gap-8">
+          {/* Portfolio Management - Material Design 3 bookmark_manager icon */}
           <div className="text-center">
-            <div className="p-3 sm:p-4 bg-neutral-100 rounded-full w-fit mx-auto mb-4">
+            <div className="p-4 bg-neutral-100 rounded-full w-fit mx-auto mb-4 flex items-center justify-center">
               <span 
-                className="material-symbols-outlined text-neutral-700" 
+                className="material-symbols-outlined text-neutral-700 select-none"
                 style={{ 
-                  fontSize: 'clamp(24px, 4vw, 32px)',
-                  lineHeight: '1'
+                  fontSize: '32px',
+                  lineHeight: '1',
+                  fontVariationSettings: "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48"
                 }}
+                aria-hidden="true"
               >
                 bookmark_manager
               </span>
@@ -268,14 +271,17 @@ export const Home: React.FC = () => {
             </p>
           </div>
 
+          {/* Influence with Your Own Insight */}
           <div className="text-center">
-            <div className="p-3 sm:p-4 bg-neutral-100 rounded-full w-fit mx-auto mb-4">
+            <div className="p-4 bg-neutral-100 rounded-full w-fit mx-auto mb-4 flex items-center justify-center">
               <span 
-                className="material-symbols-outlined text-neutral-700" 
+                className="material-symbols-outlined text-neutral-700 select-none"
                 style={{ 
-                  fontSize: 'clamp(24px, 4vw, 32px)',
-                  lineHeight: '1'
+                  fontSize: '32px',
+                  lineHeight: '1',
+                  fontVariationSettings: "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48"
                 }}
+                aria-hidden="true"
               >
                 robot_2
               </span>
@@ -288,14 +294,17 @@ export const Home: React.FC = () => {
             </p>
           </div>
 
+          {/* AI Simulation */}
           <div className="text-center">
-            <div className="p-3 sm:p-4 bg-neutral-700 rounded-full w-fit mx-auto mb-4">
+            <div className="p-4 bg-neutral-700 rounded-full w-fit mx-auto mb-4 flex items-center justify-center">
               <span 
-                className="material-symbols-outlined text-white" 
+                className="material-symbols-outlined text-white select-none"
                 style={{ 
-                  fontSize: 'clamp(24px, 4vw, 32px)',
-                  lineHeight: '1'
+                  fontSize: '32px',
+                  lineHeight: '1',
+                  fontVariationSettings: "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48"
                 }}
+                aria-hidden="true"
               >
                 bubble_chart
               </span>
