@@ -195,7 +195,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
         <div className="bg-white/90 backdrop-blur-sm rounded-lg shadow-elevation-2 border border-neutral-300 p-6">
           <div className="mb-4">
             <h2 className="text-headline-medium font-headline font-semi-bold text-neutral-900 mb-1">
-              {isLogin ? 'Log In' : 'Register'}
+              {isLogin ? 'Log In' : 'Create Account'}
             </h2>
           </div>
 
@@ -424,7 +424,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
                 </>
               ) : (
                 <>
-                  {isLogin ? 'Log In' : 'Register'}
+                  {isLogin ? 'Log In' : 'Create Account'}
                 </>
               )}
             </button>
@@ -433,10 +433,10 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
           {isLogin && (
             <div className="mt-3 text-center">
               <button 
-                className="text-body-medium text-neutral-900 hover:text-neutral-700 transition-colors disabled:opacity-50 font-medium"
+                className="text-body-medium text-neutral-600 hover:text-neutral-800 transition-colors disabled:opacity-50 underline"
                 disabled={isLoading}
               >
-                Forgot password
+                Forgot password?
               </button>
             </div>
           )}
@@ -450,7 +450,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
               className="text-label-large font-medium text-neutral-900 hover:text-neutral-700 transition-colors disabled:opacity-50"
               disabled={isLoading}
             >
-              {isLogin ? 'Register' : 'Log In'}
+              {isLogin ? 'Create Account' : 'Log In'}
             </button>
           </div>
         </div>
