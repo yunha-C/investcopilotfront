@@ -113,3 +113,9 @@ body {
   position: relative;
   overflow-x: hidden;
 }
+
+/* Ensure content is above background */
+#root {
+  position: relative;
+  z-index: 1;
+}

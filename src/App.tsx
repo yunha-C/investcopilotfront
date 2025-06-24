@@ -67,28 +67,9 @@ function App() {
     setCurrentStep('home');
   };
 
-  if (!isAuthenticated) {
-    return (
-      <>
-        {/* Responsive Gradient Background */}
-        <div className="background-container">
-          <div className="circle-1"></div>
-          <div className="circle-2"></div>
-          <div className="blur-overlay bg-neutral-50 blur-[20px]"></div>
-        </div>
-        
-        <AuthPage onAuthenticated={handleAuthenticated} />
-      </>
-    );
-  }
-
-  console.log('=== APP RENDER DEBUG ===');
-  console.log('Current step:', currentStep);
-  console.log('Rendering component for step:', currentStep);
-
   return (
     <>
-      {/* Responsive Gradient Background */}
+      {/* Responsive Gradient Background - Always Present */}
       <div className="background-container">
         <div className="circle-1"></div>
         <div className="circle-2"></div>
@@ -96,14 +77,21 @@ function App() {
       </div>
       
       {/* Main Content */}
-      <div className="min-h-screen relative z-10">
-        <Header />
-        
-        {currentStep === 'home' && <Home />}
-        {currentStep === 'questionnaire' && <Questionnaire />}
-        {currentStep === 'results' && <PortfolioResults />}
-        {currentStep === 'dashboard' && <Dashboard />}
-        {currentStep === 'portfolio-details' && <PortfolioDetails />}
+      <div className="relative z-10">
+        {!isAuthenticated ? (
+          <AuthPage onAuthenticated={handleAuthenticated} />
+        ) : (
+          <>
+            <Header />
+            <div className="min-h-screen">
+              {currentStep === 'home' && <Home />}
+              {currentStep === 'questionnaire' && <Questionnaire />}
+              {currentStep === 'results' && <PortfolioResults />}
+              {currentStep === 'dashboard' && <Dashboard />}
+              {currentStep === 'portfolio-details' && <PortfolioDetails />}
+            </div>
+          </>
+        )}
       </div>
     </>
   );
