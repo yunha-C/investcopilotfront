@@ -42,6 +42,8 @@ export interface Portfolio {
   createdAt?: string;
   updatedAt?: string;
   userId?: string;
+  // Track if saved to database
+  savedToDatabase?: boolean;
 }
 
 export interface Insight {
@@ -69,6 +71,7 @@ interface InvestmentState {
   setCurrentStep: (step: InvestmentState['currentStep']) => void;
   setQuestionnaireAnswers: (answers: QuestionnaireAnswers) => void;
   generatePortfolio: (answers: QuestionnaireAnswers) => Promise<void>;
+  savePortfolioToDatabase: (portfolio: Portfolio) => Promise<void>;
   loadUserPortfolios: (userId: string) => Promise<void>;
   addInsight: (url: string) => void;
   updatePortfolioBalance: (balance: number) => void;
@@ -96,28 +99,14 @@ export const useInvestmentStore = create<InvestmentState>((set, get) => ({
       console.log('=== GENERATING PORTFOLIO ===');
       console.log('Questionnaire answers:', answers);
       
-      // Convert questionnaire answers to API format
-      const portfolioRequest: CreatePortfolioRequest = {
-        name: generatePortfolioName(answers),
-        riskTolerance: answers.riskTolerance,
-        investmentGoal: answers.goal,
-        timeHorizon: answers.timeHorizon,
-        initialInvestment: getInitialInvestmentFromAnswers(answers),
-        monthlyContribution: 0, // Default to 0, can be updated later
-        sectors: answers.sectors?.filter(s => s !== 'none'),
-        restrictions: answers.restrictions?.filter(r => r !== 'none'),
-        questionnaire: answers,
-      };
+      // Check if user already has 3 portfolios
+      const { portfolios } = get();
+      if (portfolios.length >= 3) {
+        throw new Error('You can only create up to 3 portfolios. Please delete an existing portfolio to create a new one.');
+      }
       
-      console.log('Portfolio request to API:', portfolioRequest);
-      
-      // Call the API to create portfolio
-      const apiResponse = await portfolioService.createPortfolio(portfolioRequest);
-      console.log('API response received:', apiResponse);
-      
-      // Convert API response to internal Portfolio format
-      const portfolio = convertApiResponseToPortfolio(apiResponse, answers);
-      console.log('Converted portfolio:', portfolio);
+      // Generate portfolio locally first (don't save to database yet)
+      const portfolio = generatePortfolioFromAnswers(answers);
       
       set({ 
         portfolio, 
@@ -131,17 +120,76 @@ export const useInvestmentStore = create<InvestmentState>((set, get) => ({
       console.error('Portfolio generation failed:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to generate portfolio';
       
-      // Fallback to local generation if API fails
-      console.log('Falling back to local portfolio generation...');
-      const fallbackPortfolio = generatePortfolioFromAnswers(answers);
+      set({ 
+        isLoading: false,
+        error: errorMessage 
+      });
+    }
+  },
+
+  savePortfolioToDatabase: async (portfolio) => {
+    try {
+      console.log('=== SAVING PORTFOLIO TO DATABASE ===');
+      console.log('Portfolio to save:', portfolio);
+      
+      // Convert local portfolio to API format
+      const portfolioRequest: CreatePortfolioRequest = {
+        name: portfolio.name,
+        riskTolerance: portfolio.riskTolerance || 'moderate',
+        investmentGoal: portfolio.investmentGoal || 'wealth-growth',
+        timeHorizon: portfolio.timeHorizon || '5-10',
+        initialInvestment: portfolio.initialInvestment || 10000,
+        monthlyContribution: portfolio.monthlyContribution || 0,
+        sectors: portfolio.sectors?.filter(s => s !== 'none'),
+        restrictions: portfolio.restrictions?.filter(r => r !== 'none'),
+        questionnaire: get().questionnaire || undefined,
+      };
+      
+      console.log('Portfolio request to API:', portfolioRequest);
+      
+      // Call the API to create portfolio
+      const apiResponse = await portfolioService.createPortfolio(portfolioRequest);
+      console.log('API response received:', apiResponse);
+      
+      // Update the portfolio with API data
+      const updatedPortfolio = {
+        ...portfolio,
+        apiId: apiResponse.id,
+        savedToDatabase: true,
+        createdAt: apiResponse.createdAt,
+        updatedAt: apiResponse.updatedAt,
+        userId: apiResponse.userId,
+      };
+      
+      // Add to portfolios list
+      const { portfolios } = get();
+      const updatedPortfolios = [...portfolios, updatedPortfolio];
       
       set({ 
-        portfolio: fallbackPortfolio, 
-        questionnaire: answers,
-        currentStep: 'results',
-        isLoading: false,
-        error: `API unavailable - using local generation. ${errorMessage}` 
+        portfolio: updatedPortfolio,
+        portfolios: updatedPortfolios
       });
+      
+      console.log('Portfolio saved successfully');
+      
+    } catch (error) {
+      console.error('Failed to save portfolio to database:', error);
+      
+      // Mark as saved locally even if API fails
+      const updatedPortfolio = {
+        ...portfolio,
+        savedToDatabase: false,
+      };
+      
+      const { portfolios } = get();
+      const updatedPortfolios = [...portfolios, updatedPortfolio];
+      
+      set({ 
+        portfolio: updatedPortfolio,
+        portfolios: updatedPortfolios
+      });
+      
+      throw error; // Re-throw to let caller handle
     }
   },
   
@@ -299,6 +347,7 @@ function convertApiResponseToPortfolio(apiResponse: PortfolioResponse, answers?:
     createdAt: apiResponse.createdAt,
     updatedAt: apiResponse.updatedAt,
     userId: apiResponse.userId,
+    savedToDatabase: true,
   };
 }
 
@@ -544,7 +593,7 @@ function generatePortfolioFromAnswers(answers: QuestionnaireAnswers): Portfolio 
 
   return {
     id: Date.now().toString(),
-    name,
+    name: generatePortfolioName(answers),
     allocation,
     reasoning,
     expectedReturn,
@@ -554,6 +603,14 @@ function generatePortfolioFromAnswers(answers: QuestionnaireAnswers): Portfolio 
     growth: 0,
     riskScore,
     monthlyFee: 0,
+    // Store questionnaire data for API calls
+    riskTolerance: answers.riskTolerance,
+    investmentGoal: answers.goal,
+    timeHorizon: answers.timeHorizon,
+    initialInvestment: getInitialInvestmentFromAnswers(answers),
+    sectors: answers.sectors,
+    restrictions: answers.restrictions,
+    savedToDatabase: false,
   };
 }
 

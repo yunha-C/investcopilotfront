@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronRight, Target, Clock, TrendingUp, User, Brain, Briefcase, DollarSign, Shield, AlertTriangle, BookOpen, Home, Check, ArrowLeft } from 'lucide-react';
+import { Target, Clock, TrendingUp, User, Brain, Briefcase, DollarSign, Shield, AlertTriangle, BookOpen, Home, Check, ArrowLeft } from 'lucide-react';
 import { useInvestmentStore, QuestionnaireAnswers } from '../store/investmentStore';
 import { useAuthStore } from '../store/authStore';
 import { ProgressIndicator } from './ProgressIndicator';
@@ -137,6 +137,7 @@ export const Questionnaire: React.FC = () => {
   const [showSectors, setShowSectors] = useState(false);
   const [showRestrictions, setShowRestrictions] = useState(false);
   const [profileUpdateError, setProfileUpdateError] = useState<string | null>(null);
+  const [validationError, setValidationError] = useState<string | null>(null);
   
   const { generatePortfolio, setCurrentStep } = useInvestmentStore();
   const { updateInvestmentProfileStatus } = useAuthStore();
@@ -144,6 +145,7 @@ export const Questionnaire: React.FC = () => {
   const handleAnswer = (questionId: string, value: string) => {
     const newAnswers = { ...answers, [questionId]: value };
     setAnswers(newAnswers);
+    setValidationError(null); // Clear validation error when user selects an answer
     
     // Auto-progress to next question after a short delay
     setTimeout(() => {
@@ -235,6 +237,31 @@ export const Questionnaire: React.FC = () => {
     setCurrentStep('home');
   };
 
+  const handleNextQuestion = () => {
+    const currentQ = questions[currentQuestion];
+    const currentAnswer = answers[currentQ?.id];
+    
+    if (!currentAnswer) {
+      setValidationError('Please select an answer before continuing.');
+      return;
+    }
+    
+    setValidationError(null);
+    
+    if (currentQuestion < questions.length - 1) {
+      setCurrentQuestion(currentQuestion + 1);
+    } else {
+      setShowSectors(true);
+    }
+  };
+
+  const handlePreviousQuestion = () => {
+    setValidationError(null);
+    if (currentQuestion > 0) {
+      setCurrentQuestion(currentQuestion - 1);
+    }
+  };
+
   const currentQ = questions[currentQuestion];
   const currentAnswer = answers[currentQ?.id];
 
@@ -246,7 +273,7 @@ export const Questionnaire: React.FC = () => {
 
   if (showRestrictions) {
     return (
-      <div className="min-h-screen">
+      <div className="min-h-screen bg-gradient-to-br from-white/50 via-white/30 to-white/20">
         <div className="px-4 pt-4 pb-3">
           <div className="max-w-3xl mx-auto">
             <ProgressIndicator
@@ -355,14 +382,14 @@ export const Questionnaire: React.FC = () => {
               <div className="flex justify-between">
                 <button
                   onClick={() => setShowRestrictions(false) || setShowSectors(true)}
-                  className="px-6 py-3 bg-neutral-100 text-neutral-900 rounded-full text-label-large font-medium hover:bg-neutral-200 transition-colors border border-neutral-300"
+                  className="px-6 py-3 bg-neutral-100 text-neutral-900 rounded-lg text-label-large font-medium hover:bg-neutral-200 transition-colors border border-neutral-300"
                 >
                   Previous Question
                 </button>
                 
                 <button
                   onClick={handleSubmit}
-                  className="bg-neutral-900 text-white py-3 px-6 rounded-full text-label-large font-medium hover:bg-neutral-800 transition-colors"
+                  className="bg-neutral-900 text-white py-3 px-6 rounded-lg text-label-large font-medium hover:bg-neutral-800 transition-colors"
                 >
                   Generate My Portfolio
                 </button>
@@ -376,7 +403,7 @@ export const Questionnaire: React.FC = () => {
 
   if (showSectors) {
     return (
-      <div className="min-h-screen">
+      <div className="min-h-screen bg-gradient-to-br from-white/50 via-white/30 to-white/20">
         <div className="px-4 pt-4 pb-3">
           <div className="max-w-3xl mx-auto">
             <ProgressIndicator
@@ -476,14 +503,14 @@ export const Questionnaire: React.FC = () => {
               <div className="flex justify-between">
                 <button
                   onClick={() => setShowSectors(false) || setCurrentQuestion(questions.length - 1)}
-                  className="px-6 py-3 bg-neutral-100 text-neutral-900 rounded-full text-label-large font-medium hover:bg-neutral-200 transition-colors border border-neutral-300"
+                  className="px-6 py-3 bg-neutral-100 text-neutral-900 rounded-lg text-label-large font-medium hover:bg-neutral-200 transition-colors border border-neutral-300"
                 >
                   Previous Question
                 </button>
                 
                 <button
                   onClick={handleSectorsContinue}
-                  className="bg-neutral-900 text-white py-3 px-6 rounded-full text-label-large font-medium hover:bg-neutral-800 transition-colors"
+                  className="bg-neutral-900 text-white py-3 px-6 rounded-lg text-label-large font-medium hover:bg-neutral-800 transition-colors"
                 >
                   Continue
                 </button>
@@ -496,7 +523,7 @@ export const Questionnaire: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gradient-to-br from-white/50 via-white/30 to-white/20">
       <div className="px-4 pt-4 pb-3">
         <div className="max-w-3xl mx-auto">
           <ProgressIndicator
@@ -527,6 +554,12 @@ export const Questionnaire: React.FC = () => {
                 <ArrowLeft className="w-5 h-5" />
               </button>
             </div>
+
+            {validationError && (
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-red-800 text-body-small">{validationError}</p>
+              </div>
+            )}
 
             <div className="space-y-2 mb-5">
               {currentQ.options.map((option) => (
@@ -564,13 +597,22 @@ export const Questionnaire: React.FC = () => {
               ))}
             </div>
 
-            <div className="flex justify-start">
+            <div className="flex justify-between">
               {currentQuestion > 0 && (
                 <button
-                  onClick={() => setCurrentQuestion(currentQuestion - 1)}
-                  className="px-6 py-3 bg-neutral-100 text-neutral-900 rounded-full text-label-large font-medium hover:bg-neutral-200 transition-colors border border-neutral-300"
+                  onClick={handlePreviousQuestion}
+                  className="px-6 py-3 bg-neutral-100 text-neutral-900 rounded-lg text-label-large font-medium hover:bg-neutral-200 transition-colors border border-neutral-300"
                 >
                   Previous Question
+                </button>
+              )}
+              
+              {currentQuestion < questions.length - 1 && (
+                <button
+                  onClick={handleNextQuestion}
+                  className="ml-auto bg-neutral-900 text-white py-3 px-6 rounded-lg text-label-large font-medium hover:bg-neutral-800 transition-colors"
+                >
+                  Continue
                 </button>
               )}
             </div>
