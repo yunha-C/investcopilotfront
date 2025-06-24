@@ -52,27 +52,54 @@ export const Home: React.FC = () => {
                   <p className="text-display-medium font-headline font-semi-bold text-neutral-900 mb-3">
                     ${portfolio.balance.toLocaleString()}
                   </p>
-                  <div className="flex items-center justify-center gap-2 mb-4">
+                  <div className="flex items-center justify-center gap-2 mb-6">
                     <TrendingUp className="w-6 h-6 text-positive" />
                     <span className="text-positive text-title-large font-medium">+{portfolio.growth}%</span>
                     <span className="text-neutral-500 text-body-large">+$320.00</span>
                   </div>
                   
-                  {/* Simple Growth Chart Visualization */}
-                  <div className="max-w-md mx-auto mb-4">
-                    <div className="h-24 bg-neutral-100 rounded-lg p-4 flex items-end justify-between">
-                      {/* Simulated chart bars */}
-                      {[65, 72, 68, 75, 82, 78, 85, 90, 88, 95, 100].map((height, index) => (
-                        <div
-                          key={index}
-                          className="bg-positive rounded-sm transition-all duration-300 hover:bg-positive/80"
-                          style={{ 
-                            height: `${height}%`, 
-                            width: '6px',
-                            opacity: index === 10 ? 1 : 0.7 - (10 - index) * 0.05
-                          }}
+                  {/* Smooth Wave Chart Visualization */}
+                  <div className="max-w-lg mx-auto mb-4">
+                    <div className="h-32 bg-gradient-to-b from-neutral-50 to-neutral-100 rounded-lg p-4 relative overflow-hidden">
+                      {/* Smooth wave path using SVG */}
+                      <svg 
+                        className="absolute inset-0 w-full h-full" 
+                        viewBox="0 0 400 128" 
+                        preserveAspectRatio="none"
+                      >
+                        {/* Gradient definition */}
+                        <defs>
+                          <linearGradient id="waveGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stopColor="#4caf50" stopOpacity="0.3" />
+                            <stop offset="100%" stopColor="#4caf50" stopOpacity="0.05" />
+                          </linearGradient>
+                        </defs>
+                        
+                        {/* Smooth wave path */}
+                        <path
+                          d="M0,90 C50,85 100,75 150,70 C200,65 250,60 300,55 C350,50 380,45 400,40 L400,128 L0,128 Z"
+                          fill="url(#waveGradient)"
+                          className="transition-all duration-1000 ease-out"
                         />
-                      ))}
+                        
+                        {/* Wave line */}
+                        <path
+                          d="M0,90 C50,85 100,75 150,70 C200,65 250,60 300,55 C350,50 380,45 400,40"
+                          fill="none"
+                          stroke="#4caf50"
+                          strokeWidth="2"
+                          className="transition-all duration-1000 ease-out"
+                        />
+                        
+                        {/* Data points */}
+                        <circle cx="50" cy="85" r="3" fill="#4caf50" opacity="0.6" />
+                        <circle cx="100" cy="75" r="3" fill="#4caf50" opacity="0.7" />
+                        <circle cx="150" cy="70" r="3" fill="#4caf50" opacity="0.8" />
+                        <circle cx="200" cy="65" r="3" fill="#4caf50" opacity="0.8" />
+                        <circle cx="250" cy="60" r="3" fill="#4caf50" opacity="0.9" />
+                        <circle cx="300" cy="55" r="3" fill="#4caf50" opacity="0.9" />
+                        <circle cx="380" cy="45" r="4" fill="#4caf50" />
+                      </svg>
                     </div>
                     <div className="flex justify-between text-body-small text-neutral-500 mt-2">
                       <span>30 days ago</span>
@@ -224,15 +251,15 @@ export const Home: React.FC = () => {
               <Activity className="w-8 h-8 text-neutral-700" strokeWidth={0} fill="currentColor" />
             </div>
             <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-3">
-              Performance Tracking
+              Influence with Your Own Insight
             </h3>
             <p className="text-body-medium text-neutral-600">
-              Monitor your portfolio performance with real-time updates and detailed analytics.
+              Share market insights and research to influence your AI-powered portfolio decisions.
             </p>
           </div>
 
           <div className="text-center">
-            <div className="p-4 bg-neutral-100 rounded-full w-fit mx-auto mb-4">
+            <div className="p-4 rounded-full w-fit mx-auto mb-4">
               <Zap className="w-8 h-8 text-neutral-700" strokeWidth={0} fill="currentColor" />
             </div>
             <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-3">
