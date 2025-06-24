@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Eye, EyeOff, Mail, Lock, User, ArrowRight, AlertCircle } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, User, AlertCircle } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 
 interface AuthPageProps {
@@ -183,7 +183,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-8 relative z-10">
       <div className="w-full max-w-md">
-        <div className="text-center mb-8">
+        <div className="text-center mb-6">
           <h1 className="text-headline-large font-headline font-semi-bold text-neutral-900 mb-2">
             aivestie
           </h1>
@@ -192,9 +192,9 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
           </p>
         </div>
 
-        <div className="bg-white/90 backdrop-blur-sm rounded-lg shadow-elevation-2 border border-neutral-300 p-8">
-          <div className="mb-6">
-            <h2 className="text-headline-medium font-headline font-semi-bold text-neutral-900 mb-2">
+        <div className="bg-white/90 backdrop-blur-sm rounded-lg shadow-elevation-2 border border-neutral-300 p-6">
+          <div className="mb-4">
+            <h2 className="text-headline-medium font-headline font-semi-bold text-neutral-900 mb-1">
               {isLogin ? 'Sign In' : 'Create Account'}
             </h2>
             <p className="text-body-medium text-neutral-600">
@@ -206,7 +206,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
           </div>
 
           {registrationSuccess && (
-            <div className="mb-6 p-4 bg-positive/10 border border-positive/20 rounded-lg flex items-start gap-3">
+            <div className="mb-4 p-3 bg-positive/10 border border-positive/20 rounded-lg flex items-start gap-3">
               <div className="w-5 h-5 rounded-full bg-positive flex items-center justify-center flex-shrink-0 mt-0.5">
                 <span className="text-white text-xs">✓</span>
               </div>
@@ -220,7 +220,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
           )}
 
           {error && !error.includes('Account created successfully') && (
-            <div className="mb-6 p-4 bg-negative/10 border border-negative/20 rounded-lg flex items-start gap-3">
+            <div className="mb-4 p-3 bg-negative/10 border border-negative/20 rounded-lg flex items-start gap-3">
               <AlertCircle className="w-5 h-5 text-negative flex-shrink-0 mt-0.5" />
               <div className="flex-1">
                 <p className="text-body-small text-negative">{error}</p>
@@ -233,11 +233,11 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-4">
             {!isLogin && (
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label htmlFor="firstName" className="block text-label-large font-medium text-neutral-700 mb-2">
+                  <label htmlFor="firstName" className="block text-label-large font-medium text-neutral-700 mb-1">
                     First Name
                   </label>
                   <div className="relative">
@@ -259,14 +259,14 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
                     />
                   </div>
                   {errors.firstName && (
-                    <p id="firstName-error" className="mt-2 text-body-small text-negative" role="alert">
+                    <p id="firstName-error" className="mt-1 text-body-small text-negative" role="alert">
                       {errors.firstName}
                     </p>
                   )}
                 </div>
 
                 <div>
-                  <label htmlFor="lastName" className="block text-label-large font-medium text-neutral-700 mb-2">
+                  <label htmlFor="lastName" className="block text-label-large font-medium text-neutral-700 mb-1">
                     Last Name
                   </label>
                   <div className="relative">
@@ -288,7 +288,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
                     />
                   </div>
                   {errors.lastName && (
-                    <p id="lastName-error" className="mt-2 text-body-small text-negative" role="alert">
+                    <p id="lastName-error" className="mt-1 text-body-small text-negative" role="alert">
                       {errors.lastName}
                     </p>
                   )}
@@ -297,7 +297,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
             )}
 
             <div>
-              <label htmlFor="email" className="block text-label-large font-medium text-neutral-700 mb-2">
+              <label htmlFor="email" className="block text-label-large font-medium text-neutral-700 mb-1">
                 Email Address
               </label>
               <div className="relative">
@@ -320,14 +320,14 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
                 />
               </div>
               {errors.email && (
-                <p id="email-error" className="mt-2 text-body-small text-negative" role="alert">
+                <p id="email-error" className="mt-1 text-body-small text-negative" role="alert">
                   {errors.email}
                 </p>
               )}
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-label-large font-medium text-neutral-700 mb-2">
+              <label htmlFor="password" className="block text-label-large font-medium text-neutral-700 mb-1">
                 Password
               </label>
               <div className="relative">
@@ -359,7 +359,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
                 </button>
               </div>
               {!isLogin && !errors.password && (
-                <div id="password-help" className="mt-2 space-y-1">
+                <div id="password-help" className="mt-1 space-y-1">
                   <p className="text-body-small text-neutral-600 font-medium">Password requirements:</p>
                   <ul className="text-body-small text-neutral-600 space-y-1">
                     <li className="flex items-center gap-2">
@@ -382,7 +382,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
                 </div>
               )}
               {errors.password && (
-                <p id="password-error" className="mt-2 text-body-small text-negative" role="alert">
+                <p id="password-error" className="mt-1 text-body-small text-negative" role="alert">
                   {errors.password}
                 </p>
               )}
@@ -390,7 +390,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
 
             {!isLogin && (
               <div>
-                <label htmlFor="confirmPassword" className="block text-label-large font-medium text-neutral-700 mb-2">
+                <label htmlFor="confirmPassword" className="block text-label-large font-medium text-neutral-700 mb-1">
                   Confirm Password
                 </label>
                 <div className="relative">
@@ -422,7 +422,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
                   </button>
                 </div>
                 {errors.confirmPassword && (
-                  <p id="confirmPassword-error" className="mt-2 text-body-small text-negative" role="alert">
+                  <p id="confirmPassword-error" className="mt-1 text-body-small text-negative" role="alert">
                     {errors.confirmPassword}
                   </p>
                 )}
@@ -442,14 +442,13 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
               ) : (
                 <>
                   {isLogin ? 'Sign In' : 'Create Account'}
-                  <ArrowRight className="w-5 h-5" />
                 </>
               )}
             </button>
           </form>
 
           {isLogin && (
-            <div className="mt-6 text-center">
+            <div className="mt-4 text-center">
               <button 
                 className="text-body-medium text-neutral-600 hover:text-neutral-800 transition-colors disabled:opacity-50"
                 disabled={isLoading}
@@ -459,8 +458,8 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
             </div>
           )}
 
-          <div className="mt-8 pt-6 border-t border-neutral-200 text-center">
-            <p className="text-body-medium text-neutral-600 mb-3">
+          <div className="mt-6 pt-4 border-t border-neutral-200 text-center">
+            <p className="text-body-medium text-neutral-600 mb-2">
               {isLogin ? "Don't have an account?" : 'Already have an account?'}
             </p>
             <button
@@ -474,7 +473,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
         </div>
 
         {!isLogin && (
-          <div className="mt-6 text-center">
+          <div className="mt-4 text-center">
             <p className="text-body-small text-neutral-500">
               By creating an account, you agree to our{' '}
               <button className="text-neutral-700 hover:text-neutral-900 underline transition-colors">
