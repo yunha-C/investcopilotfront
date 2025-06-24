@@ -249,9 +249,15 @@ export const Home: React.FC = () => {
       <div className="max-w-6xl mx-auto px-4 py-16">
         <div className="grid md:grid-cols-3 gap-8">
           <div className="text-center">
-            <div className="p-4 bg-neutral-100 rounded-full w-fit mx-auto mb-4">
-              <span className="material-symbols-outlined text-neutral-700" style={{ fontSize: '32px' }}>
-                robot_2
+            <div className="p-3 sm:p-4 bg-neutral-100 rounded-full w-fit mx-auto mb-4">
+              <span 
+                className="material-symbols-outlined text-neutral-700" 
+                style={{ 
+                  fontSize: 'clamp(24px, 4vw, 32px)',
+                  lineHeight: '1'
+                }}
+              >
+                bookmark_manager
               </span>
             </div>
             <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-3">
@@ -263,9 +269,15 @@ export const Home: React.FC = () => {
           </div>
 
           <div className="text-center">
-            <div className="p-4 bg-neutral-100 rounded-full w-fit mx-auto mb-4">
-              <span className="material-symbols-outlined text-neutral-700" style={{ fontSize: '32px' }}>
-                bookmark_manager
+            <div className="p-3 sm:p-4 bg-neutral-100 rounded-full w-fit mx-auto mb-4">
+              <span 
+                className="material-symbols-outlined text-neutral-700" 
+                style={{ 
+                  fontSize: 'clamp(24px, 4vw, 32px)',
+                  lineHeight: '1'
+                }}
+              >
+                robot_2
               </span>
             </div>
             <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-3">
@@ -277,8 +289,14 @@ export const Home: React.FC = () => {
           </div>
 
           <div className="text-center">
-            <div className="p-4 bg-neutral-700 rounded-full w-fit mx-auto mb-4">
-              <span className="material-symbols-outlined text-white" style={{ fontSize: '32px' }}>
+            <div className="p-3 sm:p-4 bg-neutral-700 rounded-full w-fit mx-auto mb-4">
+              <span 
+                className="material-symbols-outlined text-white" 
+                style={{ 
+                  fontSize: 'clamp(24px, 4vw, 32px)',
+                  lineHeight: '1'
+                }}
+              >
                 bubble_chart
               </span>
             </div>
