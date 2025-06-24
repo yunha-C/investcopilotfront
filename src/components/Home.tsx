@@ -208,7 +208,7 @@ export const Home: React.FC = () => {
       <div className="max-w-6xl mx-auto px-4 py-16">
         <div className="grid md:grid-cols-3 gap-8">
           <div className="text-center">
-            <div className="p-4 border border-neutral-700 rounded-full w-fit mx-auto mb-4">
+            <div className="p-4 bg-neutral-100 rounded-full w-fit mx-auto mb-4">
               <BarChart3 className="w-8 h-8 text-neutral-700" />
             </div>
             <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-3">
@@ -220,7 +220,7 @@ export const Home: React.FC = () => {
           </div>
 
           <div className="text-center">
-            <div className="p-4 border border-neutral-700 rounded-full w-fit mx-auto mb-4">
+            <div className="p-4 bg-neutral-100 rounded-full w-fit mx-auto mb-4">
               <Activity className="w-8 h-8 text-neutral-700" />
             </div>
             <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-3">
@@ -232,7 +232,7 @@ export const Home: React.FC = () => {
           </div>
 
           <div className="text-center">
-            <div className="p-4 border border-neutral-700 rounded-full w-fit mx-auto mb-4">
+            <div className="p-4 bg-neutral-100 rounded-full w-fit mx-auto mb-4">
               <Zap className="w-8 h-8 text-neutral-700" />
             </div>
             <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-3">
