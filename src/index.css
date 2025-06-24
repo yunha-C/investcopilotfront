@@ -32,7 +32,8 @@
     left: -700px;
     background: radial-gradient(ellipse 50% 50% at 50% 50%, 
         #B8C2C5 0%, 
-        #D1D9DB 16%, 
+        #D1D9DB 25%, 
+        #DDE2E350 60%,
         #DDE2E300 100%);
 }
 
