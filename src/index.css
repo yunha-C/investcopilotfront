@@ -31,9 +31,9 @@
     top: -1120px;
     left: -700px;
     background: radial-gradient(ellipse 50% 50% at 50% 50%, 
-        #BAC3C4 0%, 
-        #DDE2E3E5 16%, 
-        #DDE2E300 100%);
+        #DDE2E3 0%, 
+        #DDE2E3 100%, 
+        #A6AEAF 100%);
 }
 
 /* Bottom right eclipse - flipped version of circle-1 */
@@ -43,9 +43,9 @@
     bottom: -1120px;
     right: -700px;
     background: radial-gradient(ellipse 50% 50% at 50% 50%, 
-        #CBD3D4 0%, 
-        #DDE2E3E5 7%, 
-        #DDE2E300 100%);
+        #DDE2E3 0%, 
+        #DDE2E3 100%, 
+        #A6AEAF 100%);
 }
 
 /* Blur overlay */
