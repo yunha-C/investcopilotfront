@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Eye, EyeOff, Mail, Lock, User, AlertCircle } from 'lucide-react';
+import { Eye, EyeOff, AlertCircle } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 
 interface AuthPageProps {
@@ -195,14 +195,8 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
         <div className="bg-white/90 backdrop-blur-sm rounded-lg shadow-elevation-2 border border-neutral-300 p-6">
           <div className="mb-4">
             <h2 className="text-headline-medium font-headline font-semi-bold text-neutral-900 mb-1">
-              {isLogin ? 'Sign In' : 'Create Account'}
+              {isLogin ? 'Log In' : 'Register'}
             </h2>
-            <p className="text-body-medium text-neutral-600">
-              {isLogin 
-                ? 'Enter your information to access your portfolio' 
-                : 'Join thousands of investors using AI-powered portfolio management'
-              }
-            </p>
           </div>
 
           {registrationSuccess && (
@@ -213,7 +207,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
               <div className="flex-1">
                 <p className="text-body-small text-positive font-medium">Account created successfully!</p>
                 <p className="text-body-small text-neutral-600 mt-1">
-                  Please sign in with your email and password.
+                  Please log in with your email and password.
                 </p>
               </div>
             </div>
@@ -233,31 +227,28 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-3">
             {!isLogin && (
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label htmlFor="firstName" className="block text-label-large font-medium text-neutral-700 mb-1">
                     First Name
                   </label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-neutral-500" />
-                    <input
-                      type="text"
-                      id="firstName"
-                      value={formData.firstName}
-                      onChange={(e) => handleInputChange('firstName', e.target.value)}
-                      className={`w-full pl-10 pr-4 py-3 border rounded-lg text-body-medium focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-transparent transition-colors bg-white/80 ${
-                        errors.firstName 
-                          ? 'border-negative bg-negative/5' 
-                          : 'border-neutral-300 hover:border-neutral-400'
-                      }`}
-                      placeholder="John"
-                      aria-describedby={errors.firstName ? 'firstName-error' : undefined}
-                      aria-invalid={!!errors.firstName}
-                      disabled={isLoading}
-                    />
-                  </div>
+                  <input
+                    type="text"
+                    id="firstName"
+                    value={formData.firstName}
+                    onChange={(e) => handleInputChange('firstName', e.target.value)}
+                    className={`w-full px-4 py-3 border rounded-lg text-body-medium focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-transparent transition-colors bg-white/80 ${
+                      errors.firstName 
+                        ? 'border-negative bg-negative/5' 
+                        : 'border-neutral-300 hover:border-neutral-400'
+                    }`}
+                    placeholder="John"
+                    aria-describedby={errors.firstName ? 'firstName-error' : undefined}
+                    aria-invalid={!!errors.firstName}
+                    disabled={isLoading}
+                  />
                   {errors.firstName && (
                     <p id="firstName-error" className="mt-1 text-body-small text-negative" role="alert">
                       {errors.firstName}
@@ -269,24 +260,21 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
                   <label htmlFor="lastName" className="block text-label-large font-medium text-neutral-700 mb-1">
                     Last Name
                   </label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-neutral-500" />
-                    <input
-                      type="text"
-                      id="lastName"
-                      value={formData.lastName}
-                      onChange={(e) => handleInputChange('lastName', e.target.value)}
-                      className={`w-full pl-10 pr-4 py-3 border rounded-lg text-body-medium focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-transparent transition-colors bg-white/80 ${
-                        errors.lastName 
-                          ? 'border-negative bg-negative/5' 
-                          : 'border-neutral-300 hover:border-neutral-400'
-                      }`}
-                      placeholder="Doe"
-                      aria-describedby={errors.lastName ? 'lastName-error' : undefined}
-                      aria-invalid={!!errors.lastName}
-                      disabled={isLoading}
-                    />
-                  </div>
+                  <input
+                    type="text"
+                    id="lastName"
+                    value={formData.lastName}
+                    onChange={(e) => handleInputChange('lastName', e.target.value)}
+                    className={`w-full px-4 py-3 border rounded-lg text-body-medium focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-transparent transition-colors bg-white/80 ${
+                      errors.lastName 
+                        ? 'border-negative bg-negative/5' 
+                        : 'border-neutral-300 hover:border-neutral-400'
+                    }`}
+                    placeholder="Doe"
+                    aria-describedby={errors.lastName ? 'lastName-error' : undefined}
+                    aria-invalid={!!errors.lastName}
+                    disabled={isLoading}
+                  />
                   {errors.lastName && (
                     <p id="lastName-error" className="mt-1 text-body-small text-negative" role="alert">
                       {errors.lastName}
@@ -300,25 +288,22 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
               <label htmlFor="email" className="block text-label-large font-medium text-neutral-700 mb-1">
                 Email Address
               </label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-neutral-500" />
-                <input
-                  type="email"
-                  id="email"
-                  value={formData.email}
-                  onChange={(e) => handleInputChange('email', e.target.value)}
-                  className={`w-full pl-10 pr-4 py-3 border rounded-lg text-body-medium focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-transparent transition-colors bg-white/80 ${
-                    errors.email 
-                      ? 'border-negative bg-negative/5' 
-                      : 'border-neutral-300 hover:border-neutral-400'
-                  }`}
-                  placeholder="john@example.com"
-                  autoComplete="email"
-                  aria-describedby={errors.email ? 'email-error' : undefined}
-                  aria-invalid={!!errors.email}
-                  disabled={isLoading}
-                />
-              </div>
+              <input
+                type="email"
+                id="email"
+                value={formData.email}
+                onChange={(e) => handleInputChange('email', e.target.value)}
+                className={`w-full px-4 py-3 border rounded-lg text-body-medium focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-transparent transition-colors bg-white/80 ${
+                  errors.email 
+                    ? 'border-negative bg-negative/5' 
+                    : 'border-neutral-300 hover:border-neutral-400'
+                }`}
+                placeholder="john@example.com"
+                autoComplete="email"
+                aria-describedby={errors.email ? 'email-error' : undefined}
+                aria-invalid={!!errors.email}
+                disabled={isLoading}
+              />
               {errors.email && (
                 <p id="email-error" className="mt-1 text-body-small text-negative" role="alert">
                   {errors.email}
@@ -331,13 +316,12 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
                 Password
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-neutral-500" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   id="password"
                   value={formData.password}
                   onChange={(e) => handleInputChange('password', e.target.value)}
-                  className={`w-full pl-10 pr-12 py-3 border rounded-lg text-body-medium focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-transparent transition-colors bg-white/80 ${
+                  className={`w-full pl-4 pr-12 py-3 border rounded-lg text-body-medium focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-transparent transition-colors bg-white/80 ${
                     errors.password 
                       ? 'border-negative bg-negative/5' 
                       : 'border-neutral-300 hover:border-neutral-400'
@@ -394,13 +378,12 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
                   Confirm Password
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-neutral-500" />
                   <input
                     type={showConfirmPassword ? 'text' : 'password'}
                     id="confirmPassword"
                     value={formData.confirmPassword}
                     onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                    className={`w-full pl-10 pr-12 py-3 border rounded-lg text-body-medium focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-transparent transition-colors bg-white/80 ${
+                    className={`w-full pl-4 pr-12 py-3 border rounded-lg text-body-medium focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-transparent transition-colors bg-white/80 ${
                       errors.confirmPassword 
                         ? 'border-negative bg-negative/5' 
                         : 'border-neutral-300 hover:border-neutral-400'
@@ -437,28 +420,28 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
               {isLoading ? (
                 <>
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  {isLogin ? 'Signing In...' : 'Creating Account...'}
+                  {isLogin ? 'Logging In...' : 'Creating Account...'}
                 </>
               ) : (
                 <>
-                  {isLogin ? 'Sign In' : 'Create Account'}
+                  {isLogin ? 'Log In' : 'Register'}
                 </>
               )}
             </button>
           </form>
 
           {isLogin && (
-            <div className="mt-4 text-center">
+            <div className="mt-3 text-center">
               <button 
-                className="text-body-medium text-neutral-600 hover:text-neutral-800 transition-colors disabled:opacity-50"
+                className="text-body-medium text-neutral-900 hover:text-neutral-700 transition-colors disabled:opacity-50 font-medium"
                 disabled={isLoading}
               >
-                Forgot your password?
+                Forgot password
               </button>
             </div>
           )}
 
-          <div className="mt-6 pt-4 border-t border-neutral-200 text-center">
+          <div className="mt-4 pt-3 border-t border-neutral-200 text-center">
             <p className="text-body-medium text-neutral-600 mb-2">
               {isLogin ? "Don't have an account?" : 'Already have an account?'}
             </p>
@@ -467,7 +450,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
               className="text-label-large font-medium text-neutral-900 hover:text-neutral-700 transition-colors disabled:opacity-50"
               disabled={isLoading}
             >
-              {isLogin ? 'Create Account' : 'Sign In'}
+              {isLogin ? 'Register' : 'Log In'}
             </button>
           </div>
         </div>

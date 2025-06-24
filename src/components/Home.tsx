@@ -44,13 +44,34 @@ export const Home: React.FC = () => {
       {/* Hero Section - Light background */}
       <div className="bg-gradient-to-br from-white/50 via-white/30 to-white/20">
         <div className="max-w-6xl mx-auto px-4 py-16">
+          {/* Portfolio Value Display or Welcome Message */}
           <div className="text-center mb-12">
-            <h1 className="text-display-medium font-headline font-semi-bold mb-6 text-neutral-900">
-              Welcome back, {user?.firstName}
-            </h1>
-            <p className="text-title-large text-neutral-600 mb-8 max-w-3xl mx-auto">
-              Your AI-powered investment management platform
-            </p>
+            {portfolio && portfolio.balance > 0 ? (
+              <div>
+                <div className="mb-4">
+                  <p className="text-display-medium font-headline font-semi-bold text-neutral-900 mb-2">
+                    ${portfolio.balance.toLocaleString()}
+                  </p>
+                  <div className="flex items-center justify-center gap-2">
+                    <TrendingUp className="w-6 h-6 text-positive" />
+                    <span className="text-positive text-title-large font-medium">+{portfolio.growth}%</span>
+                    <span className="text-neutral-500 text-body-large">+$320.00</span>
+                  </div>
+                </div>
+                <p className="text-body-large text-neutral-600">
+                  Your AI-powered investment portfolio
+                </p>
+              </div>
+            ) : (
+              <div>
+                <h1 className="text-display-medium font-headline font-semi-bold mb-6 text-neutral-900">
+                  Welcome back, {user?.firstName}
+                </h1>
+                <p className="text-title-large text-neutral-600 mb-8 max-w-3xl mx-auto">
+                  Your AI-powered investment management platform
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Error Display */}
