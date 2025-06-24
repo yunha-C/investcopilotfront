@@ -85,7 +85,6 @@ export const Home: React.FC = () => {
                 <div className="flex items-center justify-center gap-2 mb-6">
                   <TrendingUp className="w-6 h-6 text-positive" />
                   <span className="text-positive text-title-large font-medium">+{portfolio.growth}%</span>
-                  <span className="text-neutral-500 text-body-large">+$320.00</span>
                 </div>
                 
                 {/* Smooth Wave Chart Visualization with #044AA7 color */}
@@ -209,12 +208,6 @@ export const Home: React.FC = () => {
                       <p className="text-headline-small font-headline font-semi-bold text-neutral-900">
                         ${portfolioItem.balance > 0 ? portfolioItem.balance.toLocaleString() : '0'}
                       </p>
-                      {portfolioItem.balance > 0 && (
-                        <div className="flex items-center gap-2 mt-1">
-                          <TrendingUp className="w-4 h-4 text-positive" />
-                          <span className="text-positive text-label-large font-medium">+{portfolioItem.growth}%</span>
-                        </div>
-                      )}
                     </div>
                   </button>
                   
