@@ -68,7 +68,19 @@ function App() {
   };
 
   if (!isAuthenticated) {
-    return <AuthPage onAuthenticated={handleAuthenticated} />;
+    return (
+      <>
+        {/* Background Container */}
+        <div className="background-container fixed inset-0 z-[-10]">
+          <div className="circle-1"></div>
+          <div className="circle-2"></div>
+          <div className="blur-overlay"></div>
+        </div>
+        
+        {/* Auth Page */}
+        <AuthPage onAuthenticated={handleAuthenticated} />
+      </>
+    );
   }
 
   console.log('=== APP RENDER DEBUG ===');
@@ -77,8 +89,12 @@ function App() {
 
   return (
     <>
-      {/* Optional Blur Layer - Add this if you want the blur effect */}
-      <div className="blur-layer"></div>
+      {/* Background Container */}
+      <div className="background-container fixed inset-0 z-[-10]">
+        <div className="circle-1"></div>
+        <div className="circle-2"></div>
+        <div className="blur-overlay"></div>
+      </div>
       
       {/* Main Content */}
       <div className="min-h-screen relative z-10">
