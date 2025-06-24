@@ -136,7 +136,6 @@ export const Questionnaire: React.FC = () => {
   const [restrictions, setRestrictions] = useState<string[]>([]);
   const [showSectors, setShowSectors] = useState(false);
   const [showRestrictions, setShowRestrictions] = useState(false);
-  const [profileUpdateError, setProfileUpdateError] = useState<string | null>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
   
   const { generatePortfolio, setCurrentStep } = useInvestmentStore();
@@ -218,17 +217,23 @@ export const Questionnaire: React.FC = () => {
     generatePortfolio(finalAnswers);
     
     // Update the user's investment profile completion status in the background
-    // Use setTimeout to ensure this happens after the state update
+    // This is a non-critical operation that shouldn't block the user experience
     setTimeout(async () => {
       try {
         await updateInvestmentProfileStatus(true);
         console.log('Investment profile marked as completed');
-        setProfileUpdateError(null); // Clear any previous errors
       } catch (error) {
-        console.error('Failed to update investment profile status:', error);
-        const errorMessage = error instanceof Error ? error.message : 'Failed to update profile status';
-        setProfileUpdateError(`Profile update failed: ${errorMessage}. Your portfolio was still generated successfully.`);
-        // Don't block the user flow even if this fails
+        // Silently handle the error - this is a background operation
+        // The user has already successfully generated their portfolio
+        console.warn('Failed to update investment profile status (non-critical):', error);
+        
+        // Optionally store this information locally for retry later
+        try {
+          localStorage.setItem('aivestie_profile_completion_pending', 'true');
+        } catch (storageError) {
+          // Even localStorage might fail, but that's okay
+          console.warn('Could not store profile completion status locally:', storageError);
+        }
       }
     }, 100);
   };
@@ -309,12 +314,6 @@ export const Questionnaire: React.FC = () => {
                   <ArrowLeft className="w-5 h-5" />
                 </button>
               </div>
-
-              {profileUpdateError && (
-                <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                  <p className="text-yellow-800 text-body-small">{profileUpdateError}</p>
-                </div>
-              )}
 
               <div className="space-y-2 mb-6">
                 {restrictionOptions.map((option) => {
