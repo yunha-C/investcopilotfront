@@ -235,7 +235,10 @@ function generatePortfolioName(answers: QuestionnaireAnswers): string {
   const goalName = goalNames[answers.goal as keyof typeof goalNames] || 'Custom Portfolio';
   const riskLevel = riskLevels[answers.riskTolerance as keyof typeof riskLevels] || 'Balanced';
   
-  return `${riskLevel} ${goalName}`;
+  // Add timestamp to ensure unique portfolio names
+  const timestamp = new Date().toISOString().slice(0, 19).replace(/[-:]/g, '').replace('T', '_');
+  
+  return `${riskLevel} ${goalName} ${timestamp}`;
 }
 
 function getInitialInvestmentFromAnswers(answers: QuestionnaireAnswers): number {
