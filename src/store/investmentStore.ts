@@ -109,7 +109,7 @@ export const useInvestmentStore = create<InvestmentState>((set, get) => ({
       }
       
       // Generate portfolio locally first (don't save to database yet)
-      const portfolio = generatePortfolioFromAnswers(answers);
+      const portfolio = generatePortfolioFromAnswers(answers, portfolios);
       
       set({ 
         portfolio, 
@@ -349,7 +349,7 @@ export const useInvestmentStore = create<InvestmentState>((set, get) => ({
 }));
 
 // Helper functions
-function generatePortfolioName(answers: QuestionnaireAnswers): string {
+function generatePortfolioName(answers: QuestionnaireAnswers, existingPortfolios: Portfolio[] = []): string {
   const goalNames = {
     'wealth-growth': 'Growth Portfolio',
     'retirement': 'Retirement Strategy',
@@ -369,8 +369,32 @@ function generatePortfolioName(answers: QuestionnaireAnswers): string {
   const goalName = goalNames[answers.goal as keyof typeof goalNames] || 'Custom Portfolio';
   const riskLevel = riskLevels[answers.riskTolerance as keyof typeof riskLevels] || 'Balanced';
   
-  // Return clean portfolio name without any timestamp or random numbers
-  return `${riskLevel} ${goalName}`;
+  // Generate base name
+  const baseName = `${riskLevel} ${goalName}`;
+  
+  // Check if this name already exists in existing portfolios
+  const existingNames = existingPortfolios.map(p => p.name);
+  
+  if (!existingNames.includes(baseName)) {
+    return baseName;
+  }
+  
+  // If base name exists, append a unique identifier
+  // Generate a short, readable suffix based on current timestamp
+  const timestamp = Date.now();
+  const shortId = (timestamp % 10000).toString().padStart(4, '0');
+  
+  // Try with Roman numerals first for a cleaner look
+  const romanNumerals = ['II', 'III', 'IV', 'V'];
+  for (let i = 0; i < romanNumerals.length; i++) {
+    const nameWithRoman = `${baseName} ${romanNumerals[i]}`;
+    if (!existingNames.includes(nameWithRoman)) {
+      return nameWithRoman;
+    }
+  }
+  
+  // If all Roman numerals are taken, use the timestamp-based ID
+  return `${baseName} ${shortId}`;
 }
 
 function getInitialInvestmentFromAnswers(answers: QuestionnaireAnswers): number {
@@ -577,7 +601,7 @@ function calculateRiskScore(answers: QuestionnaireAnswers): number {
   return Math.round(score * 10) / 10; // Round to 1 decimal place
 }
 
-function generatePortfolioFromAnswers(answers: QuestionnaireAnswers): Portfolio {
+function generatePortfolioFromAnswers(answers: QuestionnaireAnswers, existingPortfolios: Portfolio[] = []): Portfolio {
   const riskScore = calculateRiskScore(answers);
   let allocation: Portfolio['allocation'] = [];
   let name = '';
@@ -674,7 +698,7 @@ function generatePortfolioFromAnswers(answers: QuestionnaireAnswers): Portfolio 
 
   return {
     id: `portfolio_${Date.now()}`, // Use simple ID for internal tracking only
-    name: generatePortfolioName(answers), // Use the clean name function
+    name: generatePortfolioName(answers, existingPortfolios), // Pass existing portfolios to ensure uniqueness
     allocation,
     reasoning,
     expectedReturn,
