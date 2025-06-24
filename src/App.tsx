@@ -7,6 +7,7 @@ import { Questionnaire } from './components/Questionnaire';
 import { PortfolioResults } from './components/PortfolioResults';
 import { Dashboard } from './components/Dashboard';
 import { PortfolioDetails } from './components/PortfolioDetails';
+import { InsightAnalysis } from './components/InsightAnalysis';
 import { Home } from './components/Home';
 
 function App() {
@@ -89,6 +90,7 @@ function App() {
               {currentStep === 'results' && <PortfolioResults />}
               {currentStep === 'dashboard' && <Dashboard />}
               {currentStep === 'portfolio-details' && <PortfolioDetails />}
+              {currentStep === 'insight-analysis' && <InsightAnalysis />}
             </div>
           </>
         )}

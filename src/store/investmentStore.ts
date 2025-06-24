@@ -59,7 +59,7 @@ export interface Insight {
 }
 
 interface InvestmentState {
-  currentStep: 'home' | 'questionnaire' | 'results' | 'dashboard' | 'portfolio-details';
+  currentStep: 'home' | 'questionnaire' | 'results' | 'dashboard' | 'portfolio-details' | 'insight-analysis';
   questionnaire: QuestionnaireAnswers | null;
   portfolio: Portfolio | null;
   portfolios: Portfolio[];

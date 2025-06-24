@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { TrendingUp, Plus, ExternalLink, ChevronRight, Calculator, ArrowLeft } from 'lucide-react';
+import { TrendingUp, Plus, ExternalLink, ChevronRight, Calculator, ArrowLeft, Info, Shield } from 'lucide-react';
 import { useInvestmentStore } from '../store/investmentStore';
 import { PortfolioChart } from './PortfolioChart';
 
 export const Dashboard: React.FC = () => {
-  const { portfolio, insights, addInsight, setCurrentStep } = useInvestmentStore();
+  const { portfolio, insights, setCurrentStep } = useInvestmentStore();
   const [showInsightForm, setShowInsightForm] = useState(false);
   const [insightUrl, setInsightUrl] = useState('');
   const [portfolioValue, setPortfolioValue] = useState('');
@@ -15,7 +15,8 @@ export const Dashboard: React.FC = () => {
   const handleAddInsight = (e: React.FormEvent) => {
     e.preventDefault();
     if (insightUrl.trim()) {
-      addInsight(insightUrl.trim());
+      // Navigate to insight analysis page instead of directly adding
+      setCurrentStep('insight-analysis');
       setInsightUrl('');
       setShowInsightForm(false);
     }
@@ -64,150 +65,199 @@ export const Dashboard: React.FC = () => {
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-3 gap-6 mb-8">
-            <div 
-              className="lg:col-span-2 bg-white rounded-lg shadow-elevation-1 border border-neutral-200 p-6 cursor-pointer hover:shadow-elevation-2 transition-shadow group"
-              onClick={handleViewPortfolio}
-            >
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h2 className="text-title-large font-headline font-semi-bold text-neutral-900">{portfolio.name}</h2>
-                  <p className="text-body-medium text-neutral-600">Current Portfolio Value</p>
-                </div>
-                <ChevronRight className="w-5 h-5 text-neutral-400 group-hover:text-neutral-600 transition-colors" />
+          {/* Main Portfolio Overview */}
+          <div className="bg-white rounded-lg shadow-elevation-1 border border-neutral-200 p-8 mb-8">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-title-large font-headline font-semi-bold text-neutral-900">{portfolio.name}</h2>
+                <p className="text-body-medium text-neutral-600">Portfolio Overview</p>
               </div>
-              
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <div className="mb-4">
-                    {hasValue ? (
-                      <>
-                        <p className="text-headline-small font-headline font-semi-bold text-neutral-900">
-                          ${portfolio.balance.toLocaleString()}
-                        </p>
-                        <div className="flex items-center gap-2 mt-2">
-                          <TrendingUp className="w-4 h-4 text-positive" />
-                          <span className="text-positive text-label-large font-medium">+{portfolio.growth}%</span>
-                          <span className="text-neutral-500 text-body-small">+$320.00</span>
-                        </div>
-                      </>
-                    ) : (
-                      <div className="text-center py-8">
-                        <p className="text-body-medium text-neutral-600 mb-4">No portfolio value set</p>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setShowAddValueForm(true);
-                          }}
-                          className="bg-neutral-900 text-white px-6 py-3 rounded-lg text-label-large font-medium hover:bg-neutral-800 transition-colors"
-                        >
-                          Add Portfolio Value
-                        </button>
+              <button
+                onClick={handleViewPortfolio}
+                className="flex items-center gap-2 text-neutral-600 hover:text-neutral-800 transition-colors"
+              >
+                <span className="text-body-small">View Details</span>
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+            
+            <div className="grid lg:grid-cols-3 gap-8">
+              {/* Portfolio Value and Performance */}
+              <div>
+                <div className="mb-6">
+                  {hasValue ? (
+                    <>
+                      <p className="text-headline-small font-headline font-semi-bold text-neutral-900">
+                        ${portfolio.balance.toLocaleString()}
+                      </p>
+                      <div className="flex items-center gap-2 mt-2">
+                        <TrendingUp className="w-4 h-4 text-positive" />
+                        <span className="text-positive text-label-large font-medium">+{portfolio.growth}%</span>
+                        <span className="text-neutral-500 text-body-small">+$320.00</span>
                       </div>
-                    )}
-                  </div>
-                  
-                  <div className="space-y-3">
-                    <div className="flex justify-between">
-                      <span className="text-body-medium text-neutral-600">Expected Return</span>
-                      <span className="text-body-medium font-medium">{portfolio.expectedReturn}%</span>
+                    </>
+                  ) : (
+                    <div className="text-center py-6">
+                      <p className="text-body-medium text-neutral-600 mb-4">No portfolio value set</p>
+                      <button
+                        onClick={() => setShowAddValueForm(true)}
+                        className="bg-neutral-900 text-white px-6 py-3 rounded-lg text-label-large font-medium hover:bg-neutral-800 transition-colors"
+                      >
+                        Add Portfolio Value
+                      </button>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-body-medium text-neutral-600">Risk Level</span>
-                      <span className="text-body-medium font-medium">{portfolio.riskLevel}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-body-medium text-neutral-600">Risk Score</span>
-                      <span className="text-body-medium font-medium">{portfolio.riskScore}/5</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-body-medium text-neutral-600">Monthly Fee</span>
-                      <span className="text-body-medium font-medium">${portfolio.monthlyFee.toFixed(2)}</span>
-                    </div>
-                  </div>
+                  )}
                 </div>
                 
-                <div>
-                  <PortfolioChart allocation={portfolio.allocation} size="small" />
+                {/* Key Metrics */}
+                <div className="space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-body-medium text-neutral-600">Expected Return</span>
+                    <span className="text-body-medium font-medium">{portfolio.expectedReturn}%</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-body-medium text-neutral-600">Risk Level</span>
+                    <span className="text-body-medium font-medium">{portfolio.riskLevel}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-body-medium text-neutral-600">Risk Score</span>
+                    <span className="text-body-medium font-medium">{portfolio.riskScore}/5</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-body-medium text-neutral-600">Monthly Fee</span>
+                    <span className="text-body-medium font-medium">${portfolio.monthlyFee.toFixed(2)}</span>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Portfolio Chart */}
+              <div>
+                <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-4">
+                  Asset Allocation
+                </h3>
+                <PortfolioChart allocation={portfolio.allocation} size="small" />
+              </div>
+
+              {/* Asset Breakdown */}
+              <div>
+                <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-4">
+                  Asset Breakdown
+                </h3>
+                <div className="space-y-3">
+                  {portfolio.allocation.map((asset, index) => (
+                    <div key={index} className="flex items-center justify-between py-2">
+                      <div className="flex items-center gap-3">
+                        <div 
+                          className="w-4 h-4 rounded-full" 
+                          style={{ backgroundColor: asset.color }}
+                        />
+                        <span className="text-label-large font-medium text-neutral-800">{asset.name}</span>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-label-large font-medium text-neutral-900">{asset.percentage}%</p>
+                        {hasValue && (
+                          <p className="text-body-small text-neutral-500">
+                            ${((portfolio.balance * asset.percentage) / 100).toLocaleString()}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
+          </div>
 
-            <div className="space-y-6">
-              <div className="bg-white rounded-lg shadow-elevation-1 border border-neutral-200 p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <Calculator className="w-5 h-5 text-neutral-700" />
-                  <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900">Fee Breakdown</h3>
+          {/* AI Strategy Reasoning */}
+          <div className="bg-white rounded-lg shadow-elevation-1 border border-neutral-200 p-8 mb-8">
+            <div className="flex items-center gap-3 mb-4">
+              <Shield className="w-5 h-5 text-neutral-700" />
+              <h3 className="text-title-large font-headline font-semi-bold text-neutral-900">AI Strategy Reasoning</h3>
+            </div>
+            <p className="text-body-medium text-neutral-700 leading-relaxed">
+              {portfolio.reasoning}
+            </p>
+          </div>
+
+          <div className="grid lg:grid-cols-2 gap-6">
+            {/* Fee Breakdown */}
+            <div className="bg-white rounded-lg shadow-elevation-1 border border-neutral-200 p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <Calculator className="w-5 h-5 text-neutral-700" />
+                <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900">Fee Breakdown</h3>
+              </div>
+              <div className="space-y-3">
+                <div className="flex justify-between">
+                  <span className="text-body-small text-neutral-600">Annual Rate</span>
+                  <span className="text-body-small font-medium">{portfolio.managementFee}%</span>
                 </div>
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-body-small text-neutral-600">Annual Rate</span>
-                    <span className="text-body-small font-medium">{portfolio.managementFee}%</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-body-small text-neutral-600">Monthly Fee</span>
-                    <span className="text-body-small font-medium">${portfolio.monthlyFee.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-body-small text-neutral-600">Annual Fee</span>
-                    <span className="text-body-small font-medium">${(portfolio.monthlyFee * 12).toFixed(2)}</span>
-                  </div>
-                  <div className="pt-2 border-t border-neutral-200">
+                <div className="flex justify-between">
+                  <span className="text-body-small text-neutral-600">Monthly Fee</span>
+                  <span className="text-body-small font-medium">${portfolio.monthlyFee.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-body-small text-neutral-600">Annual Fee</span>
+                  <span className="text-body-small font-medium">${(portfolio.monthlyFee * 12).toFixed(2)}</span>
+                </div>
+                <div className="pt-2 border-t border-neutral-200">
+                  <div className="flex items-start gap-2">
+                    <Info className="w-4 h-4 text-neutral-600 mt-0.5 flex-shrink-0" />
                     <p className="text-body-small text-neutral-500">
-                      Fees automatically deducted monthly based on current portfolio value
+                      Fees are calculated monthly based on your current portfolio value and automatically deducted from your account.
                     </p>
                   </div>
                 </div>
               </div>
+            </div>
 
-              <div className="bg-white rounded-lg shadow-elevation-1 border border-neutral-200 p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900">Market Insights</h3>
+            {/* Market Insights */}
+            <div className="bg-white rounded-lg shadow-elevation-1 border border-neutral-200 p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900">Market Insights</h3>
+                <button
+                  onClick={() => setShowInsightForm(true)}
+                  className="p-2 bg-neutral-900 text-white rounded-lg hover:bg-neutral-800 transition-colors"
+                >
+                  <Plus className="w-4 h-4" />
+                </button>
+              </div>
+              
+              {insights.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-body-medium text-neutral-500 mb-4">No insights added yet</p>
                   <button
                     onClick={() => setShowInsightForm(true)}
-                    className="p-2 bg-neutral-900 text-white rounded-lg hover:bg-neutral-800 transition-colors"
+                    className="text-neutral-900 hover:text-neutral-700 text-label-large font-medium"
                   >
-                    <Plus className="w-4 h-4" />
+                    Add your first insight
                   </button>
                 </div>
-                
-                {insights.length === 0 ? (
-                  <div className="text-center py-8">
-                    <p className="text-body-medium text-neutral-500 mb-4">No insights added yet</p>
-                    <button
-                      onClick={() => setShowInsightForm(true)}
-                      className="text-neutral-900 hover:text-neutral-700 text-label-large font-medium"
-                    >
-                      Add your first insight
-                    </button>
-                  </div>
-                ) : (
-                  <div className="space-y-4 max-h-96 overflow-y-auto">
-                    {insights.map((insight) => (
-                      <div key={insight.id} className="border border-neutral-200 rounded-lg p-4">
-                        <div className="flex items-start justify-between mb-2">
-                          <h4 className="text-label-large font-medium text-neutral-900">{insight.title}</h4>
-                          <span className="text-body-small text-neutral-500">{insight.date}</span>
-                        </div>
-                        <p className="text-body-small text-neutral-600 mb-2">{insight.impact}</p>
-                        <a 
-                          href={insight.url} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-1 text-body-small text-neutral-900 hover:text-neutral-700"
-                        >
-                          View Source <ExternalLink className="w-3 h-3" />
-                        </a>
-                        {insight.portfolioChange && (
-                          <div className="mt-2 p-2 bg-neutral-100 rounded text-body-small text-neutral-700">
-                            Portfolio rebalanced based on this insight
-                          </div>
-                        )}
+              ) : (
+                <div className="space-y-4 max-h-96 overflow-y-auto">
+                  {insights.map((insight) => (
+                    <div key={insight.id} className="border border-neutral-200 rounded-lg p-4">
+                      <div className="flex items-start justify-between mb-2">
+                        <h4 className="text-label-large font-medium text-neutral-900">{insight.title}</h4>
+                        <span className="text-body-small text-neutral-500">{insight.date}</span>
                       </div>
-                    ))}
-                  </div>
-                )}
-              </div>
+                      <p className="text-body-small text-neutral-600 mb-2">{insight.impact}</p>
+                      <a 
+                        href={insight.url} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1 text-body-small text-neutral-900 hover:text-neutral-700"
+                      >
+                        View Source <ExternalLink className="w-3 h-3" />
+                      </a>
+                      {insight.portfolioChange && (
+                        <div className="mt-2 p-2 bg-neutral-100 rounded text-body-small text-neutral-700">
+                          Portfolio rebalanced based on this insight
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
