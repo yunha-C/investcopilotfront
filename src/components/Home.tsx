@@ -245,16 +245,16 @@ export const Home: React.FC = () => {
         </div>
       </div>
 
-      {/* Features Section with Material Design 3 Icons */}
+      {/* Features Section with Material Design 3 Icons - 80px size with transparent backgrounds */}
       <div className="max-w-6xl mx-auto px-4 py-16">
         <div className="grid md:grid-cols-3 gap-8">
           {/* Portfolio Management - Material Design 3 bookmark_manager icon */}
           <div className="text-center">
-            <div className="p-4 bg-neutral-100 rounded-full w-fit mx-auto mb-4 flex items-center justify-center">
+            <div className="w-fit mx-auto mb-4 flex items-center justify-center">
               <span 
                 className="material-symbols-outlined text-neutral-700 select-none"
                 style={{ 
-                  fontSize: '32px',
+                  fontSize: '80px',
                   lineHeight: '1',
                   fontVariationSettings: "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48"
                 }}
@@ -273,11 +273,11 @@ export const Home: React.FC = () => {
 
           {/* Influence with Your Own Insight */}
           <div className="text-center">
-            <div className="p-4 bg-neutral-100 rounded-full w-fit mx-auto mb-4 flex items-center justify-center">
+            <div className="w-fit mx-auto mb-4 flex items-center justify-center">
               <span 
                 className="material-symbols-outlined text-neutral-700 select-none"
                 style={{ 
-                  fontSize: '32px',
+                  fontSize: '80px',
                   lineHeight: '1',
                   fontVariationSettings: "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48"
                 }}
@@ -296,11 +296,11 @@ export const Home: React.FC = () => {
 
           {/* AI Simulation */}
           <div className="text-center">
-            <div className="p-4 bg-neutral-700 rounded-full w-fit mx-auto mb-4 flex items-center justify-center">
+            <div className="w-fit mx-auto mb-4 flex items-center justify-center">
               <span 
-                className="material-symbols-outlined text-white select-none"
+                className="material-symbols-outlined text-neutral-700 select-none"
                 style={{ 
-                  fontSize: '32px',
+                  fontSize: '80px',
                   lineHeight: '1',
                   fontVariationSettings: "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48"
                 }}
