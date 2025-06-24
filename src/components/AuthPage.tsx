@@ -192,7 +192,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
           </p>
         </div>
 
-        <div className="bg-white/90 backdrop-blur-sm rounded-lg shadow-elevation-2 border border-neutral-300 p-6">
+        <div className="bg-white/90 backdrop-blur-sm rounded-lg shadow-elevation-2 p-6">
           <div className="mb-4">
             <h2 className="text-headline-medium font-headline font-semi-bold text-neutral-900 mb-1">
               {isLogin ? 'Log In' : 'Create Account'}
