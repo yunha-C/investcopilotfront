@@ -2,120 +2,130 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Responsive Background Gradient System */
+
 /* Base styles (Desktop default) */
 .background-container {
-  position: fixed;
-  inset: 0;
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-  background-color: #FCFDFD;
-  z-index: -10;
-  pointer-events: none;
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background-color: #FCFDFD;
+    z-index: -10;
+    pointer-events: none;
 }
 
 .circle-1,
-.circle-2 {
-  position: absolute;
-  border-radius: 50%;
-  z-index: 0;
+.circle-2,
+.blur-overlay {
+    position: absolute;
+    border-radius: 50%;
+    z-index: 0;
 }
 
 /* Top left eclipse */
 .circle-1 {
-  width: 1800px;
-  height: 1800px;
-  top: -1120px;
-  left: -700px;
-  background: radial-gradient(ellipse 50% 50% at 50% 50%, 
-    #BAC3C4 0%, 
-    #DDE2E3E5 16%, 
-    #DDE2E300 100%);
+    width: 1800px;
+    height: 1800px;
+    top: -1120px;
+    left: -700px;
+    background: radial-gradient(ellipse 50% 50% at 50% 50%, 
+        #BAC3C4 0%, 
+        #DDE2E3E5 16%, 
+        #DDE2E300 100%);
 }
 
-/* Bottom right eclipse */
+/* Bottom right eclipse - flipped version of circle-1 */
 .circle-2 {
-  width: 1800px;
-  height: 1800px;
-  top: 310px;
-  left: 270px;
-  background: radial-gradient(ellipse 50% 50% at 50% 50%, 
-    #CBD3D4 0%, 
-    #DDE2E3E5 7%, 
-    #DDE2E300 100%);
+    width: 1800px;
+    height: 1800px;
+    bottom: -1120px;
+    right: -700px;
+    background: radial-gradient(ellipse 50% 50% at 50% 50%, 
+        #CBD3D4 0%, 
+        #DDE2E3E5 7%, 
+        #DDE2E300 100%);
 }
 
 /* Blur overlay */
 .blur-overlay {
-  position: absolute;
-  width: 100vw;
-  height: 100vh;
-  top: 0;
-  left: 0;
-  opacity: 0.5;
-  z-index: 1;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    opacity: 0.5;
+    z-index: 1;
+    background-color: #fafafa;
+    filter: blur(20px);
 }
 
 /* iPhone 13 mini */
 @media (max-width: 400px) {
-  .circle-1, .circle-2 {
-    width: 900px;
-    height: 900px;
-  }
-  .circle-1 {
-    top: -540px;
-    left: -450px;
-  }
-  .circle-2 {
-    top: 387px;
-    left: -74px;
-  }
+    .circle-1, .circle-2 {
+        width: 900px;
+        height: 900px;
+    }
+    
+    .circle-1 {
+        top: -540px;
+        left: -450px;
+    }
+    
+    .circle-2 {
+        bottom: -540px;
+        right: -450px;
+    }
 }
 
 /* iPad Pro 11" */
 @media (min-width: 401px) and (max-width: 900px) {
-  .circle-1, .circle-2 {
-    width: 1500px;
-    height: 1500px;
-  }
-  .circle-1 {
-    top: -880px;
-    left: -840px;
-  }
-  .circle-2 {
-    top: 510px;
-    left: -10px;
-  }
+    .circle-1, .circle-2 {
+        width: 1500px;
+        height: 1500px;
+    }
+    
+    .circle-1 {
+        top: -880px;
+        left: -840px;
+    }
+    
+    .circle-2 {
+        bottom: -880px;
+        right: -840px;
+    }
 }
 
 /* Android Expanded (1280x800 baseline) */
 @media (min-width: 901px) and (max-width: 1400px) {
-  .circle-1, .circle-2 {
-    width: 1600px;
-    height: 1600px;
-  }
-  .circle-1 {
-    top: -1080px;
-    left: -560px;
-  }
-  .circle-2 {
-    top: 310px;
-    left: 270px;
-  }
+    .circle-1, .circle-2 {
+        width: 1600px;
+        height: 1600px;
+    }
+    
+    .circle-1 {
+        top: -1080px;
+        left: -560px;
+    }
+    
+    .circle-2 {
+        bottom: -1080px;
+        right: -560px;
+    }
 }
 
 /* Reset body styles */
 body {
-  margin: 0;
-  padding: 0;
-  min-height: 100vh;
-  background-color: #FCFDFD;
-  position: relative;
-  overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    background-color: #FCFDFD;
+    position: relative;
+    overflow-x: hidden;
 }
 
 /* Ensure content is above background */
 #root {
-  position: relative;
-  z-index: 1;
+    position: relative;
+    z-index: 1;
 }
