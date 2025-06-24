@@ -251,7 +251,7 @@ export const Home: React.FC = () => {
           <div className="text-center">
             <div className="p-4 bg-neutral-100 rounded-full w-fit mx-auto mb-4">
               <span className="material-symbols-outlined text-neutral-700" style={{ fontSize: '32px' }}>
-                bookmark_manager
+                robot_2
               </span>
             </div>
             <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-3">
@@ -265,7 +265,7 @@ export const Home: React.FC = () => {
           <div className="text-center">
             <div className="p-4 bg-neutral-100 rounded-full w-fit mx-auto mb-4">
               <span className="material-symbols-outlined text-neutral-700" style={{ fontSize: '32px' }}>
-                bubble_chart
+                bookmark_manager
               </span>
             </div>
             <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-3">
@@ -279,7 +279,7 @@ export const Home: React.FC = () => {
           <div className="text-center">
             <div className="p-4 bg-neutral-700 rounded-full w-fit mx-auto mb-4">
               <span className="material-symbols-outlined text-white" style={{ fontSize: '32px' }}>
-                smart_toy
+                bubble_chart
               </span>
             </div>
             <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-3">
