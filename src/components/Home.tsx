@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Plus, TrendingUp, ArrowRight, AlertCircle, Trash2 } from 'lucide-react';
+import { Plus, TrendingUp, ArrowRight, AlertCircle } from 'lucide-react';
 import { useInvestmentStore } from '../store/investmentStore';
 import { useAuthStore } from '../store/authStore';
 
 export const Home: React.FC = () => {
-  const { setCurrentStep, portfolio, portfolios, isLoading, error, clearError, updatePortfolioBalance, deletePortfolio, setActivePortfolio } = useInvestmentStore();
+  const { setCurrentStep, portfolio, portfolios, isLoading, error, clearError, updatePortfolioBalance, setActivePortfolio } = useInvestmentStore();
   const { user } = useAuthStore();
   const [selectedTimeframe, setSelectedTimeframe] = useState('All');
   const [showAddValueModal, setShowAddValueModal] = useState(false);
@@ -56,13 +56,6 @@ export const Home: React.FC = () => {
       setPortfolioValue('');
       setShowAddValueModal(false);
       setSelectedPortfolioForValue(null);
-    }
-  };
-
-  const handleDeletePortfolio = (portfolioToDelete: any, e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (confirm(`Are you sure you want to delete "${portfolioToDelete.name}"? This action cannot be undone.`)) {
-      deletePortfolio(portfolioToDelete.id);
     }
   };
 
@@ -191,10 +184,10 @@ export const Home: React.FC = () => {
               {portfolios.map((portfolioItem, index) => (
                 <div 
                   key={portfolioItem.id}
-                  className="bg-white border border-neutral-200 rounded-xl shadow-elevation-1 overflow-hidden group hover:shadow-elevation-2 transition-all duration-200"
+                  className="bg-white border border-neutral-200 rounded-xl shadow-elevation-1 overflow-hidden group hover:shadow-elevation-2 transition-all duration-200 flex flex-col"
                 >
                   {/* Card Header */}
-                  <div className="p-6 pb-4">
+                  <div className="p-6 pb-4 flex-1">
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex-1">
                         <h3 className="text-title-large font-headline font-semi-bold text-neutral-900 mb-1 leading-tight">
@@ -207,16 +200,16 @@ export const Home: React.FC = () => {
                         </div>
                       </div>
                       <button
-                        onClick={(e) => handleDeletePortfolio(portfolioItem, e)}
-                        className="p-2 text-neutral-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
-                        title="Delete portfolio"
+                        onClick={() => handleViewPortfolio(portfolioItem)}
+                        className="p-2 text-neutral-400 hover:text-neutral-600 hover:bg-neutral-50 rounded-lg transition-colors"
+                        title="View portfolio"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <ArrowRight className="w-4 h-4" />
                       </button>
                     </div>
                     
                     {/* Portfolio Value */}
-                    <div className="mb-4">
+                    <div className="mb-4 min-h-[60px] flex flex-col justify-center">
                       <p className="text-headline-small font-headline font-semi-bold text-neutral-900 mb-1">
                         ${portfolioItem.balance > 0 ? portfolioItem.balance.toLocaleString() : '0'}
                       </p>
@@ -230,22 +223,14 @@ export const Home: React.FC = () => {
                     </div>
 
                     {/* Expected Return */}
-                    <div className="flex justify-between items-center text-body-small text-neutral-600 mb-4">
+                    <div className="flex justify-between items-center text-body-small text-neutral-600 min-h-[20px]">
                       <span>Expected Return</span>
                       <span className="font-medium text-neutral-900">{portfolioItem.expectedReturn}%</span>
                     </div>
                   </div>
 
-                  {/* Card Actions */}
-                  <div className="px-6 pb-6 space-y-3">
-                    <button
-                      onClick={() => handleViewPortfolio(portfolioItem)}
-                      className="w-full bg-neutral-900 hover:bg-neutral-800 text-white py-3 px-4 rounded-lg text-label-large font-medium transition-colors flex items-center justify-center gap-2"
-                    >
-                      View Portfolio
-                      <ArrowRight className="w-4 h-4" />
-                    </button>
-                    
+                  {/* Card Actions - Fixed at bottom */}
+                  <div className="px-6 pb-6">
                     <button
                       onClick={(e) => handleAddValue(portfolioItem, e)}
                       className="w-full bg-neutral-100 hover:bg-neutral-200 text-neutral-900 py-3 px-4 rounded-lg text-label-large font-medium transition-colors"
@@ -258,10 +243,10 @@ export const Home: React.FC = () => {
 
               {/* Add Portfolio Card */}
               {portfolios.length < 3 && (
-                <div className="bg-white border-2 border-dashed border-neutral-300 rounded-xl shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-200">
+                <div className="bg-white border-2 border-dashed border-neutral-300 rounded-xl shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-200 flex flex-col">
                   <button 
                     onClick={handleCreatePortfolio}
-                    className="w-full h-full p-8 flex flex-col items-center justify-center text-center group"
+                    className="w-full h-full p-8 flex flex-col items-center justify-center text-center group flex-1"
                   >
                     <div className="w-16 h-16 rounded-full bg-neutral-100 group-hover:bg-neutral-200 flex items-center justify-center mx-auto mb-4 transition-colors">
                       <Plus className="w-8 h-8 text-neutral-600 group-hover:text-neutral-700 transition-colors" />

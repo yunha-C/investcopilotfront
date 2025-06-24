@@ -75,7 +75,7 @@ interface InvestmentState {
   loadUserPortfolios: (userId: string) => Promise<void>;
   addInsight: (url: string) => void;
   updatePortfolioBalance: (portfolioId: string, balance: number) => void;
-  deletePortfolio: (portfolioId: string) => void;
+  deletePortfolio: (portfolioId: string) => Promise<void>;
   setActivePortfolio: (portfolio: Portfolio) => void;
   clearError: () => void;
   setError: (error: string) => void;
@@ -292,22 +292,51 @@ export const useInvestmentStore = create<InvestmentState>((set, get) => ({
     });
   },
 
-  deletePortfolio: (portfolioId) => {
+  deletePortfolio: async (portfolioId) => {
     const { portfolios, activePortfolio } = get();
     
-    // Remove portfolio from portfolios array
-    const updatedPortfolios = portfolios.filter(p => p.id !== portfolioId);
-    
-    // Clear activePortfolio if it was the deleted one
-    let updatedActivePortfolio = activePortfolio;
-    if (activePortfolio && activePortfolio.id === portfolioId) {
-      updatedActivePortfolio = null;
+    try {
+      // Find the portfolio to delete
+      const portfolioToDelete = portfolios.find(p => p.id === portfolioId);
+      
+      // If portfolio has an API ID, delete from database
+      if (portfolioToDelete?.apiId) {
+        console.log('Deleting portfolio from database:', portfolioToDelete.apiId);
+        await portfolioService.deletePortfolio(portfolioToDelete.apiId);
+        console.log('Portfolio deleted from database successfully');
+      }
+      
+      // Remove portfolio from local state
+      const updatedPortfolios = portfolios.filter(p => p.id !== portfolioId);
+      
+      // Clear activePortfolio if it was the deleted one
+      let updatedActivePortfolio = activePortfolio;
+      if (activePortfolio && activePortfolio.id === portfolioId) {
+        updatedActivePortfolio = null;
+      }
+      
+      set({ 
+        portfolios: updatedPortfolios,
+        activePortfolio: updatedActivePortfolio
+      });
+      
+    } catch (error) {
+      console.error('Failed to delete portfolio from database:', error);
+      
+      // Still remove from local state even if API call fails
+      const updatedPortfolios = portfolios.filter(p => p.id !== portfolioId);
+      
+      let updatedActivePortfolio = activePortfolio;
+      if (activePortfolio && activePortfolio.id === portfolioId) {
+        updatedActivePortfolio = null;
+      }
+      
+      set({ 
+        portfolios: updatedPortfolios,
+        activePortfolio: updatedActivePortfolio,
+        error: 'Portfolio deleted locally, but failed to remove from server. Please try again later.'
+      });
     }
-    
-    set({ 
-      portfolios: updatedPortfolios,
-      activePortfolio: updatedActivePortfolio
-    });
   },
 
   setActivePortfolio: (portfolio) => {
@@ -599,7 +628,7 @@ function generatePortfolioFromAnswers(answers: QuestionnaireAnswers): Portfolio 
       { name: 'Technology Sector ETF', percentage: 10, color: '#bdbdbd' },
       { name: 'Bonds', percentage: 5, color: '#e0e0e0' },
     ];
-    name = 'Aggressive Growth 2035+';
+    name = 'Aggressive Growth Strategy';
     expectedReturn = 8.7;
     reasoning = `Your high risk tolerance (Risk Score: ${riskScore}/5) and long-term investment horizon (${answers.timeHorizon}) enable this aggressive growth strategy. With 95% equity allocation, this portfolio maximizes growth potential through domestic growth stocks (40%) and international diversification. Your ${answers.experience} experience level and ${answers.netWorth} net worth provide the foundation for this sophisticated approach.`;
   } else if (riskScore >= 3.0) {
