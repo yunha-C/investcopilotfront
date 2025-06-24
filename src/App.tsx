@@ -68,7 +68,18 @@ function App() {
   };
 
   if (!isAuthenticated) {
-    return <AuthPage onAuthenticated={handleAuthenticated} />;
+    return (
+      <>
+        {/* Responsive Gradient Background */}
+        <div className="background-container">
+          <div className="circle-1"></div>
+          <div className="circle-2"></div>
+          <div className="blur-overlay"></div>
+        </div>
+        
+        <AuthPage onAuthenticated={handleAuthenticated} />
+      </>
+    );
   }
 
   console.log('=== APP RENDER DEBUG ===');
@@ -77,8 +88,12 @@ function App() {
 
   return (
     <>
-      {/* Optional Blur Layer - Add this if you want the blur effect */}
-      <div className="blur-layer"></div>
+      {/* Responsive Gradient Background */}
+      <div className="background-container">
+        <div className="circle-1"></div>
+        <div className="circle-2"></div>
+        <div className="blur-overlay"></div>
+      </div>
       
       {/* Main Content */}
       <div className="min-h-screen relative z-10">

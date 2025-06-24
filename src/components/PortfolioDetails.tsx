@@ -27,7 +27,7 @@ export const PortfolioDetails: React.FC = () => {
           <span className="text-body-medium">Back to Dashboard</span>
         </button>
 
-        <div className="bg-white rounded-lg shadow-elevation-1 border border-neutral-200 overflow-hidden">
+        <div className="bg-white/90 backdrop-blur-sm rounded-lg shadow-elevation-1 border border-neutral-200 overflow-hidden">
           <div className="p-8 border-b border-neutral-200">
             <div className="flex items-center justify-between">
               <div>
@@ -65,7 +65,7 @@ export const PortfolioDetails: React.FC = () => {
               </div>
 
               <div className="space-y-6">
-                <div className="bg-neutral-100 rounded-lg p-6">
+                <div className="bg-neutral-100/80 backdrop-blur-sm rounded-lg p-6">
                   <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-4">Performance Metrics</h3>
                   <div className="space-y-4">
                     <div>
@@ -96,7 +96,7 @@ export const PortfolioDetails: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="bg-neutral-100 rounded-lg p-6">
+                <div className="bg-neutral-100/80 backdrop-blur-sm rounded-lg p-6">
                   <div className="flex items-center gap-2 mb-4">
                     <Calculator className="w-5 h-5 text-neutral-600" />
                     <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900">Fee Structure</h3>
@@ -125,11 +125,11 @@ export const PortfolioDetails: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="bg-neutral-100 rounded-lg p-6">
+                <div className="bg-neutral-100/80 backdrop-blur-sm rounded-lg p-6">
                   <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-4">Asset Breakdown</h3>
                   <div className="space-y-3">
                     {portfolio.allocation.map((asset, index) => (
-                      <div key={index} className="flex items-center justify-between">
+                      <div key={index} className="flex items-center justify-between py-2">
                         <div className="flex items-center gap-3">
                           <div 
                             className="w-4 h-4 rounded-full" 
@@ -153,7 +153,7 @@ export const PortfolioDetails: React.FC = () => {
             <div className="grid lg:grid-cols-2 gap-8">
               <div>
                 <h3 className="text-title-large font-headline font-semi-bold text-neutral-900 mb-4">AI Strategy Reasoning</h3>
-                <div className="bg-neutral-100 rounded-lg p-6">
+                <div className="bg-neutral-100/80 backdrop-blur-sm rounded-lg p-6">
                   <p className="text-body-medium text-neutral-700 leading-relaxed">
                     {portfolio.reasoning}
                   </p>
@@ -163,7 +163,7 @@ export const PortfolioDetails: React.FC = () => {
               <div>
                 <h3 className="text-title-large font-headline font-semi-bold text-neutral-900 mb-4">Recent Insights</h3>
                 {insights.length === 0 ? (
-                  <div className="bg-neutral-100 rounded-lg p-6 text-center">
+                  <div className="bg-neutral-100/80 backdrop-blur-sm rounded-lg p-6 text-center">
                     <p className="text-body-medium text-neutral-500 mb-2">No insights added yet</p>
                     <p className="text-body-small text-neutral-400">
                       Add market insights to help AI optimize your portfolio
@@ -172,7 +172,7 @@ export const PortfolioDetails: React.FC = () => {
                 ) : (
                   <div className="space-y-4 max-h-96 overflow-y-auto">
                     {insights.map((insight) => (
-                      <div key={insight.id} className="bg-white border border-neutral-200 rounded-lg p-4">
+                      <div key={insight.id} className="bg-white/80 backdrop-blur-sm border border-neutral-200 rounded-lg p-4">
                         <div className="flex items-start justify-between mb-3">
                           <h4 className="text-label-large font-medium text-neutral-900">{insight.title}</h4>
                           <div className="flex items-center gap-1 text-body-small text-neutral-500">
