@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Plus, TrendingUp, BarChart3, ArrowRight, AlertCircle, Activity, Zap } from 'lucide-react';
+import { Plus, TrendingUp, BarChart3, ArrowRight, AlertCircle } from 'lucide-react';
 import { useInvestmentStore } from '../store/investmentStore';
 import { useAuthStore } from '../store/authStore';
 
@@ -250,7 +250,9 @@ export const Home: React.FC = () => {
         <div className="grid md:grid-cols-3 gap-8">
           <div className="text-center">
             <div className="p-4 bg-neutral-100 rounded-full w-fit mx-auto mb-4">
-              <BarChart3 className="w-8 h-8 text-neutral-700" strokeWidth={0} fill="currentColor" />
+              <span className="material-symbols-outlined text-neutral-700" style={{ fontSize: '32px' }}>
+                bookmark_manager
+              </span>
             </div>
             <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-3">
               Portfolio Management
@@ -262,7 +264,9 @@ export const Home: React.FC = () => {
 
           <div className="text-center">
             <div className="p-4 bg-neutral-100 rounded-full w-fit mx-auto mb-4">
-              <Activity className="w-8 h-8 text-neutral-700" strokeWidth={0} fill="currentColor" />
+              <span className="material-symbols-outlined text-neutral-700" style={{ fontSize: '32px' }}>
+                bubble_chart
+              </span>
             </div>
             <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-3">
               Influence with Your Own Insight
@@ -274,7 +278,9 @@ export const Home: React.FC = () => {
 
           <div className="text-center">
             <div className="p-4 bg-neutral-700 rounded-full w-fit mx-auto mb-4">
-              <Zap className="w-8 h-8 text-white" strokeWidth={0} fill="currentColor" />
+              <span className="material-symbols-outlined text-white" style={{ fontSize: '32px' }}>
+                smart_toy
+              </span>
             </div>
             <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-3">
               AI Simulation
