@@ -69,82 +69,71 @@ export const Home: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-white/50 via-white/30 to-white/20">
       {/* Hero Section */}
       <div className="max-w-6xl mx-auto px-4 py-16">
-        {/* Portfolio Value Display */}
-        <div className="text-center mb-12">
-          {hasAnyValue ? (
-            <div>
-              <div className="mb-6">
-                <p className="text-display-medium font-headline font-semi-bold text-neutral-900 mb-3">
-                  ${totalValue.toLocaleString()}
-                </p>
-                <div className="flex items-center justify-center gap-2 mb-6">
-                  <TrendingUp className="w-6 h-6 text-positive" />
-                  <span className="text-positive text-title-large font-medium">+2.4%</span>
+        {/* Portfolio Value Display - Only show when there's value */}
+        {hasAnyValue && (
+          <div className="text-center mb-12">
+            <div className="mb-6">
+              <p className="text-display-medium font-headline font-semi-bold text-neutral-900 mb-3">
+                ${totalValue.toLocaleString()}
+              </p>
+              <div className="flex items-center justify-center gap-2 mb-6">
+                <TrendingUp className="w-6 h-6 text-positive" />
+                <span className="text-positive text-title-large font-medium">+2.4%</span>
+              </div>
+              
+              {/* Smooth Wave Chart */}
+              <div className="max-w-lg mx-auto mb-4">
+                <div className="h-32 bg-gradient-to-b from-neutral-50 to-neutral-100 rounded-lg p-4 relative overflow-hidden">
+                  <svg 
+                    className="absolute inset-0 w-full h-full" 
+                    viewBox="0 0 400 128" 
+                    preserveAspectRatio="none"
+                  >
+                    <defs>
+                      <linearGradient id="waveGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stopColor="#044AA7" stopOpacity="0.3" />
+                        <stop offset="100%" stopColor="#044AA7" stopOpacity="0.05" />
+                      </linearGradient>
+                    </defs>
+                    
+                    <path
+                      d="M0,90 C50,85 100,75 150,70 C200,65 250,60 300,55 C350,50 380,45 400,40 L400,128 L0,128 Z"
+                      fill="url(#waveGradient)"
+                      className="transition-all duration-1000 ease-out"
+                    />
+                    
+                    <path
+                      d="M0,90 C50,85 100,75 150,70 C200,65 250,60 300,55 C350,50 380,45 400,40"
+                      fill="none"
+                      stroke="#044AA7"
+                      strokeWidth="2"
+                      className="transition-all duration-1000 ease-out"
+                    />
+                  </svg>
                 </div>
                 
-                {/* Smooth Wave Chart */}
-                <div className="max-w-lg mx-auto mb-4">
-                  <div className="h-32 bg-gradient-to-b from-neutral-50 to-neutral-100 rounded-lg p-4 relative overflow-hidden">
-                    <svg 
-                      className="absolute inset-0 w-full h-full" 
-                      viewBox="0 0 400 128" 
-                      preserveAspectRatio="none"
-                    >
-                      <defs>
-                        <linearGradient id="waveGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                          <stop offset="0%" stopColor="#044AA7" stopOpacity="0.3" />
-                          <stop offset="100%" stopColor="#044AA7" stopOpacity="0.05" />
-                        </linearGradient>
-                      </defs>
-                      
-                      <path
-                        d="M0,90 C50,85 100,75 150,70 C200,65 250,60 300,55 C350,50 380,45 400,40 L400,128 L0,128 Z"
-                        fill="url(#waveGradient)"
-                        className="transition-all duration-1000 ease-out"
-                      />
-                      
-                      <path
-                        d="M0,90 C50,85 100,75 150,70 C200,65 250,60 300,55 C350,50 380,45 400,40"
-                        fill="none"
-                        stroke="#044AA7"
-                        strokeWidth="2"
-                        className="transition-all duration-1000 ease-out"
-                      />
-                    </svg>
-                  </div>
-                  
-                  {/* Timeline Buttons */}
-                  <div className="flex justify-center mt-4">
-                    <div className="bg-neutral-100 rounded-full p-1 flex gap-1">
-                      {timeframes.map((timeframe) => (
-                        <button
-                          key={timeframe}
-                          onClick={() => setSelectedTimeframe(timeframe)}
-                          className={`px-4 py-2 rounded-full text-body-small font-medium transition-all ${
-                            selectedTimeframe === timeframe
-                              ? 'bg-neutral-900 text-white shadow-sm'
-                              : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-200'
-                          }`}
-                        >
-                          {timeframe}
-                        </button>
-                      ))}
-                    </div>
+                {/* Timeline Buttons */}
+                <div className="flex justify-center mt-4">
+                  <div className="bg-neutral-100 rounded-full p-1 flex gap-1">
+                    {timeframes.map((timeframe) => (
+                      <button
+                        key={timeframe}
+                        onClick={() => setSelectedTimeframe(timeframe)}
+                        className={`px-4 py-2 rounded-full text-body-small font-medium transition-all ${
+                          selectedTimeframe === timeframe
+                            ? 'bg-neutral-900 text-white shadow-sm'
+                            : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-200'
+                        }`}
+                      >
+                        {timeframe}
+                      </button>
+                    ))}
                   </div>
                 </div>
               </div>
             </div>
-          ) : (
-            <div className="py-8">
-              <h1 className="text-display-medium font-headline font-semi-bold mb-6 text-neutral-900">
-                Welcome back, {user?.firstName}
-              </h1>
-              <p className="text-title-large text-neutral-600 mb-8 max-w-3xl mx-auto">
-                Your AI-powered investment management platform
-              </p>
-            </div>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Error Display */}
         {error && (
