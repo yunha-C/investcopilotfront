@@ -225,14 +225,14 @@ export const Questionnaire: React.FC = () => {
       } catch (error) {
         // Silently handle the error - this is a background operation
         // The user has already successfully generated their portfolio
-        console.warn('Failed to update investment profile status (non-critical):', error);
+        console.log('Failed to update investment profile status (non-critical):', error);
         
         // Optionally store this information locally for retry later
         try {
           localStorage.setItem('aivestie_profile_completion_pending', 'true');
         } catch (storageError) {
           // Even localStorage might fail, but that's okay
-          console.warn('Could not store profile completion status locally:', storageError);
+          console.log('Could not store profile completion status locally:', storageError);
         }
       }
     }, 100);
