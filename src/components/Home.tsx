@@ -81,7 +81,7 @@ export const Home: React.FC = () => {
         {/* Portfolio Value Display - Always show */}
         <div className="text-center mb-12">
           <div className="mb-6">
-            <p className="text-display-medium font-headline font-semi-bold text-neutral-900 mb-3">
+            <p className="text-display-medium font-headline font-semi-bold text-neutral-900 mb-1">
               ${totalValue.toLocaleString()}
             </p>
             <div className="flex items-center justify-center gap-2 mb-6">
@@ -216,7 +216,6 @@ export const Home: React.FC = () => {
                         <span className={`${getGrowthColor(portfolioItem.growth || 0)} text-label-large font-medium`}>
                           {(portfolioItem.growth || 0) >= 0 ? '+' : ''}{(portfolioItem.growth || 0).toFixed(1)}%
                         </span>
-                        <span className="text-neutral-500 text-body-small">Today</span>
                       </div>
                     </div>
 

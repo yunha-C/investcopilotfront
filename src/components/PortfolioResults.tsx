@@ -45,6 +45,20 @@ export const PortfolioResults: React.FC = () => {
     { amount: 500000, label: '$500,000' },
   ];
 
+  // Generate concise reasoning based on portfolio characteristics
+  const generateConciseReasoning = () => {
+    const riskLevel = portfolio.riskLevel.toLowerCase();
+    const expectedReturn = portfolio.expectedReturn;
+    
+    if (riskLevel.includes('conservative') || riskLevel.includes('low')) {
+      return `This ${riskLevel} portfolio focuses on stability with ${expectedReturn}% expected returns. Heavy bond allocation protects your capital while providing steady growth.`;
+    } else if (riskLevel.includes('aggressive') || riskLevel.includes('high')) {
+      return `This ${riskLevel} portfolio targets ${expectedReturn}% returns through growth stocks and international diversification. Higher risk, higher reward potential.`;
+    } else {
+      return `This ${riskLevel} portfolio balances growth and stability for ${expectedReturn}% expected returns. Mix of stocks and bonds provides steady growth with manageable risk.`;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-white/50 via-white/30 to-white/20">
       <div className="px-4 py-8">
@@ -126,7 +140,7 @@ export const PortfolioResults: React.FC = () => {
                       <Shield className="w-5 h-5 text-neutral-700" />
                       <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900">Portfolio Breakdown</h3>
                     </div>
-                    <div className="space-y-2">
+                    <div className="space-y-1">
                       {portfolio.allocation.map((asset, index) => (
                         <div key={index} className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
@@ -150,7 +164,7 @@ export const PortfolioResults: React.FC = () => {
                 <div className="p-6 bg-neutral-100 rounded-lg">
                   <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-3">AI Strategy Reasoning</h3>
                   <p className="text-body-medium text-neutral-700 leading-relaxed">
-                    {portfolio.reasoning}
+                    {generateConciseReasoning()}
                   </p>
                 </div>
 
@@ -197,7 +211,7 @@ export const PortfolioResults: React.FC = () => {
                       Saving Portfolio...
                     </>
                   ) : (
-                    'Accept Portfolio & Continue'
+                    'Accept & Continue'
                   )}
                 </button>
                 <button
