@@ -55,8 +55,8 @@ export interface ApiError {
 
 class PortfolioService {
   private getAuthHeaders(): Record<string, string> {
-    const token = localStorage.getItem('investcopilot_token');
-    const tokenType = localStorage.getItem('investcopilot_token_type') || 'Bearer';
+    const token = localStorage.getItem('aivestie_token');
+    const tokenType = localStorage.getItem('aivestie_token_type') || 'Bearer';
     return {
       'Content-Type': 'application/json',
       ...(token && { 'Authorization': `${tokenType} ${token}` }),
