@@ -2,114 +2,68 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Base styles (Desktop default) */
-.background-container {
+/* Responsive Gradient Background using CSS pseudo-elements */
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background-color: #ffffff;
   position: relative;
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-  background-color: white;
+  overflow-x: hidden;
 }
 
-.circle-1,
-.circle-2,
-.blur-overlay {
-  position: absolute;
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  width: 200vw;
+  height: 200vw;
   border-radius: 50%;
-  z-index: 0;
+  z-index: -2;
+  pointer-events: none;
 }
 
-.circle-1 {
-  width: 120vw;
-  height: 120vw;
-  top: -75vh;
-  left: -30vw;
-  background: radial-gradient(ellipse 50% 50% at 50% 50%, #CBD3D4 0%, rgba(221,226,227,0.90) 16%, rgba(221,226,227,0) 100%);
+body::before {
+  top: -100vh;
+  left: -100vw;
+  background: radial-gradient(
+    ellipse at center,
+    #CBD3D4 0%,
+    rgba(221, 226, 227, 0.9) 16%,
+    rgba(221, 226, 227, 0) 100%
+  );
 }
 
-.circle-2 {
-  width: 120vw;
-  height: 120vw;
-  top: 35vh;
-  left: 20vw;
-  background: radial-gradient(ellipse 50% 50% at 50% 50%, #BAC3C4 0%, rgba(221,226,227,0.90) 7%, rgba(221,226,227,0) 100%);
+body::after {
+  top: 30vh;
+  left: 30vw;
+  background: radial-gradient(
+    ellipse at center,
+    #BAC3C4 0%,
+    rgba(221, 226, 227, 0.9) 7%,
+    rgba(221, 226, 227, 0) 100%
+  );
 }
 
-.blur-overlay {
-  width: 100vw;
-  height: 100vh;
-  top: 0;
-  left: 0;
-  opacity: 0.5;
-  background-color: #fafafa; /* neutral-50 */
+/* Optional Blur Layer */
+.blur-layer {
+  position: fixed;
+  inset: 0;
+  background: rgba(250, 250, 250, 0.5);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  z-index: 1;
-}
-
-/* iPhone 13 mini */
-@media (max-width: 400px) {
-  .circle-1, .circle-2 {
-    width: 225vw;
-    height: 225vw;
-  }
-
-  .circle-1 {
-    top: -66vh;
-    left: -65vw;
-  }
-
-  .circle-2 {
-    top: 48vh;
-    left: -10vw;
-  }
-}
-
-/* iPad Pro 11" */
-@media (min-width: 401px) and (max-width: 900px) {
-  .circle-1, .circle-2 {
-    width: 180vw;
-    height: 180vw;
-  }
-
-  .circle-1 {
-    top: -74vh;
-    left: -75vw;
-  }
-
-  .circle-2 {
-    top: 43vh;
-    left: 0vw;
-  }
-}
-
-/* Android Expanded (1280x800 baseline) */
-@media (min-width: 901px) and (max-width: 1400px) {
-  .circle-1, .circle-2 {
-    width: 170vw;
-    height: 170vw;
-  }
-
-  .circle-1 {
-    top: -100vh;
-    left: -45vw;
-  }
-
-  .circle-2 {
-    top: 39vh;
-    left: 22vw;
-  }
+  z-index: -1;
 }
 
 /* Ensure backdrop-filter support detection */
 @supports (backdrop-filter: blur(20px)) {
-  .blur-overlay {
+  .blur-layer {
     backdrop-filter: blur(20px);
   }
 }
 
 @supports (-webkit-backdrop-filter: blur(20px)) {
-  .blur-overlay {
+  .blur-layer {
     -webkit-backdrop-filter: blur(20px);
   }
 }
