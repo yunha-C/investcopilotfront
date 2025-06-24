@@ -58,6 +58,7 @@
     z-index: 1;
     background-color: #fafafa;
     filter: blur(20px);
+    border-radius: 0; /* Override the border-radius for full coverage */
 }
 
 /* iPhone 13 mini */
