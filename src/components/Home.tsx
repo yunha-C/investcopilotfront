@@ -59,81 +59,90 @@ export const Home: React.FC = () => {
     }
   };
 
-  // Calculate total portfolio value
+  // Calculate total portfolio value and growth
   const totalValue = portfolios.reduce((sum, p) => sum + (p.balance || 0), 0);
-  const hasAnyValue = totalValue > 0;
+  const totalGrowth = portfolios.length > 0 
+    ? portfolios.reduce((sum, p) => sum + ((p.growth || 0) * (p.balance || 0)), 0) / Math.max(totalValue, 1)
+    : 0;
 
   const timeframes = ['All', '1W', '1M', '6M', '1Y'];
+
+  // Determine growth color based on value
+  const getGrowthColor = (growth: number) => {
+    if (growth > 0) return 'text-positive';
+    if (growth < 0) return 'text-negative';
+    return 'text-neutral-600'; // Neutral color for 0 growth
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white/50 via-white/30 to-white/20">
       {/* Hero Section */}
       <div className="max-w-6xl mx-auto px-4 py-16">
-        {/* Portfolio Value Display - Only show when there's value */}
-        {hasAnyValue && (
-          <div className="text-center mb-12">
-            <div className="mb-6">
-              <p className="text-display-medium font-headline font-semi-bold text-neutral-900 mb-3">
-                ${totalValue.toLocaleString()}
-              </p>
-              <div className="flex items-center justify-center gap-2 mb-6">
-                <TrendingUp className="w-6 h-6 text-positive" />
-                <span className="text-positive text-title-large font-medium">+2.4%</span>
+        {/* Portfolio Value Display - Always show */}
+        <div className="text-center mb-12">
+          <div className="mb-6">
+            <p className="text-display-medium font-headline font-semi-bold text-neutral-900 mb-3">
+              ${totalValue.toLocaleString()}
+            </p>
+            <div className="flex items-center justify-center gap-2 mb-6">
+              <TrendingUp className={`w-6 h-6 ${getGrowthColor(totalGrowth)}`} />
+              <span className={`${getGrowthColor(totalGrowth)} text-title-large font-medium`}>
+                {totalGrowth >= 0 ? '+' : ''}{totalGrowth.toFixed(1)}%
+              </span>
+            </div>
+            
+            {/* Smooth Wave Chart */}
+            <div className="max-w-lg mx-auto mb-4">
+              <div className="h-32 bg-gradient-to-b from-neutral-50 to-neutral-100 rounded-lg p-4 relative overflow-hidden">
+                <svg 
+                  className="absolute inset-0 w-full h-full" 
+                  viewBox="0 0 400 128" 
+                  preserveAspectRatio="none"
+                >
+                  <defs>
+                    <linearGradient id="waveGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" stopColor="#044AA7" stopOpacity="0.3" />
+                      <stop offset="100%" stopColor="#044AA7" stopOpacity="0.05" />
+                    </linearGradient>
+                  </defs>
+                  
+                  <path
+                    d="M0,90 C50,85 100,75 150,70 C200,65 250,60 300,55 C350,50 380,45 400,40 L400,128 L0,128 Z"
+                    fill="url(#waveGradient)"
+                    className="transition-all duration-1000 ease-out"
+                  />
+                  
+                  <path
+                    d="M0,90 C50,85 100,75 150,70 C200,65 250,60 300,55 C350,50 380,45 400,40"
+                    fill="none"
+                    stroke="#044AA7"
+                    strokeWidth="2"
+                    className="transition-all duration-1000 ease-out"
+                  />
+                </svg>
               </div>
               
-              {/* Smooth Wave Chart */}
-              <div className="max-w-lg mx-auto mb-4">
-                <div className="h-32 bg-gradient-to-b from-neutral-50 to-neutral-100 rounded-lg p-4 relative overflow-hidden">
-                  <svg 
-                    className="absolute inset-0 w-full h-full" 
-                    viewBox="0 0 400 128" 
-                    preserveAspectRatio="none"
-                  >
-                    <defs>
-                      <linearGradient id="waveGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stopColor="#044AA7" stopOpacity="0.3" />
-                        <stop offset="100%" stopColor="#044AA7" stopOpacity="0.05" />
-                      </linearGradient>
-                    </defs>
-                    
-                    <path
-                      d="M0,90 C50,85 100,75 150,70 C200,65 250,60 300,55 C350,50 380,45 400,40 L400,128 L0,128 Z"
-                      fill="url(#waveGradient)"
-                      className="transition-all duration-1000 ease-out"
-                    />
-                    
-                    <path
-                      d="M0,90 C50,85 100,75 150,70 C200,65 250,60 300,55 C350,50 380,45 400,40"
-                      fill="none"
-                      stroke="#044AA7"
-                      strokeWidth="2"
-                      className="transition-all duration-1000 ease-out"
-                    />
-                  </svg>
-                </div>
-                
-                {/* Timeline Buttons */}
-                <div className="flex justify-center mt-4">
-                  <div className="bg-neutral-100 rounded-full p-1 flex gap-1">
-                    {timeframes.map((timeframe) => (
-                      <button
-                        key={timeframe}
-                        onClick={() => setSelectedTimeframe(timeframe)}
-                        className={`px-4 py-2 rounded-full text-body-small font-medium transition-all ${
-                          selectedTimeframe === timeframe
-                            ? 'bg-neutral-900 text-white shadow-sm'
-                            : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-200'
-                        }`}
-                      >
-                        {timeframe}
-                      </button>
-                    ))}
-                  </div>
+              {/* Timeline Buttons */}
+              <div className="flex justify-center mt-4">
+                <div className="bg-neutral-100 rounded-full p-1 flex gap-1">
+                  {timeframes.map((timeframe) => (
+                    <button
+                      key={timeframe}
+                      onClick={() => setSelectedTimeframe(timeframe)}
+                      className={`px-4 py-2 rounded-full text-body-small font-medium transition-all ${
+                        selectedTimeframe === timeframe
+                          ? 'bg-neutral-900 text-white shadow-sm'
+                          : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-200'
+                      }`}
+                    >
+                      {timeframe}
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>
           </div>
-        )}
+        </div>
 
         {/* Error Display */}
         {error && (
@@ -202,13 +211,13 @@ export const Home: React.FC = () => {
                       <p className="text-headline-small font-headline font-semi-bold text-neutral-900 mb-1">
                         ${portfolioItem.balance > 0 ? portfolioItem.balance.toLocaleString() : '0'}
                       </p>
-                      {portfolioItem.balance > 0 && (
-                        <div className="flex items-center gap-2">
-                          <TrendingUp className="w-4 h-4 text-positive" />
-                          <span className="text-positive text-label-large font-medium">+{portfolioItem.growth || 0}%</span>
-                          <span className="text-neutral-500 text-body-small">Today</span>
-                        </div>
-                      )}
+                      <div className="flex items-center gap-2">
+                        <TrendingUp className={`w-4 h-4 ${getGrowthColor(portfolioItem.growth || 0)}`} />
+                        <span className={`${getGrowthColor(portfolioItem.growth || 0)} text-label-large font-medium`}>
+                          {(portfolioItem.growth || 0) >= 0 ? '+' : ''}{(portfolioItem.growth || 0).toFixed(1)}%
+                        </span>
+                        <span className="text-neutral-500 text-body-small">Today</span>
+                      </div>
                     </div>
 
                     {/* Expected Return */}

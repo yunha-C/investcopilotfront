@@ -432,26 +432,27 @@ function convertApiResponseToPortfolio(apiResponse: PortfolioResponse, answers?:
 }
 
 function getAssetColor(assetClass: string, index: number): string {
+  // Use the provided color codes from the attachment
   const colorMap: Record<string, string> = {
-    'stocks': '#424242',
-    'bonds': '#616161',
-    'real estate': '#757575',
-    'commodities': '#9e9e9e',
-    'cash': '#bdbdbd',
-    'international': '#e0e0e0',
-    'growth': '#424242',
-    'value': '#616161',
-    'small cap': '#757575',
-    'large cap': '#424242',
-    'emerging markets': '#9e9e9e',
-    'developed markets': '#757575',
-    'government bonds': '#616161',
-    'corporate bonds': '#757575',
-    'reits': '#9e9e9e',
-    'technology': '#424242',
-    'healthcare': '#616161',
-    'energy': '#757575',
-    'financial': '#9e9e9e',
+    'stocks': '#042963',
+    'bonds': '#044AA7', 
+    'real estate': '#065AC7',
+    'commodities': '#6699DB',
+    'cash': '#CBDCF3',
+    'international': '#065AC7',
+    'growth': '#042963',
+    'value': '#044AA7',
+    'small cap': '#6699DB',
+    'large cap': '#042963',
+    'emerging markets': '#6699DB',
+    'developed markets': '#065AC7',
+    'government bonds': '#044AA7',
+    'corporate bonds': '#065AC7',
+    'reits': '#6699DB',
+    'technology': '#042963',
+    'healthcare': '#044AA7',
+    'energy': '#065AC7',
+    'financial': '#6699DB',
   };
   
   // Try to match asset class name
@@ -462,44 +463,44 @@ function getAssetColor(assetClass: string, index: number): string {
     }
   }
   
-  // Fallback to index-based colors
-  const defaultColors = ['#424242', '#616161', '#757575', '#9e9e9e', '#bdbdbd', '#e0e0e0'];
+  // Fallback to index-based colors using the provided palette
+  const defaultColors = ['#042963', '#044AA7', '#065AC7', '#6699DB', '#CBDCF3'];
   return defaultColors[index % defaultColors.length];
 }
 
 function generateDefaultAllocation(riskTolerance?: string): Portfolio['allocation'] {
-  // Generate default allocation based on risk tolerance
+  // Generate default allocation based on risk tolerance using the new color palette
   switch (riskTolerance) {
     case 'very-low':
       return [
-        { name: 'Government Bonds', percentage: 60, color: '#424242' },
-        { name: 'Corporate Bonds', percentage: 25, color: '#616161' },
-        { name: 'Cash', percentage: 15, color: '#757575' },
+        { name: 'Government Bonds', percentage: 60, color: '#044AA7' },
+        { name: 'Corporate Bonds', percentage: 25, color: '#065AC7' },
+        { name: 'Cash', percentage: 15, color: '#CBDCF3' },
       ];
     case 'low':
       return [
-        { name: 'Bonds', percentage: 50, color: '#424242' },
-        { name: 'Large Cap Stocks', percentage: 30, color: '#616161' },
-        { name: 'Cash', percentage: 20, color: '#757575' },
+        { name: 'Bonds', percentage: 50, color: '#044AA7' },
+        { name: 'Large Cap Stocks', percentage: 30, color: '#042963' },
+        { name: 'Cash', percentage: 20, color: '#CBDCF3' },
       ];
     case 'high':
       return [
-        { name: 'Growth Stocks', percentage: 60, color: '#424242' },
-        { name: 'International Stocks', percentage: 25, color: '#616161' },
-        { name: 'Bonds', percentage: 15, color: '#757575' },
+        { name: 'Growth Stocks', percentage: 60, color: '#042963' },
+        { name: 'International Stocks', percentage: 25, color: '#065AC7' },
+        { name: 'Bonds', percentage: 15, color: '#044AA7' },
       ];
     case 'very-high':
       return [
-        { name: 'Growth Stocks', percentage: 70, color: '#424242' },
-        { name: 'Small Cap Stocks', percentage: 20, color: '#616161' },
-        { name: 'Emerging Markets', percentage: 10, color: '#757575' },
+        { name: 'Growth Stocks', percentage: 70, color: '#042963' },
+        { name: 'Small Cap Stocks', percentage: 20, color: '#6699DB' },
+        { name: 'Emerging Markets', percentage: 10, color: '#CBDCF3' },
       ];
     default: // moderate
       return [
-        { name: 'Large Cap Stocks', percentage: 40, color: '#424242' },
-        { name: 'Bonds', percentage: 30, color: '#616161' },
-        { name: 'International Stocks', percentage: 20, color: '#757575' },
-        { name: 'REITs', percentage: 10, color: '#9e9e9e' },
+        { name: 'Large Cap Stocks', percentage: 40, color: '#042963' },
+        { name: 'Bonds', percentage: 30, color: '#044AA7' },
+        { name: 'International Stocks', percentage: 20, color: '#065AC7' },
+        { name: 'REITs', percentage: 10, color: '#6699DB' },
       ];
   }
 }
@@ -597,59 +598,59 @@ function generatePortfolioFromAnswers(answers: QuestionnaireAnswers): Portfolio 
     riskLevel = 'Very High';
   }
 
-  // Generate portfolio based on comprehensive analysis with neutral color palette
+  // Generate portfolio based on comprehensive analysis with new color palette
   if (answers.goal === 'preserve' || riskScore <= 2.0) {
     allocation = [
-      { name: 'Government Bonds', percentage: 50, color: '#424242' },
-      { name: 'Corporate Bonds', percentage: 25, color: '#616161' },
-      { name: 'Large Cap Dividend Stocks', percentage: 15, color: '#757575' },
-      { name: 'Cash & Money Market', percentage: 10, color: '#9e9e9e' },
+      { name: 'Government Bonds', percentage: 50, color: '#044AA7' },
+      { name: 'Corporate Bonds', percentage: 25, color: '#065AC7' },
+      { name: 'Large Cap Dividend Stocks', percentage: 15, color: '#042963' },
+      { name: 'Cash & Money Market', percentage: 10, color: '#CBDCF3' },
     ];
     name = 'Ultra Conservative Preservation';
     expectedReturn = 3.8;
     reasoning = `Based on your very conservative risk profile (Risk Score: ${riskScore}/5), this portfolio prioritizes capital preservation above all else. With 75% in bonds and only 15% in stable dividend-paying stocks, this allocation minimizes volatility while providing modest growth potential. Your ${answers.timeHorizon} time horizon and ${answers.experience} experience level support this cautious approach.`;
   } else if (answers.goal === 'income' || (riskScore <= 3.0 && answers.goal !== 'wealth-growth')) {
     allocation = [
-      { name: 'Dividend Growth Stocks', percentage: 35, color: '#424242' },
-      { name: 'REITs', percentage: 25, color: '#616161' },
-      { name: 'High-Grade Corporate Bonds', percentage: 25, color: '#757575' },
-      { name: 'Utility Stocks', percentage: 10, color: '#9e9e9e' },
-      { name: 'Preferred Shares', percentage: 5, color: '#bdbdbd' },
+      { name: 'Dividend Growth Stocks', percentage: 35, color: '#042963' },
+      { name: 'REITs', percentage: 25, color: '#6699DB' },
+      { name: 'High-Grade Corporate Bonds', percentage: 25, color: '#044AA7' },
+      { name: 'Utility Stocks', percentage: 10, color: '#065AC7' },
+      { name: 'Preferred Shares', percentage: 5, color: '#CBDCF3' },
     ];
     name = 'Income-Focused Strategy';
     expectedReturn = 5.2;
     reasoning = `Your focus on income generation combined with a moderate risk tolerance (Risk Score: ${riskScore}/5) suggests this income-focused portfolio. The 35% allocation to dividend growth stocks provides both income and modest capital appreciation, while REITs (25%) offer real estate exposure and attractive yields. Your ${answers.netWorth} net worth and ${answers.income} income level support this balanced approach to income generation.`;
   } else if (riskScore >= 4.0 && answers.timeHorizon === '10+') {
     allocation = [
-      { name: 'Growth Stocks', percentage: 40, color: '#424242' },
-      { name: 'International Developed Markets', percentage: 20, color: '#616161' },
-      { name: 'Small Cap Growth', percentage: 15, color: '#757575' },
-      { name: 'Emerging Markets', percentage: 10, color: '#9e9e9e' },
-      { name: 'Technology Sector ETF', percentage: 10, color: '#bdbdbd' },
-      { name: 'Bonds', percentage: 5, color: '#e0e0e0' },
+      { name: 'Growth Stocks', percentage: 40, color: '#042963' },
+      { name: 'International Developed Markets', percentage: 20, color: '#044AA7' },
+      { name: 'Small Cap Growth', percentage: 15, color: '#065AC7' },
+      { name: 'Emerging Markets', percentage: 10, color: '#6699DB' },
+      { name: 'Technology Sector ETF', percentage: 10, color: '#042963' },
+      { name: 'Bonds', percentage: 5, color: '#CBDCF3' },
     ];
     name = 'Aggressive Growth Strategy';
     expectedReturn = 8.7;
     reasoning = `Your high risk tolerance (Risk Score: ${riskScore}/5) and long-term investment horizon (${answers.timeHorizon}) enable this aggressive growth strategy. With 95% equity allocation, this portfolio maximizes growth potential through domestic growth stocks (40%) and international diversification. Your ${answers.experience} experience level and ${answers.netWorth} net worth provide the foundation for this sophisticated approach.`;
   } else if (riskScore >= 3.0) {
     allocation = [
-      { name: 'Large Cap Blend', percentage: 30, color: '#424242' },
-      { name: 'International Stocks', percentage: 25, color: '#616161' },
-      { name: 'Intermediate-Term Bonds', percentage: 20, color: '#757575' },
-      { name: 'Small Cap Value', percentage: 10, color: '#9e9e9e' },
-      { name: 'REITs', percentage: 10, color: '#bdbdbd' },
-      { name: 'Commodities', percentage: 5, color: '#e0e0e0' },
+      { name: 'Large Cap Blend', percentage: 30, color: '#042963' },
+      { name: 'International Stocks', percentage: 25, color: '#044AA7' },
+      { name: 'Intermediate-Term Bonds', percentage: 20, color: '#065AC7' },
+      { name: 'Small Cap Value', percentage: 10, color: '#6699DB' },
+      { name: 'REITs', percentage: 10, color: '#6699DB' },
+      { name: 'Commodities', percentage: 5, color: '#CBDCF3' },
     ];
     name = 'Balanced Growth & Income';
     expectedReturn = 6.8;
     reasoning = `Your moderate-to-high risk profile (Risk Score: ${riskScore}/5) supports this balanced approach combining growth and income. The 65% equity allocation provides growth potential while 20% bonds offer stability. International diversification (25%) and alternative investments (15%) enhance risk-adjusted returns. This strategy aligns with your ${answers.timeHorizon} time horizon and ${answers.liquidityNeeds} liquidity needs.`;
   } else {
     allocation = [
-      { name: 'Large Cap Value', percentage: 35, color: '#424242' },
-      { name: 'Intermediate Bonds', percentage: 30, color: '#616161' },
-      { name: 'International Developed', percentage: 15, color: '#757575' },
-      { name: 'Dividend Stocks', percentage: 10, color: '#9e9e9e' },
-      { name: 'Short-Term Bonds', percentage: 10, color: '#bdbdbd' },
+      { name: 'Large Cap Value', percentage: 35, color: '#042963' },
+      { name: 'Intermediate Bonds', percentage: 30, color: '#044AA7' },
+      { name: 'International Developed', percentage: 15, color: '#065AC7' },
+      { name: 'Dividend Stocks', percentage: 10, color: '#6699DB' },
+      { name: 'Short-Term Bonds', percentage: 10, color: '#CBDCF3' },
     ];
     name = 'Conservative Balanced';
     expectedReturn = 5.5;

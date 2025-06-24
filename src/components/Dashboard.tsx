@@ -79,6 +79,13 @@ export const Dashboard: React.FC = () => {
 
   const hasValue = portfolio.balance > 0;
 
+  // Determine growth color based on value
+  const getGrowthColor = (growth: number) => {
+    if (growth > 0) return 'text-positive';
+    if (growth < 0) return 'text-negative';
+    return 'text-neutral-600'; // Neutral color for 0 growth
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-white/50 via-white/30 to-white/20">
       <div className="px-4 py-8">
@@ -101,13 +108,6 @@ export const Dashboard: React.FC = () => {
                   Portfolio Dashboard & Analytics
                 </p>
               </div>
-              <button
-                onClick={handleDeletePortfolio}
-                className="flex items-center gap-2 px-4 py-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
-              >
-                <Trash2 className="w-4 h-4" />
-                <span className="text-body-medium">Delete Portfolio</span>
-              </button>
             </div>
           </div>
 
@@ -123,8 +123,10 @@ export const Dashboard: React.FC = () => {
                         ${portfolio.balance.toLocaleString()}
                       </p>
                       <div className="flex items-center gap-2 mt-2">
-                        <TrendingUp className="w-4 h-4 text-positive" />
-                        <span className="text-positive text-label-large font-medium">+{portfolio.growth}%</span>
+                        <TrendingUp className={`w-4 h-4 ${getGrowthColor(portfolio.growth || 0)}`} />
+                        <span className={`${getGrowthColor(portfolio.growth || 0)} text-label-large font-medium`}>
+                          {(portfolio.growth || 0) >= 0 ? '+' : ''}{(portfolio.growth || 0).toFixed(1)}%
+                        </span>
                         <span className="text-neutral-500 text-body-small">+$320.00</span>
                       </div>
                     </>
@@ -175,9 +177,9 @@ export const Dashboard: React.FC = () => {
                 <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-4">
                   Asset Breakdown
                 </h3>
-                <div className="space-y-3">
+                <div className="space-y-1">
                   {portfolio.allocation.map((asset, index) => (
-                    <div key={index} className="flex items-center justify-between py-2">
+                    <div key={index} className="flex items-center justify-between py-1">
                       <div className="flex items-center gap-3">
                         <div 
                           className="w-4 h-4 rounded-full" 
@@ -211,7 +213,7 @@ export const Dashboard: React.FC = () => {
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-6">
+          <div className="grid lg:grid-cols-2 gap-6 mb-8">
             {/* Fee Breakdown */}
             <div className="bg-white rounded-lg shadow-elevation-1 border border-neutral-200 p-6">
               <div className="flex items-center gap-3 mb-4">
@@ -291,6 +293,17 @@ export const Dashboard: React.FC = () => {
                 </div>
               )}
             </div>
+          </div>
+
+          {/* Delete Portfolio Button - At the bottom */}
+          <div className="flex justify-center">
+            <button
+              onClick={handleDeletePortfolio}
+              className="flex items-center gap-2 px-6 py-3 text-red-600 hover:text-red-700 hover:bg-red-50 border border-red-300 rounded-lg transition-colors"
+            >
+              <Trash2 className="w-4 h-4" />
+              <span className="text-body-medium">Delete Portfolio</span>
+            </button>
           </div>
 
           {/* Add Value Modal */}
