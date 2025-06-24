@@ -1,4 +1,4 @@
-const API_BASE_URL = 'https://investment-api.duckdns.org';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://investment-api.duckdns.org';
 
 export interface CreatePortfolioRequest {
   name: string;
