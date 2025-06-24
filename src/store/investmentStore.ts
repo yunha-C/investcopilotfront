@@ -586,7 +586,7 @@ function generatePortfolioFromAnswers(answers: QuestionnaireAnswers): Portfolio 
   }
 
   return {
-    id: Date.now().toString(),
+    id: `portfolio_${Date.now()}`, // Use simple ID for internal tracking only
     name: generatePortfolioName(answers), // Use the clean name function
     allocation,
     reasoning,
