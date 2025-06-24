@@ -50,8 +50,8 @@ export interface ApiError {
 
 class AuthService {
   private getAuthHeaders(): Record<string, string> {
-    const token = localStorage.getItem('investcopilot_token');
-    const tokenType = localStorage.getItem('investcopilot_token_type') || 'Bearer';
+    const token = localStorage.getItem('aivestie_token');
+    const tokenType = localStorage.getItem('aivestie_token_type') || 'Bearer';
     return {
       'Content-Type': 'application/json',
       ...(token && { 'Authorization': `${tokenType} ${token}` }),
@@ -176,15 +176,15 @@ class AuthService {
         tokenToStore = data.token.accessToken;
         // Also store token expiry
         const expiresAt = Date.now() + (data.token.expiresIn * 1000);
-        localStorage.setItem('investcopilot_token_expires', expiresAt.toString());
-        localStorage.setItem('investcopilot_token_type', data.token.tokenType);
+        localStorage.setItem('aivestie_token_expires', expiresAt.toString());
+        localStorage.setItem('aivestie_token_type', data.token.tokenType);
       } else if (data.access_token) {
         // Old token structure
         tokenToStore = data.access_token;
       }
       
       if (tokenToStore) {
-        localStorage.setItem('investcopilot_token', tokenToStore);
+        localStorage.setItem('aivestie_token', tokenToStore);
         console.log('Token stored successfully');
       } else {
         console.warn('No token found in login response');
@@ -275,7 +275,7 @@ class AuthService {
       
       // Store the token if present
       if (data.access_token) {
-        localStorage.setItem('investcopilot_token', data.access_token);
+        localStorage.setItem('aivestie_token', data.access_token);
       } else {
         console.warn('No access_token in registration response - user may need to login separately');
       }
@@ -316,20 +316,20 @@ class AuthService {
     const data = await response.json();
     
     // Update the stored token
-    localStorage.setItem('investcopilot_token', data.access_token);
+    localStorage.setItem('aivestie_token', data.access_token);
     
     return data;
   }
 
   logout(): void {
-    localStorage.removeItem('investcopilot_token');
-    localStorage.removeItem('investcopilot_user');
-    localStorage.removeItem('investcopilot_token_expires');
-    localStorage.removeItem('investcopilot_token_type');
+    localStorage.removeItem('aivestie_token');
+    localStorage.removeItem('aivestie_user');
+    localStorage.removeItem('aivestie_token_expires');
+    localStorage.removeItem('aivestie_token_type');
   }
 
   getStoredToken(): string | null {
-    return localStorage.getItem('investcopilot_token');
+    return localStorage.getItem('aivestie_token');
   }
 
   isTokenExpired(token: string): boolean {
@@ -357,12 +357,12 @@ class AuthService {
     }
 
     // Update the stored user data
-    const storedUser = localStorage.getItem('investcopilot_user');
+    const storedUser = localStorage.getItem('aivestie_user');
     if (storedUser) {
       try {
         const userData = JSON.parse(storedUser);
         userData.hasCompletedInvestmentProfile = completed;
-        localStorage.setItem('investcopilot_user', JSON.stringify(userData));
+        localStorage.setItem('aivestie_user', JSON.stringify(userData));
       } catch (error) {
         console.warn('Failed to update stored user data:', error);
       }

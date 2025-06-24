@@ -185,7 +185,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <h1 className="text-headline-large font-headline font-semi-bold text-neutral-900 mb-2">
-            InvestCopilot
+            aivestie
           </h1>
           <p className="text-body-large text-neutral-600">
             Investment agent powered by AI

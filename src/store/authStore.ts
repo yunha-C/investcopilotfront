@@ -74,7 +74,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       }
       
       // Store user data
-      localStorage.setItem('investcopilot_user', JSON.stringify(userData));
+      localStorage.setItem('aivestie_user', JSON.stringify(userData));
       
       set({ 
         user: userData, 
@@ -160,7 +160,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       }
       
       // Store user data
-      localStorage.setItem('investcopilot_user', JSON.stringify(userData));
+      localStorage.setItem('aivestie_user', JSON.stringify(userData));
       
       set({ 
         user: userData, 
@@ -192,7 +192,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   checkAuthStatus: async () => {
     const token = authService.getStoredToken();
-    const storedUser = localStorage.getItem('investcopilot_user');
+    const storedUser = localStorage.getItem('aivestie_user');
     
     if (!token || !storedUser) {
       set({ isAuthenticated: false, user: null });
@@ -213,7 +213,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           updatedAt: response.user.updatedAt,
         };
         
-        localStorage.setItem('investcopilot_user', JSON.stringify(userData));
+        localStorage.setItem('aivestie_user', JSON.stringify(userData));
         set({ user: userData, isAuthenticated: true });
       } catch (error) {
         // Refresh failed, clear auth state
@@ -239,7 +239,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           updatedAt: freshUserData.updatedAt,
         };
         
-        localStorage.setItem('investcopilot_user', JSON.stringify(updatedUserData));
+        localStorage.setItem('aivestie_user', JSON.stringify(updatedUserData));
         set({ user: updatedUserData, isAuthenticated: true });
       } catch (apiError) {
         // API call failed, but token exists, use stored data

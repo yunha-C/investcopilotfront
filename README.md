@@ -1,4 +1,4 @@
-# InvestCopilot Frontend
+# aivestie Frontend
 
 A modern React-based investment portfolio management application that helps users create personalized investment portfolios through an interactive questionnaire and provides real-time portfolio tracking and analytics.
 
@@ -34,7 +34,7 @@ Before running this project, make sure you have the following installed:
 1. **Clone the repository**
    ```bash
    git clone <repository-url>
-   cd investcopilotfront
+   cd aivestie
    ```
 
 2. **Install dependencies**
