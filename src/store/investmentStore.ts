@@ -42,7 +42,6 @@ export interface Portfolio {
   createdAt?: string;
   updatedAt?: string;
   userId?: string;
-  // Track if saved to database
   savedToDatabase?: boolean;
 }
 
@@ -62,6 +61,7 @@ interface InvestmentState {
   currentStep: 'home' | 'questionnaire' | 'results' | 'dashboard' | 'portfolio-details' | 'insight-analysis';
   questionnaire: QuestionnaireAnswers | null;
   portfolio: Portfolio | null;
+  activePortfolio: Portfolio | null; // Currently selected portfolio for dashboard
   portfolios: Portfolio[];
   insights: Insight[];
   isLoading: boolean;
@@ -74,7 +74,9 @@ interface InvestmentState {
   savePortfolioToDatabase: (portfolio: Portfolio) => Promise<void>;
   loadUserPortfolios: (userId: string) => Promise<void>;
   addInsight: (url: string) => void;
-  updatePortfolioBalance: (balance: number) => void;
+  updatePortfolioBalance: (portfolioId: string, balance: number) => void;
+  deletePortfolio: (portfolioId: string) => void;
+  setActivePortfolio: (portfolio: Portfolio) => void;
   clearError: () => void;
   setError: (error: string) => void;
 }
@@ -83,6 +85,7 @@ export const useInvestmentStore = create<InvestmentState>((set, get) => ({
   currentStep: 'home',
   questionnaire: null,
   portfolio: null,
+  activePortfolio: null,
   portfolios: [],
   insights: [],
   isLoading: false,
@@ -232,29 +235,83 @@ export const useInvestmentStore = create<InvestmentState>((set, get) => ({
   },
   
   addInsight: (url) => {
-    const { insights, portfolio } = get();
-    const newInsight = generateInsightFromUrl(url, portfolio);
+    const { insights, activePortfolio } = get();
+    const newInsight = generateInsightFromUrl(url, activePortfolio);
     const updatedInsights = [...insights, newInsight];
     
-    // If the insight suggests rebalancing, update the portfolio
-    if (newInsight.portfolioChange) {
+    // If the insight suggests rebalancing, update the active portfolio
+    if (newInsight.portfolioChange && activePortfolio) {
       const updatedPortfolio = { 
-        ...portfolio!, 
+        ...activePortfolio, 
         allocation: newInsight.portfolioChange.after 
       };
-      set({ insights: updatedInsights, portfolio: updatedPortfolio });
+      
+      // Update both activePortfolio and the portfolio in portfolios array
+      const { portfolios } = get();
+      const updatedPortfolios = portfolios.map(p => 
+        p.id === activePortfolio.id ? updatedPortfolio : p
+      );
+      
+      set({ 
+        insights: updatedInsights, 
+        activePortfolio: updatedPortfolio,
+        portfolios: updatedPortfolios
+      });
     } else {
       set({ insights: updatedInsights });
     }
   },
   
-  updatePortfolioBalance: (balance) => {
-    const { portfolio } = get();
-    if (portfolio) {
-      const monthlyFee = (balance * 0.0001) / 12; // 0.01% annually, charged monthly
-      const growth = balance > 10000 ? ((balance - 10000) / 10000 * 100).toFixed(1) : '0.0';
-      set({ portfolio: { ...portfolio, balance, monthlyFee, growth: parseFloat(growth) } });
+  updatePortfolioBalance: (portfolioId, balance) => {
+    const { portfolios, activePortfolio } = get();
+    
+    // Update the specific portfolio in the portfolios array
+    const updatedPortfolios = portfolios.map(p => {
+      if (p.id === portfolioId) {
+        const monthlyFee = (balance * 0.0001) / 12; // 0.01% annually, charged monthly
+        const growth = balance > 10000 ? ((balance - 10000) / 10000 * 100) : 0;
+        return { 
+          ...p, 
+          balance, 
+          monthlyFee, 
+          growth: parseFloat(growth.toFixed(1)) 
+        };
+      }
+      return p;
+    });
+    
+    // Update activePortfolio if it matches the updated portfolio
+    let updatedActivePortfolio = activePortfolio;
+    if (activePortfolio && activePortfolio.id === portfolioId) {
+      updatedActivePortfolio = updatedPortfolios.find(p => p.id === portfolioId) || activePortfolio;
     }
+    
+    set({ 
+      portfolios: updatedPortfolios,
+      activePortfolio: updatedActivePortfolio
+    });
+  },
+
+  deletePortfolio: (portfolioId) => {
+    const { portfolios, activePortfolio } = get();
+    
+    // Remove portfolio from portfolios array
+    const updatedPortfolios = portfolios.filter(p => p.id !== portfolioId);
+    
+    // Clear activePortfolio if it was the deleted one
+    let updatedActivePortfolio = activePortfolio;
+    if (activePortfolio && activePortfolio.id === portfolioId) {
+      updatedActivePortfolio = null;
+    }
+    
+    set({ 
+      portfolios: updatedPortfolios,
+      activePortfolio: updatedActivePortfolio
+    });
+  },
+
+  setActivePortfolio: (portfolio) => {
+    set({ activePortfolio: portfolio });
   },
   
   clearError: () => set({ error: null }),

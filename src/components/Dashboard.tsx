@@ -1,29 +1,58 @@
 import React, { useState } from 'react';
-import { TrendingUp, Plus, ExternalLink, ChevronRight, Calculator, ArrowLeft, Info, Shield } from 'lucide-react';
+import { TrendingUp, Plus, ExternalLink, ArrowLeft, Info, Shield, Calculator, Trash2 } from 'lucide-react';
 import { useInvestmentStore } from '../store/investmentStore';
 import { PortfolioChart } from './PortfolioChart';
 
 export const Dashboard: React.FC = () => {
-  const { portfolio, insights, setCurrentStep } = useInvestmentStore();
+  const { activePortfolio, insights, setCurrentStep, deletePortfolio } = useInvestmentStore();
   const [showInsightForm, setShowInsightForm] = useState(false);
   const [insightUrl, setInsightUrl] = useState('');
   const [portfolioValue, setPortfolioValue] = useState('');
   const [showAddValueForm, setShowAddValueForm] = useState(false);
 
-  if (!portfolio) return null;
+  // Use activePortfolio instead of portfolio
+  const portfolio = activePortfolio;
+
+  if (!portfolio) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-white/50 via-white/30 to-white/20">
+        <div className="px-4 py-8">
+          <div className="max-w-6xl mx-auto">
+            <button
+              onClick={() => setCurrentStep('home')}
+              className="flex items-center gap-2 text-neutral-900 hover:text-neutral-700 mb-4 transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span className="text-body-medium">Back to Home</span>
+            </button>
+            
+            <div className="text-center py-16">
+              <h1 className="text-headline-large font-headline font-semi-bold text-neutral-900 mb-4">
+                No Portfolio Selected
+              </h1>
+              <p className="text-body-large text-neutral-600 mb-8">
+                Please select a portfolio from the home page to view its dashboard.
+              </p>
+              <button
+                onClick={() => setCurrentStep('home')}
+                className="bg-neutral-900 text-white py-3 px-6 rounded-lg text-label-large font-medium hover:bg-neutral-800 transition-colors"
+              >
+                Go to Home
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const handleAddInsight = (e: React.FormEvent) => {
     e.preventDefault();
     if (insightUrl.trim()) {
-      // Navigate to insight analysis page instead of directly adding
       setCurrentStep('insight-analysis');
       setInsightUrl('');
       setShowInsightForm(false);
     }
-  };
-
-  const handleViewPortfolio = () => {
-    setCurrentStep('portfolio-details');
   };
 
   const handleBackToHome = () => {
@@ -34,11 +63,17 @@ export const Dashboard: React.FC = () => {
     e.preventDefault();
     const value = parseFloat(portfolioValue.replace(/[,$]/g, ''));
     if (value && value > 0) {
-      // Update portfolio balance with the new value
       const { updatePortfolioBalance } = useInvestmentStore.getState();
-      updatePortfolioBalance(value);
+      updatePortfolioBalance(portfolio.id, value);
       setPortfolioValue('');
       setShowAddValueForm(false);
+    }
+  };
+
+  const handleDeletePortfolio = () => {
+    if (confirm(`Are you sure you want to delete "${portfolio.name}"? This action cannot be undone.`)) {
+      deletePortfolio(portfolio.id);
+      setCurrentStep('home');
     }
   };
 
@@ -57,30 +92,27 @@ export const Dashboard: React.FC = () => {
               <span className="text-body-medium">Back to Home</span>
             </button>
             
-            <h1 className="text-headline-large font-headline font-semi-bold text-neutral-900 mb-2">
-              Investment Dashboard
-            </h1>
-            <p className="text-body-large text-neutral-600">
-              Monitor your AI-managed portfolio performance
-            </p>
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-headline-large font-headline font-semi-bold text-neutral-900 mb-2">
+                  {portfolio.name}
+                </h1>
+                <p className="text-body-large text-neutral-600">
+                  Portfolio Dashboard & Analytics
+                </p>
+              </div>
+              <button
+                onClick={handleDeletePortfolio}
+                className="flex items-center gap-2 px-4 py-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
+              >
+                <Trash2 className="w-4 h-4" />
+                <span className="text-body-medium">Delete Portfolio</span>
+              </button>
+            </div>
           </div>
 
           {/* Main Portfolio Overview */}
           <div className="bg-white rounded-lg shadow-elevation-1 border border-neutral-200 p-8 mb-8">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h2 className="text-title-large font-headline font-semi-bold text-neutral-900">{portfolio.name}</h2>
-                <p className="text-body-medium text-neutral-600">Portfolio Overview</p>
-              </div>
-              <button
-                onClick={handleViewPortfolio}
-                className="flex items-center gap-2 text-neutral-600 hover:text-neutral-800 transition-colors"
-              >
-                <span className="text-body-small">View Details</span>
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
-            
             <div className="grid lg:grid-cols-3 gap-8">
               {/* Portfolio Value and Performance */}
               <div>
