@@ -209,7 +209,7 @@ export const Home: React.FC = () => {
         <div className="grid md:grid-cols-3 gap-8">
           <div className="text-center">
             <div className="p-4 bg-neutral-100 rounded-full w-fit mx-auto mb-4">
-              <BarChart3 className="w-8 h-8 text-neutral-700" />
+              <BarChart3 className="w-8 h-8 text-neutral-700" strokeWidth={0} fill="currentColor" />
             </div>
             <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-3">
               Portfolio Management
@@ -221,7 +221,7 @@ export const Home: React.FC = () => {
 
           <div className="text-center">
             <div className="p-4 bg-neutral-100 rounded-full w-fit mx-auto mb-4">
-              <Activity className="w-8 h-8 text-neutral-700" />
+              <Activity className="w-8 h-8 text-neutral-700" strokeWidth={0} fill="currentColor" />
             </div>
             <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-3">
               Performance Tracking
@@ -233,7 +233,7 @@ export const Home: React.FC = () => {
 
           <div className="text-center">
             <div className="p-4 bg-neutral-100 rounded-full w-fit mx-auto mb-4">
-              <Zap className="w-8 h-8 text-neutral-700" />
+              <Zap className="w-8 h-8 text-neutral-700" strokeWidth={0} fill="currentColor" />
             </div>
             <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-3">
               AI Simulation
