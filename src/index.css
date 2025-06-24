@@ -31,8 +31,8 @@
     top: -1120px;
     left: -700px;
     background: radial-gradient(ellipse 50% 50% at 50% 50%, 
-        #BAC3C4 0%, 
-        #DDE2E3E5 16%, 
+        #8B9496 0%, 
+        #A6AEAF 16%, 
         #DDE2E300 100%);
 }
 
@@ -43,8 +43,8 @@
     bottom: -1120px;
     right: -700px;
     background: radial-gradient(ellipse 50% 50% at 50% 50%, 
-        #CBD3D4 0%, 
-        #DDE2E3E5 7%, 
+        #9BA5A6 0%, 
+        #B8C1C2 7%, 
         #DDE2E300 100%);
 }
 
