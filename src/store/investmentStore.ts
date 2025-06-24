@@ -283,14 +283,8 @@ function generatePortfolioName(answers: QuestionnaireAnswers): string {
   const goalName = goalNames[answers.goal as keyof typeof goalNames] || 'Custom Portfolio';
   const riskLevel = riskLevels[answers.riskTolerance as keyof typeof riskLevels] || 'Balanced';
   
-  // Add timestamp with milliseconds to ensure unique portfolio names
-  const now = new Date();
-  const timestamp = now.toISOString()
-    .slice(0, 19)
-    .replace(/[-:]/g, '')
-    .replace('T', '_') + '_' + now.getMilliseconds().toString().padStart(3, '0');
-  
-  return `${riskLevel} ${goalName} ${timestamp}`;
+  // Return clean portfolio name without timestamp
+  return `${riskLevel} ${goalName}`;
 }
 
 function getInitialInvestmentFromAnswers(answers: QuestionnaireAnswers): number {
@@ -593,7 +587,7 @@ function generatePortfolioFromAnswers(answers: QuestionnaireAnswers): Portfolio 
 
   return {
     id: Date.now().toString(),
-    name: generatePortfolioName(answers),
+    name: generatePortfolioName(answers), // Use the clean name function
     allocation,
     reasoning,
     expectedReturn,
