@@ -4,9 +4,12 @@ import { useInvestmentStore } from '../store/investmentStore';
 import { useAuthStore } from '../store/authStore';
 
 export const Home: React.FC = () => {
-  const { setCurrentStep, portfolio, portfolios, isLoading, error, clearError } = useInvestmentStore();
+  const { setCurrentStep, portfolio, portfolios, isLoading, error, clearError, updatePortfolioBalance } = useInvestmentStore();
   const { user } = useAuthStore();
   const [selectedTimeframe, setSelectedTimeframe] = useState('All');
+  const [showAddValueModal, setShowAddValueModal] = useState(false);
+  const [selectedPortfolioForValue, setSelectedPortfolioForValue] = useState<any>(null);
+  const [portfolioValue, setPortfolioValue] = useState('');
 
   // Clear any errors when component mounts
   useEffect(() => {
@@ -45,6 +48,24 @@ export const Home: React.FC = () => {
     console.log('Viewing portfolio - navigating to dashboard');
     // If a specific portfolio is clicked, we could set it as active here
     setCurrentStep('dashboard');
+  };
+
+  const handleAddValue = (portfolioItem: any, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent card click
+    setSelectedPortfolioForValue(portfolioItem);
+    setShowAddValueModal(true);
+  };
+
+  const handleSaveValue = (e: React.FormEvent) => {
+    e.preventDefault();
+    const value = parseFloat(portfolioValue.replace(/[,$]/g, ''));
+    if (value && value > 0 && selectedPortfolioForValue) {
+      // Update the specific portfolio's balance
+      updatePortfolioBalance(value);
+      setPortfolioValue('');
+      setShowAddValueModal(false);
+      setSelectedPortfolioForValue(null);
+    }
   };
 
   const timeframes = ['All', '1W', '1M', '6M', '1Y'];
@@ -120,11 +141,6 @@ export const Home: React.FC = () => {
                       ))}
                     </div>
                   </div>
-                  
-                  <div className="flex justify-between text-body-small text-neutral-500 mt-2">
-                    <span>30 days ago</span>
-                    <span>Today</span>
-                  </div>
                 </div>
               </div>
             </div>
@@ -172,40 +188,44 @@ export const Home: React.FC = () => {
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {/* Show all portfolios */}
               {portfolios.map((portfolioItem, index) => (
-                <button 
+                <div 
                   key={portfolioItem.id}
-                  onClick={() => handleViewPortfolio(portfolioItem)}
-                  className="bg-white border border-neutral-200 rounded-lg p-6 cursor-pointer hover:shadow-elevation-2 transition-all hover:scale-[1.02] group shadow-elevation-1 w-full text-left"
+                  className="bg-white border border-neutral-200 rounded-lg p-6 shadow-elevation-1 group"
                 >
-                  <div className="flex items-center justify-between mb-4">
-                    <div>
-                      <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900">
-                        {portfolioItem.name}
-                      </h3>
-                      <p className="text-body-small text-neutral-600">
-                        Portfolio #{index + 1}
-                      </p>
-                    </div>
-                    <ArrowRight className="w-5 h-5 text-neutral-400 group-hover:text-neutral-600 transition-colors" />
-                  </div>
-                  
-                  {portfolioItem.balance > 0 ? (
-                    <div>
-                      <p className="text-headline-small font-headline font-semi-bold text-neutral-900">
-                        ${portfolioItem.balance.toLocaleString()}
-                      </p>
-                      <div className="flex items-center gap-2 mt-1">
-                        <TrendingUp className="w-4 h-4 text-positive" />
-                        <span className="text-positive text-label-large font-medium">+{portfolioItem.growth}%</span>
+                  <button 
+                    onClick={() => handleViewPortfolio(portfolioItem)}
+                    className="w-full text-left cursor-pointer hover:scale-[1.02] transition-all"
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900">
+                          {portfolioItem.name}
+                        </h3>
                       </div>
+                      <ArrowRight className="w-5 h-5 text-neutral-400 group-hover:text-neutral-600 transition-colors" />
                     </div>
-                  ) : (
-                    <div>
-                      <p className="text-body-medium text-neutral-700">Portfolio created</p>
-                      <p className="text-body-small text-neutral-500">Add value to start tracking</p>
+                    
+                    <div className="mb-4">
+                      <p className="text-headline-small font-headline font-semi-bold text-neutral-900">
+                        ${portfolioItem.balance > 0 ? portfolioItem.balance.toLocaleString() : '0'}
+                      </p>
+                      {portfolioItem.balance > 0 && (
+                        <div className="flex items-center gap-2 mt-1">
+                          <TrendingUp className="w-4 h-4 text-positive" />
+                          <span className="text-positive text-label-large font-medium">+{portfolioItem.growth}%</span>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </button>
+                  </button>
+                  
+                  {/* Add Value Button */}
+                  <button
+                    onClick={(e) => handleAddValue(portfolioItem, e)}
+                    className="w-full bg-neutral-100 hover:bg-neutral-200 text-neutral-900 py-2 px-4 rounded-lg text-label-medium font-medium transition-colors"
+                  >
+                    Add Value
+                  </button>
+                </div>
               ))}
 
               {/* Add Portfolio Card - Only show if less than 3 portfolios */}
@@ -267,6 +287,60 @@ export const Home: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Add Value Modal */}
+      {showAddValueModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-elevation-3">
+            <h3 className="text-title-large font-headline font-semi-bold text-neutral-900 mb-4">
+              Add Portfolio Value
+            </h3>
+            <form onSubmit={handleSaveValue}>
+              <div className="mb-4">
+                <label className="block text-label-large font-medium text-neutral-700 mb-2">
+                  Investment Amount
+                </label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-500">$</span>
+                  <input
+                    type="text"
+                    value={portfolioValue}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/[^0-9.]/g, '');
+                      setPortfolioValue(value);
+                    }}
+                    placeholder="10,000"
+                    className="w-full pl-8 pr-4 p-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-transparent text-body-medium"
+                    required
+                  />
+                </div>
+                <p className="text-body-small text-neutral-500 mt-1">
+                  Enter the amount you want to invest in this portfolio
+                </p>
+              </div>
+              <div className="flex gap-3">
+                <button
+                  type="submit"
+                  className="flex-1 bg-neutral-900 text-white py-3 px-4 rounded-lg text-label-large font-medium hover:bg-neutral-800 transition-colors"
+                >
+                  Add Value
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowAddValueModal(false);
+                    setSelectedPortfolioForValue(null);
+                    setPortfolioValue('');
+                  }}
+                  className="px-4 py-3 border border-neutral-300 rounded-lg hover:bg-neutral-100 transition-colors text-label-large"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Features Section with Material Design 3 Icons - 64px size with #3E4749 color */}
       <div className="max-w-6xl mx-auto px-4 py-16">
