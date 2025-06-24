@@ -343,29 +343,36 @@ class AuthService {
   }
 
   async updateInvestmentProfileStatus(completed: boolean): Promise<void> {
-    const response = await fetch(`${API_BASE_URL}/user/investment-profile`, {
-      method: 'PATCH',
-      headers: this.getAuthHeaders(),
-      body: JSON.stringify({
-        hasCompletedInvestmentProfile: completed
-      }),
-    });
+    try {
+      const response = await fetch(`${API_BASE_URL}/user/investment-profile`, {
+        method: 'PATCH',
+        headers: this.getAuthHeaders(),
+        body: JSON.stringify({
+          hasCompletedInvestmentProfile: completed
+        }),
+      });
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ detail: 'Failed to update profile status' }));
-      throw new Error(errorData.detail || errorData.message || 'Failed to update investment profile status');
-    }
-
-    // Update the stored user data
-    const storedUser = localStorage.getItem('aivestie_user');
-    if (storedUser) {
-      try {
-        const userData = JSON.parse(storedUser);
-        userData.hasCompletedInvestmentProfile = completed;
-        localStorage.setItem('aivestie_user', JSON.stringify(userData));
-      } catch (error) {
-        console.warn('Failed to update stored user data:', error);
+      if (!response.ok) {
+        await this.handleErrorResponse(response, 'Failed to update investment profile status');
       }
+
+      // Update the stored user data
+      const storedUser = localStorage.getItem('aivestie_user');
+      if (storedUser) {
+        try {
+          const userData = JSON.parse(storedUser);
+          userData.hasCompletedInvestmentProfile = completed;
+          localStorage.setItem('aivestie_user', JSON.stringify(userData));
+        } catch (error) {
+          console.warn('Failed to update stored user data:', error);
+        }
+      }
+    } catch (error) {
+      // If it's a network error or other issue, provide more context
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new Error('Unable to connect to server. Please check your internet connection.');
+      }
+      throw error;
     }
   }
 }

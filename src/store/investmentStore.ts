@@ -235,8 +235,12 @@ function generatePortfolioName(answers: QuestionnaireAnswers): string {
   const goalName = goalNames[answers.goal as keyof typeof goalNames] || 'Custom Portfolio';
   const riskLevel = riskLevels[answers.riskTolerance as keyof typeof riskLevels] || 'Balanced';
   
-  // Add timestamp to ensure unique portfolio names
-  const timestamp = new Date().toISOString().slice(0, 19).replace(/[-:]/g, '').replace('T', '_');
+  // Add timestamp with milliseconds to ensure unique portfolio names
+  const now = new Date();
+  const timestamp = now.toISOString()
+    .slice(0, 19)
+    .replace(/[-:]/g, '')
+    .replace('T', '_') + '_' + now.getMilliseconds().toString().padStart(3, '0');
   
   return `${riskLevel} ${goalName} ${timestamp}`;
 }
