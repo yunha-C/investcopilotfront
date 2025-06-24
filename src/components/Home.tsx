@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Plus, TrendingUp, BarChart3, ArrowRight, AlertCircle } from 'lucide-react';
+import { Plus, TrendingUp, ArrowRight, AlertCircle } from 'lucide-react';
 import { useInvestmentStore } from '../store/investmentStore';
 import { useAuthStore } from '../store/authStore';
 
@@ -171,24 +171,19 @@ export const Home: React.FC = () => {
           <div className="max-w-4xl mx-auto">
             {portfolio || portfolios.length > 0 ? (
               <div className="grid md:grid-cols-2 gap-6">
-                {/* Existing Portfolio Card */}
+                {/* Existing Portfolio Card - No icon */}
                 <button 
                   onClick={handleViewPortfolio}
                   className="bg-white border border-neutral-200 rounded-lg p-6 cursor-pointer hover:shadow-elevation-2 transition-all hover:scale-[1.02] group shadow-elevation-1 w-full text-left"
                 >
                   <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 border border-positive rounded-lg">
-                        <BarChart3 className="w-5 h-5 text-positive" />
-                      </div>
-                      <div>
-                        <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900">
-                          {portfolio?.name || portfolios[0]?.name || 'Your Portfolio'}
-                        </h3>
-                        <p className="text-body-small text-neutral-600">
-                          {portfolios.length > 1 ? `Active Portfolio (${portfolios.length} total)` : 'Active Portfolio'}
-                        </p>
-                      </div>
+                    <div>
+                      <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900">
+                        {portfolio?.name || portfolios[0]?.name || 'Your Portfolio'}
+                      </h3>
+                      <p className="text-body-small text-neutral-600">
+                        {portfolios.length > 1 ? `Active Portfolio (${portfolios.length} total)` : 'Active Portfolio'}
+                      </p>
                     </div>
                     <ArrowRight className="w-5 h-5 text-neutral-400 group-hover:text-neutral-600 transition-colors" />
                   </div>
@@ -211,28 +206,50 @@ export const Home: React.FC = () => {
                   )}
                 </button>
 
-                {/* Add Portfolio Card - Simplified */}
+                {/* Add Portfolio Card - Material Design 3 style */}
                 <button 
                   onClick={handleCreatePortfolio}
                   className="bg-white border border-neutral-200 rounded-lg p-6 cursor-pointer hover:shadow-elevation-2 transition-all hover:scale-[1.02] group flex items-center justify-center shadow-elevation-1 w-full"
                 >
                   <div className="text-center">
-                    <div className="p-4 border border-primary-600 rounded-full w-fit mx-auto mb-3 group-hover:border-primary-700 transition-colors">
-                      <Plus className="w-8 h-8 text-primary-600 group-hover:text-primary-700 transition-colors" />
+                    <div className="w-16 h-16 rounded-full bg-neutral-100 flex items-center justify-center mx-auto mb-3 group-hover:bg-neutral-200 transition-colors">
+                      <span 
+                        className="material-symbols-outlined select-none"
+                        style={{ 
+                          fontSize: '32px',
+                          lineHeight: '1',
+                          color: '#3E4749',
+                          fontVariationSettings: "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48"
+                        }}
+                        aria-hidden="true"
+                      >
+                        add
+                      </span>
                     </div>
                     <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900">Add Portfolio</h3>
                   </div>
                 </button>
               </div>
             ) : (
-              /* First Portfolio Card - Simplified */
+              /* First Portfolio Card - Material Design 3 style */
               <div className="max-w-md mx-auto">
                 <button 
                   onClick={handleCreatePortfolio}
                   className="bg-white border border-neutral-200 rounded-lg p-8 cursor-pointer hover:shadow-elevation-2 transition-all hover:scale-[1.02] group text-center shadow-elevation-1 w-full"
                 >
-                  <div className="p-4 border border-primary-600 rounded-full w-fit mx-auto mb-4 group-hover:border-primary-700 transition-colors">
-                    <Plus className="w-8 h-8 text-primary-600 group-hover:text-primary-700 transition-colors" />
+                  <div className="w-20 h-20 rounded-full bg-neutral-100 flex items-center justify-center mx-auto mb-4 group-hover:bg-neutral-200 transition-colors">
+                    <span 
+                      className="material-symbols-outlined select-none"
+                      style={{ 
+                        fontSize: '40px',
+                        lineHeight: '1',
+                        color: '#3E4749',
+                        fontVariationSettings: "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48"
+                      }}
+                      aria-hidden="true"
+                    >
+                      add
+                    </span>
                   </div>
                   <h3 className="text-headline-medium font-headline font-semi-bold mb-3 text-neutral-900">Add a Portfolio</h3>
                   <p className="text-body-medium text-neutral-600">
@@ -245,17 +262,18 @@ export const Home: React.FC = () => {
         </div>
       </div>
 
-      {/* Features Section with Material Design 3 Icons - 80px size with transparent backgrounds */}
+      {/* Features Section with Material Design 3 Icons - 64px size with #3E4749 color */}
       <div className="max-w-6xl mx-auto px-4 py-16">
         <div className="grid md:grid-cols-3 gap-8">
           {/* Portfolio Management - Material Design 3 bookmark_manager icon */}
           <div className="text-center">
             <div className="w-fit mx-auto mb-4 flex items-center justify-center">
               <span 
-                className="material-symbols-outlined text-neutral-700 select-none"
+                className="material-symbols-outlined select-none"
                 style={{ 
-                  fontSize: '80px',
+                  fontSize: '64px',
                   lineHeight: '1',
+                  color: '#3E4749',
                   fontVariationSettings: "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48"
                 }}
                 aria-hidden="true"
@@ -275,10 +293,11 @@ export const Home: React.FC = () => {
           <div className="text-center">
             <div className="w-fit mx-auto mb-4 flex items-center justify-center">
               <span 
-                className="material-symbols-outlined text-neutral-700 select-none"
+                className="material-symbols-outlined select-none"
                 style={{ 
-                  fontSize: '80px',
+                  fontSize: '64px',
                   lineHeight: '1',
+                  color: '#3E4749',
                   fontVariationSettings: "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48"
                 }}
                 aria-hidden="true"
@@ -298,10 +317,11 @@ export const Home: React.FC = () => {
           <div className="text-center">
             <div className="w-fit mx-auto mb-4 flex items-center justify-center">
               <span 
-                className="material-symbols-outlined text-neutral-700 select-none"
+                className="material-symbols-outlined select-none"
                 style={{ 
-                  fontSize: '80px',
+                  fontSize: '64px',
                   lineHeight: '1',
+                  color: '#3E4749',
                   fontVariationSettings: "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48"
                 }}
                 aria-hidden="true"
