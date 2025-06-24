@@ -239,7 +239,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
                     id="firstName"
                     value={formData.firstName}
                     onChange={(e) => handleInputChange('firstName', e.target.value)}
-                    className={`w-full px-4 py-3 border rounded-lg text-body-medium focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-transparent transition-colors bg-white/80 ${
+                    className={`w-full px-4 py-3 border rounded-sm text-body-medium focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-transparent transition-colors bg-white/80 ${
                       errors.firstName 
                         ? 'border-negative bg-negative/5' 
                         : 'border-neutral-300 hover:border-neutral-400'
@@ -265,7 +265,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
                     id="lastName"
                     value={formData.lastName}
                     onChange={(e) => handleInputChange('lastName', e.target.value)}
-                    className={`w-full px-4 py-3 border rounded-lg text-body-medium focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-transparent transition-colors bg-white/80 ${
+                    className={`w-full px-4 py-3 border rounded-sm text-body-medium focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-transparent transition-colors bg-white/80 ${
                       errors.lastName 
                         ? 'border-negative bg-negative/5' 
                         : 'border-neutral-300 hover:border-neutral-400'
@@ -293,7 +293,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
                 id="email"
                 value={formData.email}
                 onChange={(e) => handleInputChange('email', e.target.value)}
-                className={`w-full px-4 py-3 border rounded-lg text-body-medium focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-transparent transition-colors bg-white/80 ${
+                className={`w-full px-4 py-3 border rounded-sm text-body-medium focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-transparent transition-colors bg-white/80 ${
                   errors.email 
                     ? 'border-negative bg-negative/5' 
                     : 'border-neutral-300 hover:border-neutral-400'
@@ -321,7 +321,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
                   id="password"
                   value={formData.password}
                   onChange={(e) => handleInputChange('password', e.target.value)}
-                  className={`w-full pl-4 pr-12 py-3 border rounded-lg text-body-medium focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-transparent transition-colors bg-white/80 ${
+                  className={`w-full pl-4 pr-12 py-3 border rounded-sm text-body-medium focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-transparent transition-colors bg-white/80 ${
                     errors.password 
                       ? 'border-negative bg-negative/5' 
                       : 'border-neutral-300 hover:border-neutral-400'
@@ -383,7 +383,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
                     id="confirmPassword"
                     value={formData.confirmPassword}
                     onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                    className={`w-full pl-4 pr-12 py-3 border rounded-lg text-body-medium focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-transparent transition-colors bg-white/80 ${
+                    className={`w-full pl-4 pr-12 py-3 border rounded-sm text-body-medium focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-transparent transition-colors bg-white/80 ${
                       errors.confirmPassword 
                         ? 'border-negative bg-negative/5' 
                         : 'border-neutral-300 hover:border-neutral-400'
