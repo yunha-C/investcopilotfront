@@ -47,7 +47,7 @@ export const Home: React.FC = () => {
       {/* Hero Section - Light background */}
       <div className="bg-gradient-to-br from-white/50 via-white/30 to-white/20">
         <div className="max-w-6xl mx-auto px-4 py-16">
-          {/* Portfolio Value Display or Welcome Message */}
+          {/* Portfolio Value Display or Simple Centered Layout */}
           <div className="text-center mb-12">
             {portfolio && portfolio.balance > 0 ? (
               <div>
@@ -61,20 +61,20 @@ export const Home: React.FC = () => {
                     <span className="text-neutral-500 text-body-large">+$320.00</span>
                   </div>
                   
-                  {/* Smooth Wave Chart Visualization - No corner radius */}
+                  {/* Smooth Wave Chart Visualization with #044AA7 color */}
                   <div className="max-w-lg mx-auto mb-4">
                     <div className="h-32 bg-gradient-to-b from-neutral-50 to-neutral-100 p-4 relative overflow-hidden">
-                      {/* Smooth wave path using SVG - No dots */}
+                      {/* Smooth wave path using SVG */}
                       <svg 
                         className="absolute inset-0 w-full h-full" 
                         viewBox="0 0 400 128" 
                         preserveAspectRatio="none"
                       >
-                        {/* Gradient definition */}
+                        {/* Gradient definition with #044AA7 */}
                         <defs>
                           <linearGradient id="waveGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                            <stop offset="0%" stopColor="#4caf50" stopOpacity="0.3" />
-                            <stop offset="100%" stopColor="#4caf50" stopOpacity="0.05" />
+                            <stop offset="0%" stopColor="#044AA7" stopOpacity="0.3" />
+                            <stop offset="100%" stopColor="#044AA7" stopOpacity="0.05" />
                           </linearGradient>
                         </defs>
                         
@@ -85,11 +85,11 @@ export const Home: React.FC = () => {
                           className="transition-all duration-1000 ease-out"
                         />
                         
-                        {/* Wave line - no dots */}
+                        {/* Wave line with #044AA7 */}
                         <path
                           d="M0,90 C50,85 100,75 150,70 C200,65 250,60 300,55 C350,50 380,45 400,40"
                           fill="none"
-                          stroke="#4caf50"
+                          stroke="#044AA7"
                           strokeWidth="2"
                           className="transition-all duration-1000 ease-out"
                         />
@@ -121,18 +121,11 @@ export const Home: React.FC = () => {
                     </div>
                   </div>
                 </div>
-                <p className="text-body-large text-neutral-600">
-                  Your AI-powered investment portfolio
-                </p>
               </div>
             ) : (
-              <div>
-                <h1 className="text-display-medium font-headline font-semi-bold mb-6 text-neutral-900">
-                  Welcome back, {user?.firstName}
-                </h1>
-                <p className="text-title-large text-neutral-600 mb-8 max-w-3xl mx-auto">
-                  Your AI-powered investment management platform
-                </p>
+              /* No welcome messages - just empty space for clean layout */
+              <div className="py-8">
+                {/* Empty space for clean layout */}
               </div>
             )}
           </div>
