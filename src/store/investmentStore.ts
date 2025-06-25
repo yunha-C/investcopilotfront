@@ -1,5 +1,11 @@
-import { create } from 'zustand';
-import { portfolioService, CreatePortfolioRequest, PortfolioResponse } from '../services/portfolioService';
+import { create } from "zustand";
+import {
+  portfolioService,
+  CreatePortfolioRequest,
+  PortfolioResponse,
+  Holding,
+  InvestmentProfile,
+} from "../services/portfolioService";
 
 export interface QuestionnaireAnswers {
   goal: string;
@@ -15,34 +21,38 @@ export interface QuestionnaireAnswers {
 }
 
 export interface Portfolio {
+  // Database fields
   id: string;
+  userId: string;
+  accountId?: string;
   name: string;
+  description?: string;
+  status: string;
+  holdingsData: Record<string, any>;
+  totalValue: number;
+  rebalanceThreshold: number;
+  created_at: string;
+  updated_at: string;
+  created_by: string;
+  updated_by: string;
+  investmentProfile: InvestmentProfile;
+  cashBalance: number;
+
+  // Computed/UI fields
+  holdings?: Holding[];
   allocation: Array<{
     name: string;
     percentage: number;
     color: string;
   }>;
-  reasoning: string;
-  expectedReturn: number;
-  managementFee: number;
-  riskLevel: string;
+  reasoning?: string;
+  expectedReturn?: number;
+  managementFee?: number;
+  riskLevel?: string;
   balance: number;
   growth: number;
-  riskScore: number;
-  monthlyFee: number;
-  // API fields
-  apiId?: string;
-  riskTolerance?: string;
-  investmentGoal?: string;
-  timeHorizon?: string;
-  initialInvestment?: number;
-  monthlyContribution?: number;
-  sectors?: string[];
-  restrictions?: string[];
-  createdAt?: string;
-  updatedAt?: string;
-  userId?: string;
-  savedToDatabase?: boolean;
+  riskScore?: number;
+  monthlyFee?: number;
 }
 
 export interface Insight {
@@ -52,13 +62,19 @@ export interface Insight {
   impact: string;
   date: string;
   portfolioChange?: {
-    before: Portfolio['allocation'];
-    after: Portfolio['allocation'];
+    before: Portfolio["allocation"];
+    after: Portfolio["allocation"];
   };
 }
 
 interface InvestmentState {
-  currentStep: 'home' | 'questionnaire' | 'results' | 'dashboard' | 'portfolio-details' | 'insight-analysis';
+  currentStep:
+    | "home"
+    | "questionnaire"
+    | "results"
+    | "dashboard"
+    | "portfolio-details"
+    | "insight-analysis";
   questionnaire: QuestionnaireAnswers | null;
   portfolio: Portfolio | null;
   activePortfolio: Portfolio | null; // Currently selected portfolio for dashboard
@@ -66,23 +82,27 @@ interface InvestmentState {
   insights: Insight[];
   isLoading: boolean;
   error: string | null;
-  
+
   // Actions
-  setCurrentStep: (step: InvestmentState['currentStep']) => void;
+  setCurrentStep: (step: InvestmentState["currentStep"]) => void;
   setQuestionnaireAnswers: (answers: QuestionnaireAnswers) => void;
   generatePortfolio: (answers: QuestionnaireAnswers) => Promise<void>;
   savePortfolioToDatabase: (portfolio: Portfolio) => Promise<void>;
   loadUserPortfolios: (userId: string) => Promise<void>;
   addInsight: (url: string) => void;
-  updatePortfolioBalance: (portfolioId: string, balance: number) => void;
+  updatePortfolioBalance: (
+    portfolioId: string,
+    amount: number
+  ) => Promise<void>;
   deletePortfolio: (portfolioId: string) => Promise<void>;
   setActivePortfolio: (portfolio: Portfolio) => void;
+  loadPortfolioById: (portfolioId: string) => Promise<Portfolio>;
   clearError: () => void;
   setError: (error: string) => void;
 }
 
 export const useInvestmentStore = create<InvestmentState>((set, get) => ({
-  currentStep: 'home',
+  currentStep: "home",
   questionnaire: null,
   portfolio: null,
   activePortfolio: null,
@@ -92,249 +112,337 @@ export const useInvestmentStore = create<InvestmentState>((set, get) => ({
   error: null,
 
   setCurrentStep: (step) => set({ currentStep: step }),
-  
+
   setQuestionnaireAnswers: (answers) => set({ questionnaire: answers }),
-  
+
   generatePortfolio: async (answers) => {
     set({ isLoading: true, error: null });
-    
+
     try {
-      console.log('=== GENERATING PORTFOLIO ===');
-      console.log('Questionnaire answers:', answers);
-      
+      console.log("=== GENERATING PORTFOLIO ===");
+      console.log("Questionnaire answers:", answers);
+
       // Check if user already has 3 portfolios
       const { portfolios } = get();
       if (portfolios.length >= 3) {
-        throw new Error('You can only create up to 3 portfolios. Please delete an existing portfolio to create a new one.');
+        throw new Error(
+          "You can only create up to 3 portfolios. Please delete an existing portfolio to create a new one."
+        );
       }
-      
-      // Generate portfolio locally first (don't save to database yet)
-      const portfolio = generatePortfolioFromAnswers(answers, portfolios);
-      
-      set({ 
-        portfolio, 
+
+      // For now, create a basic portfolio structure for the results page
+      // This will be saved to the database when the user confirms
+      console.log("### Debug", answers);
+      const portfolio: Portfolio = {
+        // Database fields (will be set when saved)
+        id: `temp_${Date.now()}`,
+        userId: "",
+        name: generatePortfolioName(answers, portfolios),
+        status: "draft",
+        holdingsData: {},
+        totalValue: getInitialInvestmentFromAnswers(answers),
+        rebalanceThreshold: 5.0,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        created_by: "",
+        updated_by: "",
+        investmentProfile: {
+          riskTolerance: answers.riskTolerance,
+          investmentGoals: [answers.goal],
+          experience: {
+            yearsExperience: getExperienceYears(answers.experience),
+            hasStockExperience: ["intermediate", "advanced", "expert"].includes(
+              answers.experience
+            ),
+            hasBondExperience: ["intermediate", "advanced", "expert"].includes(
+              answers.experience
+            ),
+            hasOptionsExperience: ["advanced", "expert"].includes(
+              answers.experience
+            ),
+            hasInternationalExperience: ["advanced", "expert"].includes(
+              answers.experience
+            ),
+            hasAlternativeExperience: ["expert"].includes(answers.experience),
+          },
+          financialSituation: {
+            annualIncome: getIncomeFromRange(answers.income),
+            netWorth: getNetWorthFromRange(answers.netWorth),
+            liquidAssets: 0,
+            monthlyExpenses: 0,
+            employmentStatus: "employed",
+            hasEmergencyFund: false,
+            hasDebt: false,
+          },
+          preferences: {
+            preferredSectors:
+              answers.sectors?.filter((s) => s !== "none") || [],
+            excludedSectors:
+              answers.restrictions?.filter((r) => r !== "none") || [],
+            esgFocused: answers.sectors?.includes("esg") || false,
+            preferDividendStocks: answers.goal === "income",
+            internationalExposure: true,
+            maxSinglePositionPercent: 10,
+            rebalanceFrequency: "quarterly",
+          },
+          questionsAnswered: true,
+        },
+        cashBalance: getInitialInvestmentFromAnswers(answers),
+
+        // Computed/UI fields
+        allocation: generateDefaultAllocation(answers.riskTolerance),
+        reasoning: `This portfolio is designed based on your ${answers.riskTolerance} risk tolerance and ${answers.goal} investment goal.`,
+        expectedReturn: calculateExpectedReturn(answers.riskTolerance),
+        managementFee: 0.01,
+        riskLevel: getRiskLevelFromScore(
+          calculateRiskScoreFromTolerance(answers.riskTolerance)
+        ),
+        balance: getInitialInvestmentFromAnswers(answers),
+        growth: 0,
+        riskScore: calculateRiskScoreFromTolerance(answers.riskTolerance),
+        monthlyFee: (getInitialInvestmentFromAnswers(answers) * 0.0001) / 12,
+      };
+
+      set({
+        portfolio,
         questionnaire: answers,
-        currentStep: 'results',
+        currentStep: "results",
         isLoading: false,
-        error: null 
+        error: null,
       });
-      
     } catch (error) {
-      console.error('Portfolio generation failed:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Failed to generate portfolio';
-      
-      set({ 
+      console.error("Portfolio generation failed:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to generate portfolio";
+
+      set({
         isLoading: false,
-        error: errorMessage 
+        error: errorMessage,
       });
     }
   },
 
   savePortfolioToDatabase: async (portfolio) => {
     try {
-      console.log('=== SAVING PORTFOLIO TO DATABASE ===');
-      console.log('Portfolio to save:', portfolio);
-      
-      // Convert local portfolio to API format
+      console.log("=== SAVING PORTFOLIO TO DATABASE ===");
+      console.log("Portfolio to save:", portfolio);
+
+      // Extract data from questionnaire for creating portfolio request
+      const questionnaire = get().questionnaire;
+      if (!questionnaire) {
+        throw new Error("No questionnaire data available");
+      }
+
+      // Convert local portfolio to API format using questionnaire data
       const portfolioRequest: CreatePortfolioRequest = {
         name: portfolio.name,
-        riskTolerance: portfolio.riskTolerance || 'moderate',
-        investmentGoal: portfolio.investmentGoal || 'wealth-growth',
-        timeHorizon: portfolio.timeHorizon || '5-10',
-        initialInvestment: portfolio.initialInvestment || 10000,
-        monthlyContribution: portfolio.monthlyContribution || 0,
-        sectors: portfolio.sectors?.filter(s => s !== 'none'),
-        restrictions: portfolio.restrictions?.filter(r => r !== 'none'),
-        questionnaire: get().questionnaire || undefined,
+        riskTolerance: questionnaire.riskTolerance,
+        investmentGoal: questionnaire.goal,
+        timeHorizon: questionnaire.timeHorizon,
+        initialInvestment: portfolio.totalValue || 10000,
+        monthlyContribution: 0,
+        sectors: questionnaire.sectors?.filter((s) => s !== "none"),
+        restrictions: questionnaire.restrictions?.filter((r) => r !== "none"),
+        questionnaire: questionnaire,
       };
-      
-      console.log('Portfolio request to API:', portfolioRequest);
-      
+
+      console.log("Portfolio request to API:", portfolioRequest);
+
       // Call the API to create portfolio
       const apiResponse = await portfolioService.createPortfolio(portfolioRequest);
-      console.log('API response received:', apiResponse);
-      
-      // Update the portfolio with API data
-      const updatedPortfolio = {
-        ...portfolio,
-        apiId: apiResponse.id,
-        savedToDatabase: true,
-        createdAt: apiResponse.createdAt,
-        updatedAt: apiResponse.updatedAt,
-        userId: apiResponse.userId,
-      };
-      
+      console.log("API response received:", apiResponse);
+
+      // Convert API response to internal format
+      const updatedPortfolio = convertApiResponseToPortfolio(apiResponse);
+
       // Add to portfolios list
       const { portfolios } = get();
       const updatedPortfolios = [...portfolios, updatedPortfolio];
-      
-      set({ 
+
+      set({
         portfolio: updatedPortfolio,
-        portfolios: updatedPortfolios
+        portfolios: updatedPortfolios,
       });
-      
-      console.log('Portfolio saved successfully');
-      
+
+      console.log("Portfolio saved successfully");
     } catch (error) {
-      console.error('Failed to save portfolio to database:', error);
-      
-      // Mark as saved locally even if API fails
-      const updatedPortfolio = {
-        ...portfolio,
-        savedToDatabase: false,
-      };
-      
+      console.error("Failed to save portfolio to database:", error);
+
+      // Add portfolio to local state even if API fails
       const { portfolios } = get();
-      const updatedPortfolios = [...portfolios, updatedPortfolio];
-      
-      set({ 
-        portfolio: updatedPortfolio,
-        portfolios: updatedPortfolios
+      const updatedPortfolios = [...portfolios, portfolio];
+
+      set({
+        portfolio: portfolio,
+        portfolios: updatedPortfolios,
       });
-      
+
       throw error; // Re-throw to let caller handle
     }
   },
-  
+
   loadUserPortfolios: async (userId) => {
     set({ isLoading: true, error: null });
-    
+
     try {
-      console.log('=== LOADING USER PORTFOLIOS ===');
-      console.log('User ID:', userId);
-      
+      console.log("=== LOADING USER PORTFOLIOS ===");
+      console.log("User ID:", userId);
+
       const apiPortfolios = await portfolioService.getUserPortfolios(userId);
-      console.log('API portfolios received:', apiPortfolios);
-      
+      console.log("API portfolios received:", apiPortfolios);
+
       // Convert API portfolios to internal format
-      const portfolios = apiPortfolios.map(apiPortfolio => 
+      const portfolios = apiPortfolios.map((apiPortfolio) =>
         convertApiResponseToPortfolio(apiPortfolio)
       );
-      
-      console.log('Converted portfolios:', portfolios);
-      
+
+      console.log("Converted portfolios:", portfolios);
+
       // Set the first portfolio as active if we don't have one
       const currentPortfolio = get().portfolio;
       const activePortfolio = currentPortfolio || portfolios[0] || null;
-      
-      set({ 
+
+      set({
         portfolios,
         portfolio: activePortfolio,
         isLoading: false,
-        error: null 
+        error: null,
       });
-      
     } catch (error) {
-      console.error('Failed to load user portfolios:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Failed to load portfolios';
-      set({ 
+      console.error("Failed to load user portfolios:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to load portfolios";
+      set({
         isLoading: false,
-        error: errorMessage 
+        error: errorMessage,
       });
     }
   },
-  
+
   addInsight: (url) => {
     const { insights, activePortfolio } = get();
     const newInsight = generateInsightFromUrl(url, activePortfolio);
     const updatedInsights = [...insights, newInsight];
-    
+
     // If the insight suggests rebalancing, update the active portfolio
     if (newInsight.portfolioChange && activePortfolio) {
-      const updatedPortfolio = { 
-        ...activePortfolio, 
-        allocation: newInsight.portfolioChange.after 
+      const updatedPortfolio = {
+        ...activePortfolio,
+        allocation: newInsight.portfolioChange.after,
       };
-      
+
       // Update both activePortfolio and the portfolio in portfolios array
       const { portfolios } = get();
-      const updatedPortfolios = portfolios.map(p => 
+      const updatedPortfolios = portfolios.map((p) =>
         p.id === activePortfolio.id ? updatedPortfolio : p
       );
-      
-      set({ 
-        insights: updatedInsights, 
+
+      set({
+        insights: updatedInsights,
         activePortfolio: updatedPortfolio,
-        portfolios: updatedPortfolios
+        portfolios: updatedPortfolios,
       });
     } else {
       set({ insights: updatedInsights });
     }
   },
-  
-  updatePortfolioBalance: (portfolioId, balance) => {
+
+  updatePortfolioBalance: async (portfolioId, amount) => {
     const { portfolios, activePortfolio } = get();
-    
-    // Update the specific portfolio in the portfolios array
-    const updatedPortfolios = portfolios.map(p => {
-      if (p.id === portfolioId) {
-        const monthlyFee = (balance * 0.0001) / 12; // 0.01% annually, charged monthly
-        const growth = balance > 10000 ? ((balance - 10000) / 10000 * 100) : 0;
-        return { 
-          ...p, 
-          balance, 
-          monthlyFee, 
-          growth: parseFloat(growth.toFixed(1)) 
-        };
+
+    try {
+      // Find the portfolio to update
+      const portfolioToUpdate = portfolios.find((p) => p.id === portfolioId);
+
+      if (!portfolioToUpdate) {
+        throw new Error("Portfolio not found");
       }
-      return p;
-    });
-    
-    // Update activePortfolio if it matches the updated portfolio
-    let updatedActivePortfolio = activePortfolio;
-    if (activePortfolio && activePortfolio.id === portfolioId) {
-      updatedActivePortfolio = updatedPortfolios.find(p => p.id === portfolioId) || activePortfolio;
+
+      // Use the new add-balance endpoint with the actual portfolio ID
+      const updatedPortfolioData = await portfolioService.addBalance(
+        portfolioToUpdate.id,
+        amount
+      );
+      console.log("Portfolio balance updated via API:", updatedPortfolioData);
+
+      // Convert API response back to internal format
+      const updatedPortfolio =
+        convertApiResponseToPortfolio(updatedPortfolioData);
+
+      // Update the portfolios array with the API response
+      const updatedPortfolios = portfolios.map((p) => {
+        if (p.id === portfolioId) {
+          return updatedPortfolio;
+        }
+        return p;
+      });
+
+      // Update activePortfolio if it matches the updated portfolio
+      let updatedActivePortfolio = activePortfolio;
+      if (activePortfolio && activePortfolio.id === portfolioId) {
+        updatedActivePortfolio =
+          updatedPortfolios.find((p) => p.id === portfolioId) ||
+          activePortfolio;
+      }
+
+      set({
+        portfolios: updatedPortfolios,
+        activePortfolio: updatedActivePortfolio,
+      });
+    } catch (error) {
+      console.error("Failed to update portfolio balance:", error);
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to update portfolio balance";
+      set({ error: errorMessage });
+      throw error;
     }
-    
-    set({ 
-      portfolios: updatedPortfolios,
-      activePortfolio: updatedActivePortfolio
-    });
   },
 
   deletePortfolio: async (portfolioId) => {
     const { portfolios, activePortfolio } = get();
-    
+
     try {
       // Find the portfolio to delete
-      const portfolioToDelete = portfolios.find(p => p.id === portfolioId);
-      
-      // If portfolio has an API ID, delete from database
-      if (portfolioToDelete?.apiId) {
-        console.log('Deleting portfolio from database:', portfolioToDelete.apiId);
-        await portfolioService.deletePortfolio(portfolioToDelete.apiId);
-        console.log('Portfolio deleted from database successfully');
+      const portfolioToDelete = portfolios.find((p) => p.id === portfolioId);
+
+      // Delete from database using the portfolio ID
+      if (portfolioToDelete) {
+        console.log("Deleting portfolio from database:", portfolioToDelete.id);
+        await portfolioService.deletePortfolio(portfolioToDelete.id);
+        console.log("Portfolio deleted from database successfully");
       }
-      
+
       // Remove portfolio from local state
-      const updatedPortfolios = portfolios.filter(p => p.id !== portfolioId);
-      
+      const updatedPortfolios = portfolios.filter((p) => p.id !== portfolioId);
+
       // Clear activePortfolio if it was the deleted one
       let updatedActivePortfolio = activePortfolio;
       if (activePortfolio && activePortfolio.id === portfolioId) {
         updatedActivePortfolio = null;
       }
-      
-      set({ 
+
+      set({
         portfolios: updatedPortfolios,
-        activePortfolio: updatedActivePortfolio
+        activePortfolio: updatedActivePortfolio,
       });
-      
     } catch (error) {
-      console.error('Failed to delete portfolio from database:', error);
-      
+      console.error("Failed to delete portfolio from database:", error);
+
       // Still remove from local state even if API call fails
-      const updatedPortfolios = portfolios.filter(p => p.id !== portfolioId);
-      
+      const updatedPortfolios = portfolios.filter((p) => p.id !== portfolioId);
+
       let updatedActivePortfolio = activePortfolio;
       if (activePortfolio && activePortfolio.id === portfolioId) {
         updatedActivePortfolio = null;
       }
-      
-      set({ 
+
+      set({
         portfolios: updatedPortfolios,
         activePortfolio: updatedActivePortfolio,
-        error: 'Portfolio deleted locally, but failed to remove from server. Please try again later.'
+        error:
+          "Portfolio deleted locally, but failed to remove from server. Please try again later.",
       });
     }
   },
@@ -342,143 +450,291 @@ export const useInvestmentStore = create<InvestmentState>((set, get) => ({
   setActivePortfolio: (portfolio) => {
     set({ activePortfolio: portfolio });
   },
-  
+
+  loadPortfolioById: async (portfolioId) => {
+    try {
+      console.log("=== LOADING PORTFOLIO BY ID ===");
+      console.log("Portfolio ID:", portfolioId);
+
+      // First check if portfolio exists in local state
+      const { portfolios } = get();
+      const localPortfolio = portfolios.find(
+        (p) => p.id === portfolioId
+      );
+
+      if (localPortfolio) {
+        console.log("Found portfolio in local state:", localPortfolio.name);
+        return localPortfolio;
+      }
+
+      // If not found locally, fetch from API
+      const apiResponse = await portfolioService.getPortfolioById(portfolioId);
+      console.log("API portfolio response:", apiResponse);
+
+      // Convert API response to internal format
+      const portfolio = convertApiResponseToPortfolio(apiResponse);
+      console.log("Converted portfolio:", portfolio);
+
+      // Update portfolios in state if not already present
+      const updatedPortfolios = [...portfolios, portfolio];
+      set({ portfolios: updatedPortfolios });
+
+      return portfolio;
+    } catch (error) {
+      console.error("Failed to load portfolio by ID:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to load portfolio";
+      set({ error: errorMessage });
+      throw error;
+    }
+  },
+
   clearError: () => set({ error: null }),
-  
+
   setError: (error) => set({ error }),
 }));
 
 // Helper functions
-function generatePortfolioName(answers: QuestionnaireAnswers, existingPortfolios: Portfolio[] = []): string {
+function generatePortfolioName(
+  answers: QuestionnaireAnswers,
+  existingPortfolios: Portfolio[] = []
+): string {
   const goalNames = {
-    'wealth-growth': 'Growth Portfolio',
-    'retirement': 'Retirement Strategy',
-    'preserve': 'Capital Preservation',
-    'income': 'Income Generation',
-    'major-purchase': 'Goal-Based Savings',
+    "wealth-growth": "Growth Portfolio",
+    retirement: "Retirement Strategy",
+    preserve: "Capital Preservation",
+    income: "Income Generation",
+    "major-purchase": "Goal-Based Savings",
   };
-  
+
   const riskLevels = {
-    'very-low': 'Ultra Conservative',
-    'low': 'Conservative',
-    'moderate': 'Balanced',
-    'high': 'Growth',
-    'very-high': 'Aggressive',
+    "very-low": "Ultra Conservative",
+    low: "Conservative",
+    moderate: "Balanced",
+    high: "Growth",
+    "very-high": "Aggressive",
   };
-  
-  const goalName = goalNames[answers.goal as keyof typeof goalNames] || 'Custom Portfolio';
-  const riskLevel = riskLevels[answers.riskTolerance as keyof typeof riskLevels] || 'Balanced';
-  
+
+  const goalName =
+    goalNames[answers.goal as keyof typeof goalNames] || "Custom Portfolio";
+  const riskLevel =
+    riskLevels[answers.riskTolerance as keyof typeof riskLevels] || "Balanced";
+
   // Generate base name
   const baseName = `${riskLevel} ${goalName}`;
-  
+
   // Check if this name already exists in existing portfolios
-  const existingNames = existingPortfolios.map(p => p.name);
-  
+  const existingNames = existingPortfolios.map((p) => p.name);
+
   if (!existingNames.includes(baseName)) {
     return baseName;
   }
-  
+
   // If base name exists, append a unique identifier
   // Generate a short, readable suffix based on current timestamp
   const timestamp = Date.now();
-  const shortId = (timestamp % 10000).toString().padStart(4, '0');
-  
+  const shortId = (timestamp % 10000).toString().padStart(4, "0");
+
   // Try with Roman numerals first for a cleaner look
-  const romanNumerals = ['II', 'III', 'IV', 'V'];
+  const romanNumerals = ["II", "III", "IV", "V"];
   for (let i = 0; i < romanNumerals.length; i++) {
     const nameWithRoman = `${baseName} ${romanNumerals[i]}`;
     if (!existingNames.includes(nameWithRoman)) {
       return nameWithRoman;
     }
   }
-  
+
   // If all Roman numerals are taken, use the timestamp-based ID
   return `${baseName} ${shortId}`;
 }
 
-function getInitialInvestmentFromAnswers(answers: QuestionnaireAnswers): number {
+function getInitialInvestmentFromAnswers(
+  answers: QuestionnaireAnswers
+): number {
   // Estimate initial investment based on income and net worth
   const incomeRanges = {
-    '<50k': 1000,
-    '50k-100k': 5000,
-    '100k-200k': 10000,
-    '200k-500k': 25000,
-    '500k+': 50000,
+    "<50k": 1000,
+    "50k-100k": 5000,
+    "100k-200k": 10000,
+    "200k-500k": 25000,
+    "500k+": 50000,
   };
-  
+
   return incomeRanges[answers.income as keyof typeof incomeRanges] || 10000;
 }
 
-function convertApiResponseToPortfolio(apiResponse: PortfolioResponse, answers?: QuestionnaireAnswers): Portfolio {
-  console.log('Converting API response to portfolio:', apiResponse);
+function getExperienceYears(experience: string): number {
+  const experienceYears = {
+    "none": 0,
+    "basic": 1,
+    "intermediate": 3,
+    "advanced": 7,
+    "expert": 15,
+  };
   
-  // Convert API allocation to internal format with colors
-  const allocation = apiResponse.allocation?.map((asset, index) => ({
-    name: asset.assetClass,
-    percentage: asset.percentage,
-    color: getAssetColor(asset.assetClass, index),
-  })) || generateDefaultAllocation(apiResponse.riskTolerance);
+  return experienceYears[experience as keyof typeof experienceYears] || 0;
+}
+
+function getIncomeFromRange(income: string): number {
+  const incomeRanges = {
+    "<50k": 35000,
+    "50k-100k": 75000,
+    "100k-200k": 150000,
+    "200k-500k": 350000,
+    "500k+": 750000,
+  };
   
-  // Calculate risk score and level
-  const riskScore = apiResponse.riskScore || calculateRiskScoreFromTolerance(apiResponse.riskTolerance);
+  return incomeRanges[income as keyof typeof incomeRanges] || 0;
+}
+
+function getNetWorthFromRange(netWorth: string): number {
+  const netWorthRanges = {
+    "<100k": 50000,
+    "100k-500k": 300000,
+    "500k-1m": 750000,
+    "1m-5m": 3000000,
+    "5m+": 10000000,
+  };
+  
+  return netWorthRanges[netWorth as keyof typeof netWorthRanges] || 0;
+}
+
+function convertApiResponseToPortfolio(
+  apiResponse: PortfolioResponse
+): Portfolio {
+  console.log("Converting API response to portfolio:", apiResponse);
+
+  // Parse investmentProfile JSON string
+  let parsedProfile: InvestmentProfile;
+  try {
+    parsedProfile = typeof apiResponse.investmentProfile === 'string' 
+      ? JSON.parse(apiResponse.investmentProfile) 
+      : apiResponse.investmentProfile;
+  } catch (error) {
+    console.error('Failed to parse investmentProfile:', error);
+    // Fallback to default profile
+    parsedProfile = {
+      riskTolerance: 'moderate',
+      investmentGoals: [],
+      experience: {
+        yearsExperience: 0,
+        hasStockExperience: false,
+        hasBondExperience: false,
+        hasOptionsExperience: false,
+        hasInternationalExperience: false,
+        hasAlternativeExperience: false,
+      },
+      financialSituation: {
+        annualIncome: 0,
+        netWorth: 0,
+        liquidAssets: 0,
+        monthlyExpenses: 0,
+        employmentStatus: 'employed',
+        hasEmergencyFund: false,
+        hasDebt: false,
+      },
+      preferences: {
+        preferredSectors: [],
+        excludedSectors: [],
+        esgFocused: false,
+        preferDividendStocks: false,
+        internationalExposure: false,
+        maxSinglePositionPercent: 10,
+        rebalanceFrequency: 'quarterly',
+      },
+      questionsAnswered: false,
+    };
+  }
+
+  // Parse holdings from holdingsData (which is currently empty in your example)
+  const holdings: Holding[] = [];
+  const holdingsArray = Object.values(apiResponse.holdingsData || {});
+
+  // Calculate allocation based on real holdings or show cash
+  let allocation: Array<{ name: string; percentage: number; color: string }> = [];
+
+  if (holdingsArray.length > 0) {
+    // If we have actual holdings, use them
+    allocation = holdingsArray.map((holding: any, index) => ({
+      name: holding.symbol?.name || holding.symbol?.ticker || `Holding ${index + 1}`,
+      percentage: holding.currentAllocation?.percentage || 0,
+      color: getAssetColor("", index),
+    }));
+  } else {
+    // No holdings = all cash (this matches your database example)
+    allocation = [
+      {
+        name: "Cash",
+        percentage: 100,
+        color: "#CBDCF3",
+      },
+    ];
+  }
+
+  // Calculate risk score and level from parsed investment profile
+  const riskScore = calculateRiskScoreFromTolerance(parsedProfile.riskTolerance || "moderate");
   const riskLevel = getRiskLevelFromScore(riskScore);
-  
-  // Generate reasoning if not provided
-  const reasoning = apiResponse.reasoning || generateReasoningFromApi(apiResponse, answers);
-  
+
+  // Calculate growth based on actual database values
+  // Since we don't have initial investment data, assume no growth for cash-only portfolios
+  const growth = holdingsArray.length > 0 ? 0 : 0; // Set to 0 for cash-only portfolios
+
   return {
-    id: `local_${apiResponse.id}`,
-    apiId: apiResponse.id,
-    name: apiResponse.name, // Use the clean name from API
-    allocation,
-    reasoning,
-    expectedReturn: apiResponse.expectedReturn || 6.5,
-    managementFee: apiResponse.managementFee || 0.01,
-    riskLevel,
-    balance: apiResponse.initialInvestment || 0,
-    growth: 0,
-    riskScore,
-    monthlyFee: ((apiResponse.initialInvestment || 0) * 0.0001) / 12,
-    // Store API fields
-    riskTolerance: apiResponse.riskTolerance,
-    investmentGoal: apiResponse.investmentGoal,
-    timeHorizon: apiResponse.timeHorizon,
-    initialInvestment: apiResponse.initialInvestment,
-    monthlyContribution: apiResponse.monthlyContribution,
-    sectors: apiResponse.sectors,
-    restrictions: apiResponse.restrictions,
-    createdAt: apiResponse.createdAt,
-    updatedAt: apiResponse.updatedAt,
+    // Database fields - use actual values from database
+    id: apiResponse.id,
     userId: apiResponse.userId,
-    savedToDatabase: true,
+    accountId: apiResponse.accountId,
+    name: apiResponse.name,
+    description: apiResponse.description,
+    status: apiResponse.status,
+    holdingsData: apiResponse.holdingsData,
+    totalValue: apiResponse.totalValue, // Use actual totalValue from database
+    rebalanceThreshold: apiResponse.rebalanceThreshold,
+    created_at: apiResponse.created_at,
+    updated_at: apiResponse.updated_at,
+    created_by: apiResponse.created_by,
+    updated_by: apiResponse.updated_by,
+    investmentProfile: parsedProfile, // Use parsed profile object
+    cashBalance: apiResponse.cashBalance, // Use actual cashBalance from database
+
+    // Computed/UI fields
+    holdings,
+    allocation,
+    reasoning: generateReasoningFromProfile(parsedProfile, apiResponse.name),
+    expectedReturn: calculateExpectedReturn(parsedProfile.riskTolerance),
+    managementFee: 0.01,
+    riskLevel,
+    balance: apiResponse.totalValue, // Use actual totalValue
+    growth: parseFloat(growth.toFixed(1)),
+    riskScore,
+    monthlyFee: (apiResponse.totalValue * 0.0001) / 12,
   };
 }
 
 function getAssetColor(assetClass: string, index: number): string {
   // Use the provided color codes from the attachment
   const colorMap: Record<string, string> = {
-    'stocks': '#042963',
-    'bonds': '#044AA7', 
-    'real estate': '#065AC7',
-    'commodities': '#6699DB',
-    'cash': '#CBDCF3',
-    'international': '#065AC7',
-    'growth': '#042963',
-    'value': '#044AA7',
-    'small cap': '#6699DB',
-    'large cap': '#042963',
-    'emerging markets': '#6699DB',
-    'developed markets': '#065AC7',
-    'government bonds': '#044AA7',
-    'corporate bonds': '#065AC7',
-    'reits': '#6699DB',
-    'technology': '#042963',
-    'healthcare': '#044AA7',
-    'energy': '#065AC7',
-    'financial': '#6699DB',
+    stocks: "#042963",
+    bonds: "#044AA7",
+    "real estate": "#065AC7",
+    commodities: "#6699DB",
+    cash: "#CBDCF3",
+    international: "#065AC7",
+    growth: "#042963",
+    value: "#044AA7",
+    "small cap": "#6699DB",
+    "large cap": "#042963",
+    "emerging markets": "#6699DB",
+    "developed markets": "#065AC7",
+    "government bonds": "#044AA7",
+    "corporate bonds": "#065AC7",
+    reits: "#6699DB",
+    technology: "#042963",
+    healthcare: "#044AA7",
+    energy: "#065AC7",
+    financial: "#6699DB",
   };
-  
+
   // Try to match asset class name
   const lowerAssetClass = assetClass.toLowerCase();
   for (const [key, color] of Object.entries(colorMap)) {
@@ -486,289 +742,224 @@ function getAssetColor(assetClass: string, index: number): string {
       return color;
     }
   }
-  
+
   // Fallback to index-based colors using the provided palette
-  const defaultColors = ['#042963', '#044AA7', '#065AC7', '#6699DB', '#CBDCF3'];
+  const defaultColors = ["#042963", "#044AA7", "#065AC7", "#6699DB", "#CBDCF3"];
   return defaultColors[index % defaultColors.length];
 }
 
-function generateDefaultAllocation(riskTolerance?: string): Portfolio['allocation'] {
+function generateDefaultAllocation(
+  riskTolerance?: string
+): Portfolio["allocation"] {
   // Generate default allocation based on risk tolerance using the new color palette
   switch (riskTolerance) {
-    case 'very-low':
+    case "very-low":
       return [
-        { name: 'Government Bonds', percentage: 60, color: '#044AA7' },
-        { name: 'Corporate Bonds', percentage: 25, color: '#065AC7' },
-        { name: 'Cash', percentage: 15, color: '#CBDCF3' },
+        { name: "Government Bonds", percentage: 60, color: "#044AA7" },
+        { name: "Corporate Bonds", percentage: 25, color: "#065AC7" },
+        { name: "Cash", percentage: 15, color: "#CBDCF3" },
       ];
-    case 'low':
+    case "low":
       return [
-        { name: 'Bonds', percentage: 50, color: '#044AA7' },
-        { name: 'Large Cap Stocks', percentage: 30, color: '#042963' },
-        { name: 'Cash', percentage: 20, color: '#CBDCF3' },
+        { name: "Bonds", percentage: 50, color: "#044AA7" },
+        { name: "Large Cap Stocks", percentage: 30, color: "#042963" },
+        { name: "Cash", percentage: 20, color: "#CBDCF3" },
       ];
-    case 'high':
+    case "high":
       return [
-        { name: 'Growth Stocks', percentage: 60, color: '#042963' },
-        { name: 'International Stocks', percentage: 25, color: '#065AC7' },
-        { name: 'Bonds', percentage: 15, color: '#044AA7' },
+        { name: "Growth Stocks", percentage: 60, color: "#042963" },
+        { name: "International Stocks", percentage: 25, color: "#065AC7" },
+        { name: "Bonds", percentage: 15, color: "#044AA7" },
       ];
-    case 'very-high':
+    case "very-high":
       return [
-        { name: 'Growth Stocks', percentage: 70, color: '#042963' },
-        { name: 'Small Cap Stocks', percentage: 20, color: '#6699DB' },
-        { name: 'Emerging Markets', percentage: 10, color: '#CBDCF3' },
+        { name: "Growth Stocks", percentage: 70, color: "#042963" },
+        { name: "Small Cap Stocks", percentage: 20, color: "#6699DB" },
+        { name: "Emerging Markets", percentage: 10, color: "#CBDCF3" },
       ];
     default: // moderate
       return [
-        { name: 'Large Cap Stocks', percentage: 40, color: '#042963' },
-        { name: 'Bonds', percentage: 30, color: '#044AA7' },
-        { name: 'International Stocks', percentage: 20, color: '#065AC7' },
-        { name: 'REITs', percentage: 10, color: '#6699DB' },
+        { name: "Large Cap Stocks", percentage: 40, color: "#042963" },
+        { name: "Bonds", percentage: 30, color: "#044AA7" },
+        { name: "International Stocks", percentage: 20, color: "#065AC7" },
+        { name: "REITs", percentage: 10, color: "#6699DB" },
       ];
   }
 }
 
 function calculateRiskScoreFromTolerance(riskTolerance?: string): number {
   const riskScores = {
-    'very-low': 1,
-    'low': 2,
-    'moderate': 3,
-    'high': 4,
-    'very-high': 5,
+    "very-low": 1,
+    low: 2,
+    moderate: 3,
+    high: 4,
+    "very-high": 5,
   };
-  
+
   return riskScores[riskTolerance as keyof typeof riskScores] || 3;
 }
 
-function getRiskLevelFromScore(riskScore: number): string {
-  if (riskScore <= 1.5) return 'Very Low';
-  if (riskScore <= 2.5) return 'Low';
-  if (riskScore <= 3.5) return 'Moderate';
-  if (riskScore <= 4.5) return 'High';
-  return 'Very High';
+function calculateExpectedReturn(riskTolerance?: string): number {
+  const expectedReturns = {
+    "very-low": 3.5,
+    low: 4.5,
+    moderate: 6.5,
+    high: 8.0,
+    "very-high": 9.5,
+  };
+
+  return expectedReturns[riskTolerance as keyof typeof expectedReturns] || 6.5;
 }
 
-function generateReasoningFromApi(apiResponse: PortfolioResponse, answers?: QuestionnaireAnswers): string {
-  const riskLevel = getRiskLevelFromScore(apiResponse.riskScore || 3);
-  const timeHorizon = apiResponse.timeHorizon || 'medium-term';
-  const goal = apiResponse.investmentGoal || 'growth';
-  
-  return `This ${riskLevel.toLowerCase()} risk portfolio is designed for ${goal} with a ${timeHorizon} investment horizon. The allocation balances growth potential with risk management, targeting an expected annual return of ${apiResponse.expectedReturn || 6.5}%. The portfolio is professionally managed with a ${((apiResponse.managementFee || 0.01) * 100).toFixed(2)}% annual fee.`;
+function generateReasoningFromProfile(
+  investmentProfile: InvestmentProfile,
+  portfolioName: string
+): string {
+  const riskLevel = getRiskLevelFromScore(
+    calculateRiskScoreFromTolerance(investmentProfile.riskTolerance)
+  );
+  const expectedReturn = calculateExpectedReturn(
+    investmentProfile.riskTolerance
+  );
+
+  return `This ${riskLevel.toLowerCase()} risk portfolio "${portfolioName}" is designed based on your investment profile. With a ${
+    investmentProfile.riskTolerance
+  } risk tolerance, the portfolio targets an expected annual return of ${expectedReturn}%. The allocation balances growth potential with risk management according to your preferences and financial situation.`;
 }
+
+function getRiskLevelFromScore(riskScore: number): string {
+  if (riskScore <= 1.5) return "Very Low";
+  if (riskScore <= 2.5) return "Low";
+  if (riskScore <= 3.5) return "Moderate";
+  if (riskScore <= 4.5) return "High";
+  return "Very High";
+}
+
 
 // Keep the original local generation function as fallback
 function calculateRiskScore(answers: QuestionnaireAnswers): number {
   let score = 0;
-  
+
   // Risk tolerance (40% weight)
   const riskWeights = {
-    'very-low': 1,
-    'low': 2,
-    'moderate': 3,
-    'high': 4,
-    'very-high': 5
+    "very-low": 1,
+    low: 2,
+    moderate: 3,
+    high: 4,
+    "very-high": 5,
   };
-  score += (riskWeights[answers.riskTolerance as keyof typeof riskWeights] || 3) * 0.4;
-  
+  score +=
+    (riskWeights[answers.riskTolerance as keyof typeof riskWeights] || 3) * 0.4;
+
   // Time horizon (30% weight)
   const timeWeights = {
-    '<1': 1,
-    '1-3': 2,
-    '3-5': 3,
-    '5-10': 4,
-    '10+': 5
+    "<1": 1,
+    "1-3": 2,
+    "3-5": 3,
+    "5-10": 4,
+    "10+": 5,
   };
-  score += (timeWeights[answers.timeHorizon as keyof typeof timeWeights] || 3) * 0.3;
-  
+  score +=
+    (timeWeights[answers.timeHorizon as keyof typeof timeWeights] || 3) * 0.3;
+
   // Experience (20% weight)
   const expWeights = {
-    'none': 1,
-    'basic': 2,
-    'intermediate': 3,
-    'advanced': 4,
-    'expert': 5
+    none: 1,
+    basic: 2,
+    intermediate: 3,
+    advanced: 4,
+    expert: 5,
   };
-  score += (expWeights[answers.experience as keyof typeof expWeights] || 2) * 0.2;
-  
+  score +=
+    (expWeights[answers.experience as keyof typeof expWeights] || 2) * 0.2;
+
   // Income/Net worth (10% weight)
-  const wealthScore = answers.netWorth === '5m+' ? 5 : 
-                     answers.netWorth === '1m-5m' ? 4 :
-                     answers.netWorth === '500k-1m' ? 3 :
-                     answers.netWorth === '100k-500k' ? 2 : 1;
+  const wealthScore =
+    answers.netWorth === "5m+"
+      ? 5
+      : answers.netWorth === "1m-5m"
+      ? 4
+      : answers.netWorth === "500k-1m"
+      ? 3
+      : answers.netWorth === "100k-500k"
+      ? 2
+      : 1;
   score += wealthScore * 0.1;
-  
+
   return Math.round(score * 10) / 10; // Round to 1 decimal place
 }
 
-function generatePortfolioFromAnswers(answers: QuestionnaireAnswers, existingPortfolios: Portfolio[] = []): Portfolio {
-  const riskScore = calculateRiskScore(answers);
-  let allocation: Portfolio['allocation'] = [];
-  let name = '';
-  let reasoning = '';
-  let expectedReturn = 0;
-  let riskLevel = '';
-
-  // Determine risk level based on score
-  if (riskScore <= 1.5) {
-    riskLevel = 'Very Low';
-  } else if (riskScore <= 2.5) {
-    riskLevel = 'Low';
-  } else if (riskScore <= 3.5) {
-    riskLevel = 'Moderate';
-  } else if (riskScore <= 4.5) {
-    riskLevel = 'High';
-  } else {
-    riskLevel = 'Very High';
-  }
-
-  // Generate portfolio based on comprehensive analysis with new color palette
-  if (answers.goal === 'preserve' || riskScore <= 2.0) {
-    allocation = [
-      { name: 'Government Bonds', percentage: 50, color: '#044AA7' },
-      { name: 'Corporate Bonds', percentage: 25, color: '#065AC7' },
-      { name: 'Large Cap Dividend Stocks', percentage: 15, color: '#042963' },
-      { name: 'Cash & Money Market', percentage: 10, color: '#CBDCF3' },
-    ];
-    name = 'Ultra Conservative Preservation';
-    expectedReturn = 3.8;
-    reasoning = `Based on your very conservative risk profile (Risk Score: ${riskScore}/5), this portfolio prioritizes capital preservation above all else. With 75% in bonds and only 15% in stable dividend-paying stocks, this allocation minimizes volatility while providing modest growth potential. Your ${answers.timeHorizon} time horizon and ${answers.experience} experience level support this cautious approach.`;
-  } else if (answers.goal === 'income' || (riskScore <= 3.0 && answers.goal !== 'wealth-growth')) {
-    allocation = [
-      { name: 'Dividend Growth Stocks', percentage: 35, color: '#042963' },
-      { name: 'REITs', percentage: 25, color: '#6699DB' },
-      { name: 'High-Grade Corporate Bonds', percentage: 25, color: '#044AA7' },
-      { name: 'Utility Stocks', percentage: 10, color: '#065AC7' },
-      { name: 'Preferred Shares', percentage: 5, color: '#CBDCF3' },
-    ];
-    name = 'Income-Focused Strategy';
-    expectedReturn = 5.2;
-    reasoning = `Your focus on income generation combined with a moderate risk tolerance (Risk Score: ${riskScore}/5) suggests this income-focused portfolio. The 35% allocation to dividend growth stocks provides both income and modest capital appreciation, while REITs (25%) offer real estate exposure and attractive yields. Your ${answers.netWorth} net worth and ${answers.income} income level support this balanced approach to income generation.`;
-  } else if (riskScore >= 4.0 && answers.timeHorizon === '10+') {
-    allocation = [
-      { name: 'Growth Stocks', percentage: 40, color: '#042963' },
-      { name: 'International Developed Markets', percentage: 20, color: '#044AA7' },
-      { name: 'Small Cap Growth', percentage: 15, color: '#065AC7' },
-      { name: 'Emerging Markets', percentage: 10, color: '#6699DB' },
-      { name: 'Technology Sector ETF', percentage: 10, color: '#042963' },
-      { name: 'Bonds', percentage: 5, color: '#CBDCF3' },
-    ];
-    name = 'Aggressive Growth Strategy';
-    expectedReturn = 8.7;
-    reasoning = `Your high risk tolerance (Risk Score: ${riskScore}/5) and long-term investment horizon (${answers.timeHorizon}) enable this aggressive growth strategy. With 95% equity allocation, this portfolio maximizes growth potential through domestic growth stocks (40%) and international diversification. Your ${answers.experience} experience level and ${answers.netWorth} net worth provide the foundation for this sophisticated approach.`;
-  } else if (riskScore >= 3.0) {
-    allocation = [
-      { name: 'Large Cap Blend', percentage: 30, color: '#042963' },
-      { name: 'International Stocks', percentage: 25, color: '#044AA7' },
-      { name: 'Intermediate-Term Bonds', percentage: 20, color: '#065AC7' },
-      { name: 'Small Cap Value', percentage: 10, color: '#6699DB' },
-      { name: 'REITs', percentage: 10, color: '#6699DB' },
-      { name: 'Commodities', percentage: 5, color: '#CBDCF3' },
-    ];
-    name = 'Balanced Growth & Income';
-    expectedReturn = 6.8;
-    reasoning = `Your moderate-to-high risk profile (Risk Score: ${riskScore}/5) supports this balanced approach combining growth and income. The 65% equity allocation provides growth potential while 20% bonds offer stability. International diversification (25%) and alternative investments (15%) enhance risk-adjusted returns. This strategy aligns with your ${answers.timeHorizon} time horizon and ${answers.liquidityNeeds} liquidity needs.`;
-  } else {
-    allocation = [
-      { name: 'Large Cap Value', percentage: 35, color: '#042963' },
-      { name: 'Intermediate Bonds', percentage: 30, color: '#044AA7' },
-      { name: 'International Developed', percentage: 15, color: '#065AC7' },
-      { name: 'Dividend Stocks', percentage: 10, color: '#6699DB' },
-      { name: 'Short-Term Bonds', percentage: 10, color: '#CBDCF3' },
-    ];
-    name = 'Conservative Balanced';
-    expectedReturn = 5.5;
-    reasoning = `Your moderate risk tolerance (Risk Score: ${riskScore}/5) and ${answers.timeHorizon} investment timeline suggest this conservative balanced approach. The 60/40 stock-to-bond allocation provides growth potential while managing downside risk. Focus on value stocks and high-quality bonds aligns with your ${answers.experience} experience level and preference for stability.`;
-  }
-
-  // Adjust for sector preferences
-  if (answers.sectors && !answers.sectors.includes('none')) {
-    reasoning += ` Your sector preferences (${answers.sectors.join(', ')}) have been incorporated through targeted sector allocations and ETF selections.`;
-  }
-
-  // Adjust for restrictions
-  if (answers.restrictions && !answers.restrictions.includes('none')) {
-    reasoning += ` Investment restrictions (${answers.restrictions.join(', ')}) are applied through ESG screening and exclusionary filters.`;
-  }
-
-  // Adjust for liquidity needs
-  if (answers.liquidityNeeds === 'high' || answers.liquidityNeeds === 'very-high') {
-    reasoning += ` Your high liquidity requirements have been addressed through increased allocation to liquid ETFs and reduced exposure to illiquid alternatives.`;
-  }
-
-  return {
-    id: `portfolio_${Date.now()}`, // Use simple ID for internal tracking only
-    name: generatePortfolioName(answers, existingPortfolios), // Pass existing portfolios to ensure uniqueness
-    allocation,
-    reasoning,
-    expectedReturn,
-    managementFee: 0.01, // 0.01% annually
-    riskLevel,
-    balance: 0,
-    growth: 0,
-    riskScore,
-    monthlyFee: 0,
-    // Store questionnaire data for API calls
-    riskTolerance: answers.riskTolerance,
-    investmentGoal: answers.goal,
-    timeHorizon: answers.timeHorizon,
-    initialInvestment: getInitialInvestmentFromAnswers(answers),
-    sectors: answers.sectors,
-    restrictions: answers.restrictions,
-    savedToDatabase: false,
-  };
-}
-
-function generateInsightFromUrl(url: string, portfolio: Portfolio | null): Insight {
+function generateInsightFromUrl(
+  url: string,
+  portfolio: Portfolio | null
+): Insight {
   // Simulate AI analysis of the URL
   const insights = [
     {
-      title: 'Federal Reserve Interest Rate Decision',
-      impact: 'The Fed\'s decision to maintain current rates suggests continued economic stability. Consider increasing bond allocation by 3% to capitalize on current yields while maintaining growth exposure.',
+      title: "Federal Reserve Interest Rate Decision",
+      impact:
+        "The Fed's decision to maintain current rates suggests continued economic stability. Consider increasing bond allocation by 3% to capitalize on current yields while maintaining growth exposure.",
       shouldRebalance: true,
     },
     {
-      title: 'Technology Sector Earnings Outlook',
-      impact: 'Strong Q4 earnings projections for major tech companies indicate robust growth potential. Current technology allocation appears well-positioned for this trend, no immediate changes recommended.',
+      title: "Technology Sector Earnings Outlook",
+      impact:
+        "Strong Q4 earnings projections for major tech companies indicate robust growth potential. Current technology allocation appears well-positioned for this trend, no immediate changes recommended.",
       shouldRebalance: false,
     },
     {
-      title: 'Emerging Markets Geopolitical Analysis',
-      impact: 'Rising geopolitical tensions in key emerging markets suggest reducing exposure by 2% and reallocating to developed international markets for better risk-adjusted returns.',
+      title: "Emerging Markets Geopolitical Analysis",
+      impact:
+        "Rising geopolitical tensions in key emerging markets suggest reducing exposure by 2% and reallocating to developed international markets for better risk-adjusted returns.",
       shouldRebalance: true,
     },
     {
-      title: 'ESG Investment Performance Study',
-      impact: 'New research shows ESG-focused investments outperforming traditional benchmarks over 5-year periods. Current ESG allocation aligns well with this trend.',
+      title: "ESG Investment Performance Study",
+      impact:
+        "New research shows ESG-focused investments outperforming traditional benchmarks over 5-year periods. Current ESG allocation aligns well with this trend.",
       shouldRebalance: false,
     },
     {
-      title: 'Real Estate Market Outlook',
-      impact: 'Commercial real estate showing signs of recovery with improved occupancy rates. Consider increasing REIT allocation by 2% to capitalize on this trend.',
+      title: "Real Estate Market Outlook",
+      impact:
+        "Commercial real estate showing signs of recovery with improved occupancy rates. Consider increasing REIT allocation by 2% to capitalize on this trend.",
       shouldRebalance: true,
-    }
+    },
   ];
 
   const randomInsight = insights[Math.floor(Math.random() * insights.length)];
-  
+
   let portfolioChange;
   if (randomInsight.shouldRebalance && portfolio) {
     // Create a modified allocation based on the insight
     const newAllocation = [...portfolio.allocation];
     if (newAllocation.length >= 2) {
       // Simulate intelligent rebalancing based on insight type
-      if (randomInsight.title.includes('Fed') || randomInsight.title.includes('Interest')) {
+      if (
+        randomInsight.title.includes("Fed") ||
+        randomInsight.title.includes("Interest")
+      ) {
         // Increase bond allocation
-        const bondIndex = newAllocation.findIndex(asset => asset.name.toLowerCase().includes('bond'));
-        const stockIndex = newAllocation.findIndex(asset => asset.name.toLowerCase().includes('stock') || asset.name.toLowerCase().includes('growth'));
+        const bondIndex = newAllocation.findIndex((asset) =>
+          asset.name.toLowerCase().includes("bond")
+        );
+        const stockIndex = newAllocation.findIndex(
+          (asset) =>
+            asset.name.toLowerCase().includes("stock") ||
+            asset.name.toLowerCase().includes("growth")
+        );
         if (bondIndex !== -1 && stockIndex !== -1) {
           newAllocation[bondIndex].percentage += 3;
           newAllocation[stockIndex].percentage -= 3;
         }
-      } else if (randomInsight.title.includes('Emerging')) {
+      } else if (randomInsight.title.includes("Emerging")) {
         // Reduce emerging markets exposure
-        const emIndex = newAllocation.findIndex(asset => asset.name.toLowerCase().includes('emerging'));
-        const intlIndex = newAllocation.findIndex(asset => asset.name.toLowerCase().includes('international'));
+        const emIndex = newAllocation.findIndex((asset) =>
+          asset.name.toLowerCase().includes("emerging")
+        );
+        const intlIndex = newAllocation.findIndex((asset) =>
+          asset.name.toLowerCase().includes("international")
+        );
         if (emIndex !== -1 && intlIndex !== -1) {
           newAllocation[emIndex].percentage -= 2;
           newAllocation[intlIndex].percentage += 2;
@@ -779,7 +970,7 @@ function generateInsightFromUrl(url: string, portfolio: Portfolio | null): Insig
         newAllocation[1].percentage += 2;
       }
     }
-    
+
     portfolioChange = {
       before: portfolio.allocation,
       after: newAllocation,
