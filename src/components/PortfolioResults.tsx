@@ -15,13 +15,21 @@ export const PortfolioResults: React.FC = () => {
       // Save portfolio to database
       await savePortfolioToDatabase(portfolio);
       
-      // Simulate initial investment
-      updatePortfolioBalance(10000);
+      // Set initial investment
+      if (portfolio.id) {
+        await updatePortfolioBalance(portfolio.id, portfolio.initialInvestment || 10000);
+      }
       setCurrentStep('dashboard');
     } catch (error) {
       console.error('Failed to save portfolio:', error);
       // Still proceed to dashboard even if save fails
-      updatePortfolioBalance(10000);
+      if (portfolio.id) {
+        try {
+          await updatePortfolioBalance(portfolio.id, portfolio.initialInvestment || 10000);
+        } catch (updateError) {
+          console.error('Failed to set initial balance:', updateError);
+        }
+      }
       setCurrentStep('dashboard');
     } finally {
       setIsSaving(false);

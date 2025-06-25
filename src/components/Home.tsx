@@ -48,21 +48,26 @@ export const Home: React.FC = () => {
     setShowAddValueModal(true);
   };
 
-  const handleSaveValue = (e: React.FormEvent) => {
+  const handleSaveValue = async (e: React.FormEvent) => {
     e.preventDefault();
     const value = parseFloat(portfolioValue.replace(/[,$]/g, ''));
     if (value && value > 0 && selectedPortfolioForValue) {
-      updatePortfolioBalance(selectedPortfolioForValue.id, value);
-      setPortfolioValue('');
-      setShowAddValueModal(false);
-      setSelectedPortfolioForValue(null);
+      try {
+        await updatePortfolioBalance(selectedPortfolioForValue.id, value);
+        setPortfolioValue('');
+        setShowAddValueModal(false);
+        setSelectedPortfolioForValue(null);
+      } catch (error) {
+        console.error('Failed to update portfolio balance:', error);
+        // Error is handled by the store, but we can add user feedback here if needed
+      }
     }
   };
 
-  // Calculate total portfolio value and growth
-  const totalValue = portfolios.reduce((sum, p) => sum + (p.balance || 0), 0);
+  // Calculate total portfolio value and growth using real database data
+  const totalValue = portfolios.reduce((sum, p) => sum + (p.totalValue || 0), 0);
   const totalGrowth = portfolios.length > 0 
-    ? portfolios.reduce((sum, p) => sum + ((p.growth || 0) * (p.balance || 0)), 0) / Math.max(totalValue, 1)
+    ? portfolios.reduce((sum, p) => sum + (p.growth || 0), 0) / portfolios.length
     : 0;
 
   const timeframes = ['All', '1W', '1M', '6M', '1Y'];
@@ -193,9 +198,9 @@ export const Home: React.FC = () => {
                           {portfolioItem.name}
                         </h3>
                         <div className="flex items-center gap-2 text-body-small text-neutral-600">
-                          <span>Risk: {portfolioItem.riskLevel}</span>
+                          <span>Risk: {portfolioItem.riskLevel || 'Moderate'}</span>
                           <span>•</span>
-                          <span>{portfolioItem.riskScore}/5</span>
+                          <span>{portfolioItem.riskScore || 3}/5</span>
                         </div>
                       </div>
                       <button
@@ -210,7 +215,7 @@ export const Home: React.FC = () => {
                     {/* Portfolio Value */}
                     <div className="mb-3 min-h-[60px] flex flex-col justify-center">
                       <p className="text-headline-small font-headline font-semi-bold text-neutral-900 mb-1">
-                        ${portfolioItem.balance > 0 ? portfolioItem.balance.toLocaleString() : '0'}
+                        ${portfolioItem.totalValue.toLocaleString()}
                       </p>
                       <div className="flex items-center gap-2">
                         <TrendingUp className={`w-4 h-4 ${getGrowthColor(portfolioItem.growth || 0)}`} />
@@ -223,7 +228,7 @@ export const Home: React.FC = () => {
                     {/* Expected Return */}
                     <div className="flex justify-between items-center text-body-small text-neutral-600 min-h-[20px]">
                       <span>Expected Return</span>
-                      <span className="font-medium text-neutral-900">{portfolioItem.expectedReturn}%</span>
+                      <span className="font-medium text-neutral-900">{portfolioItem.expectedReturn?.toFixed(1) || '6.5'}%</span>
                     </div>
                   </div>
 

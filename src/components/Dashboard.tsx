@@ -59,14 +59,18 @@ export const Dashboard: React.FC = () => {
     setCurrentStep('home');
   };
 
-  const handleAddValue = (e: React.FormEvent) => {
+  const handleAddValue = async (e: React.FormEvent) => {
     e.preventDefault();
     const value = parseFloat(portfolioValue.replace(/[,$]/g, ''));
     if (value && value > 0) {
-      const { updatePortfolioBalance } = useInvestmentStore.getState();
-      updatePortfolioBalance(portfolio.id, value);
-      setPortfolioValue('');
-      setShowAddValueForm(false);
+      try {
+        const { updatePortfolioBalance } = useInvestmentStore.getState();
+        await updatePortfolioBalance(portfolio.id, value);
+        setPortfolioValue('');
+        setShowAddValueForm(false);
+      } catch (error) {
+        console.error('Failed to update portfolio balance:', error);
+      }
     }
   };
 

@@ -23,28 +23,74 @@ export interface CreatePortfolioRequest {
   };
 }
 
-export interface PortfolioResponse {
+export interface Holding {
   id: string;
-  name: string;
-  riskTolerance: string;
-  investmentGoal: string;
-  timeHorizon: string;
-  initialInvestment: number;
-  monthlyContribution?: number;
-  sectors?: string[];
-  restrictions?: string[];
-  allocation?: Array<{
-    assetClass: string;
+  symbol: {
+    ticker: string;
+    name: string;
+    exchange?: string;
+  };
+  targetAllocation: {
     percentage: number;
-    description?: string;
-  }>;
-  expectedReturn?: number;
-  riskScore?: number;
-  managementFee?: number;
-  reasoning?: string;
+  };
+  currentAllocation: {
+    percentage: number;
+  };
+  shares: number;
+  marketValue: number;
+  averageCostBasis: number;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface InvestmentProfile {
+  riskTolerance: string;
+  investmentGoals: string[];
+  experience: {
+    yearsExperience: number;
+    hasStockExperience: boolean;
+    hasBondExperience: boolean;
+    hasOptionsExperience: boolean;
+    hasInternationalExperience: boolean;
+    hasAlternativeExperience: boolean;
+  };
+  financialSituation: {
+    annualIncome: number;
+    netWorth: number;
+    liquidAssets: number;
+    monthlyExpenses: number;
+    employmentStatus: string;
+    hasEmergencyFund: boolean;
+    hasDebt: boolean;
+  };
+  preferences: {
+    preferredSectors: string[];
+    excludedSectors: string[];
+    esgFocused: boolean;
+    preferDividendStocks: boolean;
+    internationalExposure: boolean;
+    maxSinglePositionPercent: number;
+    rebalanceFrequency: string;
+  };
+  questionsAnswered: boolean;
+}
+
+export interface PortfolioResponse {
+  id: string;
   userId: string;
+  accountId?: string;
+  name: string;
+  description?: string;
+  status: string;
+  holdingsData: Record<string, any>; // JSON object containing holdings
+  totalValue: number;
+  rebalanceThreshold: number;
+  created_at: string;
+  updated_at: string;
+  created_by: string;
+  updated_by: string;
+  investmentProfile: string; // JSON string from database
+  cashBalance: number;
 }
 
 export interface ApiError {
@@ -57,10 +103,18 @@ class PortfolioService {
   private getAuthHeaders(): Record<string, string> {
     const token = localStorage.getItem('aivestie_token');
     const tokenType = localStorage.getItem('aivestie_token_type') || 'Bearer';
-    return {
+    const headers = {
       'Content-Type': 'application/json',
       ...(token && { 'Authorization': `${tokenType} ${token}` }),
     };
+    
+    console.log('Portfolio service auth headers:', { 
+      hasToken: !!token, 
+      tokenType,
+      headers: Object.keys(headers)
+    });
+    
+    return headers;
   }
 
   private async handleErrorResponse(response: Response, defaultMessage: string): Promise<never> {
@@ -203,6 +257,38 @@ class PortfolioService {
       return data;
     } catch (error) {
       console.error('Update portfolio error:', error);
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new Error('Unable to connect to server. Please check your internet connection.');
+      }
+      throw error;
+    }
+  }
+
+  async addBalance(portfolioId: string, amount: number): Promise<PortfolioResponse> {
+    try {
+      console.log('=== ADD BALANCE API CALL ===');
+      console.log('Adding balance to portfolio:', portfolioId);
+      console.log('Amount:', amount);
+      console.log('API URL:', `${API_BASE_URL}/portfolios/${portfolioId}/add-balance`);
+      
+      const response = await fetch(`${API_BASE_URL}/portfolios/${portfolioId}/add-balance`, {
+        method: 'POST',
+        headers: this.getAuthHeaders(),
+        body: JSON.stringify({ amount }),
+      });
+
+      console.log('Add balance response status:', response.status);
+
+      if (!response.ok) {
+        await this.handleErrorResponse(response, 'Failed to add balance to portfolio');
+      }
+
+      const data = await response.json();
+      console.log('Add balance API response:', data);
+      
+      return data;
+    } catch (error) {
+      console.error('Add balance error:', error);
       if (error instanceof TypeError && error.message.includes('fetch')) {
         throw new Error('Unable to connect to server. Please check your internet connection.');
       }
