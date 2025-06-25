@@ -607,11 +607,29 @@ function convertApiResponseToPortfolio(
   // Parse investmentProfile JSON string
   let parsedProfile: InvestmentProfile;
   try {
-    parsedProfile = typeof apiResponse.investmentProfile === 'string' 
-      ? JSON.parse(apiResponse.investmentProfile) 
-      : apiResponse.investmentProfile;
+    console.log('Raw investmentProfile from API:', apiResponse.investmentProfile);
+    console.log('Type of investmentProfile:', typeof apiResponse.investmentProfile);
+    
+    if (typeof apiResponse.investmentProfile === 'string') {
+      parsedProfile = JSON.parse(apiResponse.investmentProfile);
+    } else if (apiResponse.investmentProfile && typeof apiResponse.investmentProfile === 'object') {
+      parsedProfile = apiResponse.investmentProfile as InvestmentProfile;
+    } else {
+      throw new Error('Invalid investmentProfile format');
+    }
+    
+    console.log('Parsed investmentProfile:', parsedProfile);
+    
+    // Validate required fields
+    if (!parsedProfile.riskTolerance) {
+      console.warn('Missing riskTolerance in parsed profile, using default');
+      parsedProfile.riskTolerance = 'moderate';
+    }
+    
   } catch (error) {
     console.error('Failed to parse investmentProfile:', error);
+    console.error('Raw data:', apiResponse.investmentProfile);
+    
     // Fallback to default profile
     parsedProfile = {
       riskTolerance: 'moderate',
@@ -728,7 +746,7 @@ function getAssetColor(assetClass: string, index: number): string {
     "developed markets": "#065AC7",
     "government bonds": "#044AA7",
     "corporate bonds": "#065AC7",
-    reits: "#6699DB",
+    "real estate investment trusts": "#6699DB",
     technology: "#042963",
     healthcare: "#044AA7",
     energy: "#065AC7",
@@ -782,7 +800,7 @@ function generateDefaultAllocation(
         { name: "Large Cap Stocks", percentage: 40, color: "#042963" },
         { name: "Bonds", percentage: 30, color: "#044AA7" },
         { name: "International Stocks", percentage: 20, color: "#065AC7" },
-        { name: "REITs", percentage: 10, color: "#6699DB" },
+        { name: "Real Estate", percentage: 10, color: "#6699DB" },
       ];
   }
 }
@@ -836,7 +854,7 @@ function getRiskLevelFromScore(riskScore: number): string {
 }
 
 
-// Keep the original local generation function as fallback
+// Keep the original local generation function as fallback - used for local portfolio generation
 function calculateRiskScore(answers: QuestionnaireAnswers): number {
   let score = 0;
 
