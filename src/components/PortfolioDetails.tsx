@@ -109,9 +109,12 @@ export const PortfolioDetails: React.FC = () => {
               <div className="grid lg:grid-cols-3 gap-8 mb-8">
                 <div className="lg:col-span-2">
                   <h2 className="text-title-large font-headline font-semi-bold text-neutral-900 mb-6">
-                    Current Allocation
+                    {portfolio.holdings && portfolio.holdings.length > 0 ? 'Current Holdings' : 'Current Allocation'}
                   </h2>
-                  <PortfolioChart allocation={portfolio.allocation} />
+                  <PortfolioChart 
+                    allocation={portfolio.allocation} 
+                    holdings={portfolio.holdings}
+                  />
                 </div>
 
                 <div className="space-y-6">
@@ -121,7 +124,7 @@ export const PortfolioDetails: React.FC = () => {
                       <div>
                         <p className="text-body-small text-neutral-600">Current Value</p>
                         <p className="text-headline-medium font-headline font-semi-bold text-neutral-900">
-                          ${portfolio.balance.toLocaleString()}
+                          ${portfolio.totalValue.toLocaleString()}
                         </p>
                       </div>
                       <div className="flex items-center gap-2">
@@ -176,25 +179,73 @@ export const PortfolioDetails: React.FC = () => {
                   </div>
 
                   <div className="bg-neutral-100/80 backdrop-blur-sm rounded-lg p-6">
-                    <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-4">Asset Breakdown</h3>
+                    <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-4">
+                      {portfolio.holdings && portfolio.holdings.length > 0 ? 'Holdings Breakdown' : 'Asset Breakdown'}
+                    </h3>
                     <div className="space-y-3">
-                      {portfolio.allocation.map((asset, index) => (
-                        <div key={index} className="flex items-center justify-between py-2">
-                          <div className="flex items-center gap-3">
-                            <div 
-                              className="w-4 h-4 rounded-full" 
-                              style={{ backgroundColor: asset.color }}
-                            />
-                            <span className="text-label-large font-medium text-neutral-800">{asset.name}</span>
+                      {portfolio.holdings && portfolio.holdings.length > 0 ? (
+                        portfolio.holdings.map((holding, index) => {
+                          const colors = ['#042963', '#044AA7', '#065AC7', '#6699DB', '#CBDCF3', '#2563EB', '#3B82F6', '#60A5FA', '#93C5FD', '#DBEAFE'];
+                          const color = colors[index % colors.length];
+                          const gainLoss = holding.marketValue - (holding.shares * holding.averageCostBasis);
+                          const gainLossPercentage = holding.shares * holding.averageCostBasis > 0 
+                            ? (gainLoss / (holding.shares * holding.averageCostBasis)) * 100 
+                            : 0;
+                          
+                          return (
+                            <div key={holding.id} className="flex items-center justify-between py-3 border-b border-neutral-200 last:border-b-0">
+                              <div className="flex items-center gap-3 flex-1">
+                                <div 
+                                  className="w-4 h-4 rounded-full" 
+                                  style={{ backgroundColor: color }}
+                                />
+                                <div className="flex-1">
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-label-large font-medium text-neutral-800">
+                                      {holding.symbol.name || holding.symbol.ticker}
+                                    </span>
+                                    <span className="text-body-small text-neutral-500 bg-neutral-200 px-2 py-1 rounded">
+                                      {holding.symbol.ticker}
+                                    </span>
+                                  </div>
+                                  <p className="text-body-small text-neutral-600">
+                                    {holding.shares} shares @ ${holding.averageCostBasis.toFixed(2)} avg
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <p className="text-label-large font-medium text-neutral-900">
+                                  {holding.currentAllocation.percentage.toFixed(1)}%
+                                </p>
+                                <p className="text-body-small text-neutral-500">
+                                  ${holding.marketValue.toLocaleString()}
+                                </p>
+                                <p className={`text-body-small ${gainLoss >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                  {gainLoss >= 0 ? '+' : ''}${gainLoss.toFixed(2)} ({gainLossPercentage.toFixed(1)}%)
+                                </p>
+                              </div>
+                            </div>
+                          );
+                        })
+                      ) : (
+                        portfolio.allocation.map((asset, index) => (
+                          <div key={index} className="flex items-center justify-between py-2">
+                            <div className="flex items-center gap-3">
+                              <div 
+                                className="w-4 h-4 rounded-full" 
+                                style={{ backgroundColor: asset.color }}
+                              />
+                              <span className="text-label-large font-medium text-neutral-800">{asset.name}</span>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-label-large font-medium text-neutral-900">{asset.percentage}%</p>
+                              <p className="text-body-small text-neutral-500">
+                                ${((portfolio.totalValue * asset.percentage) / 100).toLocaleString()}
+                              </p>
+                            </div>
                           </div>
-                          <div className="text-right">
-                            <p className="text-label-large font-medium text-neutral-900">{asset.percentage}%</p>
-                            <p className="text-body-small text-neutral-500">
-                              ${((portfolio.balance * asset.percentage) / 100).toLocaleString()}
-                            </p>
-                          </div>
-                        </div>
-                      ))}
+                        ))
+                      )}
                     </div>
                   </div>
                 </div>
