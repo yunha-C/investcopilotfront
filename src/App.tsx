@@ -12,7 +12,7 @@ import { Home } from './components/Home';
 
 function App() {
   const { currentStep, updatePortfolioBalance, setCurrentStep, portfolio, loadUserPortfolios } = useInvestmentStore();
-  const { isAuthenticated, checkAuthStatus, user } = useAuthStore();
+  const { isAuthenticated, checkAuthStatus, user, isLoading } = useAuthStore();
 
   // Check authentication status on app load
   useEffect(() => {
@@ -79,7 +79,14 @@ function App() {
       
       {/* Main Content */}
       <div className="relative z-10">
-        {!isAuthenticated ? (
+        {isLoading ? (
+          <div className="min-h-screen flex items-center justify-center">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <p className="text-gray-600">Loading...</p>
+            </div>
+          </div>
+        ) : !isAuthenticated ? (
           <AuthPage onAuthenticated={handleAuthenticated} />
         ) : (
           <>

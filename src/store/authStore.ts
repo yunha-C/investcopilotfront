@@ -33,7 +33,7 @@ interface AuthState {
 export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
   isAuthenticated: false,
-  isLoading: false,
+  isLoading: true, // Start with loading state to prevent flash
   error: null,
 
   login: async (email: string, password: string) => {
@@ -195,7 +195,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     const storedUser = localStorage.getItem('aivestie_user');
     
     if (!token || !storedUser) {
-      set({ isAuthenticated: false, user: null });
+      set({ isAuthenticated: false, user: null, isLoading: false });
       return;
     }
 
@@ -214,11 +214,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         };
         
         localStorage.setItem('aivestie_user', JSON.stringify(userData));
-        set({ user: userData, isAuthenticated: true });
+        set({ user: userData, isAuthenticated: true, isLoading: false });
       } catch (error) {
         // Refresh failed, clear auth state
         authService.logout();
-        set({ user: null, isAuthenticated: false });
+        set({ user: null, isAuthenticated: false, isLoading: false });
       }
       return;
     }
@@ -240,15 +240,15 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         };
         
         localStorage.setItem('aivestie_user', JSON.stringify(updatedUserData));
-        set({ user: updatedUserData, isAuthenticated: true });
+        set({ user: updatedUserData, isAuthenticated: true, isLoading: false });
       } catch (apiError) {
         // API call failed, but token exists, use stored data
-        set({ user: userData, isAuthenticated: true });
+        set({ user: userData, isAuthenticated: true, isLoading: false });
       }
     } catch (error) {
       // Invalid stored data, clear auth state
       authService.logout();
-      set({ user: null, isAuthenticated: false });
+      set({ user: null, isAuthenticated: false, isLoading: false });
     }
   },
 
