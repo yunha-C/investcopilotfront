@@ -74,6 +74,50 @@ export const Home: React.FC = () => {
     return 'text-neutral-600'; // Neutral color for 0 growth
   };
 
+  // Generate growth chart for individual portfolios
+  const generatePortfolioGrowthChart = (portfolioItem: any) => {
+    const growth = portfolioItem.growth || 0;
+    const isPositive = growth >= 0;
+    
+    return (
+      <div className="h-16 bg-gradient-to-b from-neutral-50/30 to-neutral-100/30 rounded-sm p-2 relative overflow-hidden">
+        <svg 
+          className="absolute inset-0 w-full h-full" 
+          viewBox="0 0 200 64" 
+          preserveAspectRatio="none"
+        >
+          <defs>
+            <linearGradient id={`portfolioGradient-${portfolioItem.id}`} x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor={isPositive ? "#044AA7" : "#f44336"} stopOpacity="0.1" />
+              <stop offset="100%" stopColor={isPositive ? "#044AA7" : "#f44336"} stopOpacity="0.02" />
+            </linearGradient>
+          </defs>
+          
+          <path
+            d={isPositive 
+              ? "M0,50 C30,48 60,45 90,42 C120,39 150,36 180,33 C190,32 195,31 200,30 L200,64 L0,64 Z"
+              : "M0,30 C30,32 60,35 90,38 C120,41 150,44 180,47 C190,48 195,49 200,50 L200,64 L0,64 Z"
+            }
+            fill={`url(#portfolioGradient-${portfolioItem.id})`}
+            className="transition-all duration-1000 ease-out"
+          />
+          
+          <path
+            d={isPositive 
+              ? "M0,50 C30,48 60,45 90,42 C120,39 150,36 180,33 C190,32 195,31 200,30"
+              : "M0,30 C30,32 60,35 90,38 C120,41 150,44 180,47 C190,48 195,49 200,50"
+            }
+            fill="none"
+            stroke={isPositive ? "#044AA7" : "#f44336"}
+            strokeWidth="1"
+            strokeOpacity="0.3"
+            className="transition-all duration-1000 ease-out"
+          />
+        </svg>
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-white/50 via-white/30 to-white/20">
       {/* Hero Section */}
@@ -91,9 +135,9 @@ export const Home: React.FC = () => {
               </span>
             </div>
             
-            {/* Smooth Wave Chart */}
+            {/* Subtle Wave Chart */}
             <div className="max-w-lg mx-auto mb-4">
-              <div className="h-32 bg-gradient-to-b from-neutral-50 to-neutral-100 rounded-lg p-4 relative overflow-hidden">
+              <div className="h-32 bg-gradient-to-b from-neutral-50/20 to-neutral-100/20 rounded-lg p-4 relative overflow-hidden">
                 <svg 
                   className="absolute inset-0 w-full h-full" 
                   viewBox="0 0 400 128" 
@@ -101,8 +145,8 @@ export const Home: React.FC = () => {
                 >
                   <defs>
                     <linearGradient id="waveGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" stopColor="#044AA7" stopOpacity="0.3" />
-                      <stop offset="100%" stopColor="#044AA7" stopOpacity="0.05" />
+                      <stop offset="0%" stopColor="#044AA7" stopOpacity="0.15" />
+                      <stop offset="100%" stopColor="#044AA7" stopOpacity="0.02" />
                     </linearGradient>
                   </defs>
                   
@@ -116,7 +160,8 @@ export const Home: React.FC = () => {
                     d="M0,90 C50,85 100,75 150,70 C200,65 250,60 300,55 C350,50 380,45 400,40"
                     fill="none"
                     stroke="#044AA7"
-                    strokeWidth="2"
+                    strokeWidth="1.5"
+                    strokeOpacity="0.2"
                     className="transition-all duration-1000 ease-out"
                   />
                 </svg>
@@ -124,7 +169,7 @@ export const Home: React.FC = () => {
               
               {/* Timeline Buttons */}
               <div className="flex justify-center mt-4">
-                <div className="bg-neutral-100 rounded-full p-1 flex gap-1">
+                <div className="bg-neutral-100/50 rounded-full p-1 flex gap-1">
                   {timeframes.map((timeframe) => (
                     <button
                       key={timeframe}
@@ -132,7 +177,7 @@ export const Home: React.FC = () => {
                       className={`px-4 py-2 rounded-full text-body-small font-medium transition-all ${
                         selectedTimeframe === timeframe
                           ? 'bg-neutral-900 text-white shadow-sm'
-                          : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-200'
+                          : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-200/50'
                       }`}
                     >
                       {timeframe}
@@ -207,16 +252,21 @@ export const Home: React.FC = () => {
                     </div>
                     
                     {/* Portfolio Value */}
-                    <div className="mb-4 min-h-[60px] flex flex-col justify-center">
+                    <div className="mb-3 min-h-[60px] flex flex-col justify-center">
                       <p className="text-headline-small font-headline font-semi-bold text-neutral-900 mb-1">
                         ${portfolioItem.balance > 0 ? portfolioItem.balance.toLocaleString() : '0'}
                       </p>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 mb-2">
                         <TrendingUp className={`w-4 h-4 ${getGrowthColor(portfolioItem.growth || 0)}`} />
                         <span className={`${getGrowthColor(portfolioItem.growth || 0)} text-label-large font-medium`}>
                           {(portfolioItem.growth || 0) >= 0 ? '+' : ''}{(portfolioItem.growth || 0).toFixed(1)}%
                         </span>
                       </div>
+                    </div>
+
+                    {/* Individual Portfolio Growth Chart */}
+                    <div className="mb-4">
+                      {generatePortfolioGrowthChart(portfolioItem)}
                     </div>
 
                     {/* Expected Return */}

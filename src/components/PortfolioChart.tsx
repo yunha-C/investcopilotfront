@@ -34,10 +34,11 @@ export const PortfolioChart: React.FC<PortfolioChartProps> = ({ allocation, size
             labelLine={false}
             label={size === 'large' ? renderCustomizedLabel : false}
             outerRadius={size === 'small' ? 80 : 120}
+            innerRadius={size === 'small' ? 40 : 60} // Add inner radius for donut chart style
             fill="#8884d8"
             dataKey="value"
             stroke="white"
-            strokeWidth={2}
+            strokeWidth={3} // Increase stroke width for better separation
           >
             {data.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={entry.color} />

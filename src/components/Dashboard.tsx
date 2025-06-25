@@ -86,6 +86,50 @@ export const Dashboard: React.FC = () => {
     return 'text-neutral-600'; // Neutral color for 0 growth
   };
 
+  // Generate growth chart for dashboard
+  const generateDashboardGrowthChart = () => {
+    const growth = portfolio.growth || 0;
+    const isPositive = growth >= 0;
+    
+    return (
+      <div className="h-20 bg-gradient-to-b from-neutral-50/20 to-neutral-100/20 rounded-sm p-3 relative overflow-hidden mb-4">
+        <svg 
+          className="absolute inset-0 w-full h-full" 
+          viewBox="0 0 300 80" 
+          preserveAspectRatio="none"
+        >
+          <defs>
+            <linearGradient id="dashboardGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor={isPositive ? "#044AA7" : "#f44336"} stopOpacity="0.08" />
+              <stop offset="100%" stopColor={isPositive ? "#044AA7" : "#f44336"} stopOpacity="0.01" />
+            </linearGradient>
+          </defs>
+          
+          <path
+            d={isPositive 
+              ? "M0,60 C40,58 80,55 120,52 C160,49 200,46 240,43 C270,41 285,40 300,39 L300,80 L0,80 Z"
+              : "M0,39 C40,41 80,44 120,47 C160,50 200,53 240,56 C270,58 285,59 300,60 L300,80 L0,80 Z"
+            }
+            fill="url(#dashboardGradient)"
+            className="transition-all duration-1000 ease-out"
+          />
+          
+          <path
+            d={isPositive 
+              ? "M0,60 C40,58 80,55 120,52 C160,49 200,46 240,43 C270,41 285,40 300,39"
+              : "M0,39 C40,41 80,44 120,47 C160,50 200,53 240,56 C270,58 285,59 300,60"
+            }
+            fill="none"
+            stroke={isPositive ? "#044AA7" : "#f44336"}
+            strokeWidth="1.5"
+            strokeOpacity="0.2"
+            className="transition-all duration-1000 ease-out"
+          />
+        </svg>
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-white/50 via-white/30 to-white/20">
       <div className="px-4 py-8">
@@ -122,13 +166,15 @@ export const Dashboard: React.FC = () => {
                       <p className="text-headline-small font-headline font-semi-bold text-neutral-900">
                         ${portfolio.balance.toLocaleString()}
                       </p>
-                      <div className="flex items-center gap-2 mt-2">
+                      <div className="flex items-center gap-2 mt-1 mb-4">
                         <TrendingUp className={`w-4 h-4 ${getGrowthColor(portfolio.growth || 0)}`} />
                         <span className={`${getGrowthColor(portfolio.growth || 0)} text-label-large font-medium`}>
                           {(portfolio.growth || 0) >= 0 ? '+' : ''}{(portfolio.growth || 0).toFixed(1)}%
                         </span>
                         <span className="text-neutral-500 text-body-small">+$320.00</span>
                       </div>
+                      {/* Growth Chart */}
+                      {generateDashboardGrowthChart()}
                     </>
                   ) : (
                     <div className="text-center py-6">
@@ -164,39 +210,44 @@ export const Dashboard: React.FC = () => {
                 </div>
               </div>
               
-              {/* Portfolio Chart */}
-              <div>
-                <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-4">
-                  Asset Allocation
-                </h3>
-                <PortfolioChart allocation={portfolio.allocation} size="small" />
-              </div>
+              {/* Portfolio Chart and Asset Breakdown */}
+              <div className="lg:col-span-2">
+                <div className="grid lg:grid-cols-2 gap-6">
+                  {/* Asset Allocation Chart */}
+                  <div>
+                    <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-4">
+                      Asset Allocation
+                    </h3>
+                    <PortfolioChart allocation={portfolio.allocation} size="small" />
+                  </div>
 
-              {/* Asset Breakdown */}
-              <div>
-                <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-4">
-                  Asset Breakdown
-                </h3>
-                <div className="space-y-1">
-                  {portfolio.allocation.map((asset, index) => (
-                    <div key={index} className="flex items-center justify-between py-1">
-                      <div className="flex items-center gap-3">
-                        <div 
-                          className="w-4 h-4 rounded-full" 
-                          style={{ backgroundColor: asset.color }}
-                        />
-                        <span className="text-label-large font-medium text-neutral-800">{asset.name}</span>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-label-large font-medium text-neutral-900">{asset.percentage}%</p>
-                        {hasValue && (
-                          <p className="text-body-small text-neutral-500">
-                            ${((portfolio.balance * asset.percentage) / 100).toLocaleString()}
-                          </p>
-                        )}
-                      </div>
+                  {/* Asset Breakdown */}
+                  <div>
+                    <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-4">
+                      Asset Breakdown
+                    </h3>
+                    <div className="space-y-1">
+                      {portfolio.allocation.map((asset, index) => (
+                        <div key={index} className="flex items-center justify-between py-1">
+                          <div className="flex items-center gap-3">
+                            <div 
+                              className="w-4 h-4 rounded-full" 
+                              style={{ backgroundColor: asset.color }}
+                            />
+                            <span className="text-label-large font-medium text-neutral-800">{asset.name}</span>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-label-large font-medium text-neutral-900">{asset.percentage}%</p>
+                            {hasValue && (
+                              <p className="text-body-small text-neutral-500">
+                                ${((portfolio.balance * asset.percentage) / 100).toLocaleString()}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  ))}
+                  </div>
                 </div>
               </div>
             </div>
@@ -208,9 +259,29 @@ export const Dashboard: React.FC = () => {
               <Shield className="w-5 h-5 text-neutral-700" />
               <h3 className="text-title-large font-headline font-semi-bold text-neutral-900">AI Strategy Reasoning</h3>
             </div>
-            <p className="text-body-medium text-neutral-700 leading-relaxed">
-              {portfolio.reasoning}
-            </p>
+            <div className="space-y-3">
+              <p className="text-body-medium text-neutral-700 leading-relaxed">
+                {portfolio.reasoning}
+              </p>
+              {/* Keyword Analysis */}
+              <div className="bg-neutral-100 rounded-lg p-4">
+                <h4 className="text-label-large font-medium text-neutral-900 mb-2">Key Strategy Elements</h4>
+                <div className="flex flex-wrap gap-2">
+                  <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-body-small font-medium">
+                    Risk Level: {portfolio.riskLevel}
+                  </span>
+                  <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-body-small font-medium">
+                    Target Return: {portfolio.expectedReturn}%
+                  </span>
+                  <span className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-body-small font-medium">
+                    Diversification: {portfolio.allocation.length} Assets
+                  </span>
+                  <span className="px-3 py-1 bg-orange-100 text-orange-800 rounded-full text-body-small font-medium">
+                    Fee: {portfolio.managementFee}% Annual
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className="grid lg:grid-cols-2 gap-6 mb-8">
