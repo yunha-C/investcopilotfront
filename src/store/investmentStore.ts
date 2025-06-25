@@ -757,14 +757,13 @@ function convertApiResponseToPortfolio(
       });
     });
 
-    // Add cash allocation if holdings don't add up to 100%
-    const totalHoldingsPercentage = allocation.reduce(
-      (sum, item) => sum + item.percentage,
-      0
-    );
-    const cashPercentage = Math.max(0, 100 - totalHoldingsPercentage);
+    // Add cash allocation based on actual cash balance from API
+    const totalValue = apiResponse.totalValue || 0;
+    const cashBalance = apiResponse.cashBalance || 0;
+    const cashPercentage = totalValue > 0 ? (cashBalance / totalValue) * 100 : 0;
 
-    console.log("Total holdings percentage:", totalHoldingsPercentage);
+    console.log("Total portfolio value:", totalValue);
+    console.log("Cash balance:", cashBalance);
     console.log("Calculated cash percentage:", cashPercentage);
 
     if (cashPercentage > 0) {
