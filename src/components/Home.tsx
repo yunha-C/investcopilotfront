@@ -10,6 +10,7 @@ export const Home: React.FC = () => {
   const [showAddValueModal, setShowAddValueModal] = useState(false);
   const [selectedPortfolioForValue, setSelectedPortfolioForValue] = useState<any>(null);
   const [portfolioValue, setPortfolioValue] = useState('');
+  const [isAddingValue, setIsAddingValue] = useState(false);
 
   // Clear any errors when component mounts
   useEffect(() => {
@@ -52,6 +53,7 @@ export const Home: React.FC = () => {
     e.preventDefault();
     const value = parseFloat(portfolioValue.replace(/[,$]/g, ''));
     if (value && value > 0 && selectedPortfolioForValue) {
+      setIsAddingValue(true);
       try {
         await updatePortfolioBalance(selectedPortfolioForValue.id, value);
         setPortfolioValue('');
@@ -60,6 +62,8 @@ export const Home: React.FC = () => {
       } catch (error) {
         console.error('Failed to update portfolio balance:', error);
         // Error is handled by the store, but we can add user feedback here if needed
+      } finally {
+        setIsAddingValue(false);
       }
     }
   };
@@ -323,18 +327,23 @@ export const Home: React.FC = () => {
               <div className="flex gap-3">
                 <button
                   type="submit"
-                  className="flex-1 bg-neutral-900 text-white py-3 px-4 rounded-lg text-label-large font-medium hover:bg-neutral-800 transition-colors"
+                  disabled={isAddingValue}
+                  className="flex-1 bg-neutral-900 text-white py-3 px-4 rounded-lg text-label-large font-medium hover:bg-neutral-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
-                  Add Value
+                  {isAddingValue && (
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  )}
+                  {isAddingValue ? 'Adding...' : 'Add Value'}
                 </button>
                 <button
                   type="button"
+                  disabled={isAddingValue}
                   onClick={() => {
                     setShowAddValueModal(false);
                     setSelectedPortfolioForValue(null);
                     setPortfolioValue('');
                   }}
-                  className="px-4 py-3 border border-neutral-300 rounded-lg hover:bg-neutral-100 transition-colors text-label-large"
+                  className="px-4 py-3 border border-neutral-300 rounded-lg hover:bg-neutral-100 transition-colors text-label-large disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Cancel
                 </button>
