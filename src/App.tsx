@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useInvestmentStore } from './store/investmentStore';
 import { useAuthStore } from './store/authStore';
 import { Header } from './components/Header';
@@ -48,17 +48,6 @@ function App() {
     }
   }, [isAuthenticated, user, setCurrentStep]); // Removed currentStep and portfolio from deps to prevent loops
 
-  // Simulate portfolio growth over time
-  useEffect(() => {
-    if (!isAuthenticated || !portfolio) return;
-
-    const interval = setInterval(() => {
-      const randomGrowth = Math.random() * 0.1 - 0.05; // Random growth between -0.05% and +0.05%
-      updatePortfolioBalance(10000 + (Math.random() * 400)); // Simulate small balance changes
-    }, 30000); // Update every 30 seconds
-
-    return () => clearInterval(interval);
-  }, [updatePortfolioBalance, isAuthenticated, portfolio]);
 
   const handleAuthenticated = () => {
     console.log('=== AUTHENTICATION SUCCESS ===');
