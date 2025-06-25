@@ -1,4 +1,5 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://investment-api.duckdns.org';
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "https://investment-api.duckdns.org";
 
 export interface CreatePortfolioRequest {
   name: string;
@@ -82,7 +83,7 @@ export interface PortfolioResponse {
   name: string;
   description?: string;
   status: string;
-  holdingsData: Record<string, any>; // JSON object containing holdings
+  holdings: Record<string, any>[]; // JSON object containing holdings
   totalValue: number;
   rebalanceThreshold: number;
   created_at: string;
@@ -101,25 +102,28 @@ export interface ApiError {
 
 class PortfolioService {
   private getAuthHeaders(): Record<string, string> {
-    const token = localStorage.getItem('aivestie_token');
-    const tokenType = localStorage.getItem('aivestie_token_type') || 'Bearer';
+    const token = localStorage.getItem("aivestie_token");
+    const tokenType = localStorage.getItem("aivestie_token_type") || "Bearer";
     const headers = {
-      'Content-Type': 'application/json',
-      ...(token && { 'Authorization': `${tokenType} ${token}` }),
+      "Content-Type": "application/json",
+      ...(token && { Authorization: `${tokenType} ${token}` }),
     };
-    
-    console.log('Portfolio service auth headers:', { 
-      hasToken: !!token, 
+
+    console.log("Portfolio service auth headers:", {
+      hasToken: !!token,
       tokenType,
-      headers: Object.keys(headers)
+      headers: Object.keys(headers),
     });
-    
+
     return headers;
   }
 
-  private async handleErrorResponse(response: Response, defaultMessage: string): Promise<never> {
+  private async handleErrorResponse(
+    response: Response,
+    defaultMessage: string
+  ): Promise<never> {
     let errorMessage = defaultMessage;
-    
+
     try {
       const errorData = await response.json();
       errorMessage = errorData.detail || errorData.message || defaultMessage;
@@ -135,37 +139,44 @@ class PortfolioService {
         errorMessage = `${defaultMessage} (Status: ${response.status})`;
       }
     }
-    
+
     throw new Error(errorMessage);
   }
 
-  async createPortfolio(portfolioData: CreatePortfolioRequest): Promise<PortfolioResponse> {
+  async createPortfolio(
+    portfolioData: CreatePortfolioRequest
+  ): Promise<PortfolioResponse> {
     try {
-      console.log('=== PORTFOLIO CREATION API CALL ===');
-      console.log('Creating portfolio with data:', portfolioData);
-      console.log('API URL:', `${API_BASE_URL}/portfolios`);
-      
+      console.log("=== PORTFOLIO CREATION API CALL ===");
+      console.log("Creating portfolio with data:", portfolioData);
+      console.log("API URL:", `${API_BASE_URL}/portfolios`);
+
       const response = await fetch(`${API_BASE_URL}/portfolios`, {
-        method: 'POST',
+        method: "POST",
         headers: this.getAuthHeaders(),
         body: JSON.stringify(portfolioData),
       });
 
-      console.log('Portfolio creation response status:', response.status);
-      console.log('Portfolio creation response headers:', Object.fromEntries(response.headers.entries()));
+      console.log("Portfolio creation response status:", response.status);
+      console.log(
+        "Portfolio creation response headers:",
+        Object.fromEntries(response.headers.entries())
+      );
 
       if (!response.ok) {
-        await this.handleErrorResponse(response, 'Failed to create portfolio');
+        await this.handleErrorResponse(response, "Failed to create portfolio");
       }
 
       const data = await response.json();
-      console.log('Portfolio creation API response:', data);
-      
+      console.log("Portfolio creation API response:", data);
+
       return data;
     } catch (error) {
-      console.error('Portfolio creation error:', error);
-      if (error instanceof TypeError && error.message.includes('fetch')) {
-        throw new Error('Unable to connect to server. Please check your internet connection.');
+      console.error("Portfolio creation error:", error);
+      if (error instanceof TypeError && error.message.includes("fetch")) {
+        throw new Error(
+          "Unable to connect to server. Please check your internet connection."
+        );
       }
       throw error;
     }
@@ -173,31 +184,42 @@ class PortfolioService {
 
   async getUserPortfolios(userId: string): Promise<PortfolioResponse[]> {
     try {
-      console.log('=== GET USER PORTFOLIOS API CALL ===');
-      console.log('Fetching portfolios for user:', userId);
-      console.log('API URL:', `${API_BASE_URL}/portfolios/user/${userId}`);
-      
-      const response = await fetch(`${API_BASE_URL}/portfolios/user/${userId}`, {
-        method: 'GET',
-        headers: this.getAuthHeaders(),
-      });
+      console.log("=== GET USER PORTFOLIOS API CALL ===");
+      console.log("Fetching portfolios for user:", userId);
+      console.log("API URL:", `${API_BASE_URL}/portfolios/user/${userId}`);
 
-      console.log('Get portfolios response status:', response.status);
-      console.log('Get portfolios response headers:', Object.fromEntries(response.headers.entries()));
+      const response = await fetch(
+        `${API_BASE_URL}/portfolios/user/${userId}`,
+        {
+          method: "GET",
+          headers: this.getAuthHeaders(),
+        }
+      );
+
+      console.log("Get portfolios response status:", response.status);
+      console.log(
+        "Get portfolios response headers:",
+        Object.fromEntries(response.headers.entries())
+      );
 
       if (!response.ok) {
-        await this.handleErrorResponse(response, 'Failed to fetch user portfolios');
+        await this.handleErrorResponse(
+          response,
+          "Failed to fetch user portfolios"
+        );
       }
 
       const data = await response.json();
-      console.log('Get portfolios API response:', data);
-      
+      console.log("Get portfolios API response:", data);
+
       // Handle both array response and object with portfolios array
-      return Array.isArray(data) ? data : (data.portfolios || []);
+      return Array.isArray(data) ? data : data.portfolios || [];
     } catch (error) {
-      console.error('Get portfolios error:', error);
-      if (error instanceof TypeError && error.message.includes('fetch')) {
-        throw new Error('Unable to connect to server. Please check your internet connection.');
+      console.error("Get portfolios error:", error);
+      if (error instanceof TypeError && error.message.includes("fetch")) {
+        throw new Error(
+          "Unable to connect to server. Please check your internet connection."
+        );
       }
       throw error;
     }
@@ -205,92 +227,119 @@ class PortfolioService {
 
   async getPortfolioById(portfolioId: string): Promise<PortfolioResponse> {
     try {
-      console.log('=== GET PORTFOLIO BY ID API CALL ===');
-      console.log('Fetching portfolio:', portfolioId);
-      console.log('API URL:', `${API_BASE_URL}/portfolios/${portfolioId}`);
-      
-      const response = await fetch(`${API_BASE_URL}/portfolios/${portfolioId}`, {
-        method: 'GET',
-        headers: this.getAuthHeaders(),
-      });
+      console.log("=== GET PORTFOLIO BY ID API CALL ===");
+      console.log("Fetching portfolio:", portfolioId);
+      console.log("API URL:", `${API_BASE_URL}/portfolios/${portfolioId}`);
 
-      console.log('Get portfolio response status:', response.status);
+      const response = await fetch(
+        `${API_BASE_URL}/portfolios/${portfolioId}`,
+        {
+          method: "GET",
+          headers: this.getAuthHeaders(),
+        }
+      );
+
+      console.log("Get portfolio response status:", response.status);
 
       if (!response.ok) {
-        await this.handleErrorResponse(response, 'Failed to fetch portfolio');
+        await this.handleErrorResponse(response, "Failed to fetch portfolio");
       }
 
       const data = await response.json();
-      console.log('Get portfolio API response:', data);
-      
+      console.log("Get portfolio API response:", data);
+
       return data;
     } catch (error) {
-      console.error('Get portfolio error:', error);
-      if (error instanceof TypeError && error.message.includes('fetch')) {
-        throw new Error('Unable to connect to server. Please check your internet connection.');
+      console.error("Get portfolio error:", error);
+      if (error instanceof TypeError && error.message.includes("fetch")) {
+        throw new Error(
+          "Unable to connect to server. Please check your internet connection."
+        );
       }
       throw error;
     }
   }
 
-  async updatePortfolio(portfolioId: string, updateData: Partial<CreatePortfolioRequest>): Promise<PortfolioResponse> {
+  async updatePortfolio(
+    portfolioId: string,
+    updateData: Partial<CreatePortfolioRequest>
+  ): Promise<PortfolioResponse> {
     try {
-      console.log('=== UPDATE PORTFOLIO API CALL ===');
-      console.log('Updating portfolio:', portfolioId);
-      console.log('Update data:', updateData);
-      
-      const response = await fetch(`${API_BASE_URL}/portfolios/${portfolioId}`, {
-        method: 'PUT',
-        headers: this.getAuthHeaders(),
-        body: JSON.stringify(updateData),
-      });
+      console.log("=== UPDATE PORTFOLIO API CALL ===");
+      console.log("Updating portfolio:", portfolioId);
+      console.log("Update data:", updateData);
 
-      console.log('Update portfolio response status:', response.status);
+      const response = await fetch(
+        `${API_BASE_URL}/portfolios/${portfolioId}`,
+        {
+          method: "PUT",
+          headers: this.getAuthHeaders(),
+          body: JSON.stringify(updateData),
+        }
+      );
+
+      console.log("Update portfolio response status:", response.status);
 
       if (!response.ok) {
-        await this.handleErrorResponse(response, 'Failed to update portfolio');
+        await this.handleErrorResponse(response, "Failed to update portfolio");
       }
 
       const data = await response.json();
-      console.log('Update portfolio API response:', data);
-      
+      console.log("Update portfolio API response:", data);
+
       return data;
     } catch (error) {
-      console.error('Update portfolio error:', error);
-      if (error instanceof TypeError && error.message.includes('fetch')) {
-        throw new Error('Unable to connect to server. Please check your internet connection.');
+      console.error("Update portfolio error:", error);
+      if (error instanceof TypeError && error.message.includes("fetch")) {
+        throw new Error(
+          "Unable to connect to server. Please check your internet connection."
+        );
       }
       throw error;
     }
   }
 
-  async addBalance(portfolioId: string, amount: number): Promise<PortfolioResponse> {
+  async addBalance(
+    portfolioId: string,
+    amount: number
+  ): Promise<PortfolioResponse> {
     try {
-      console.log('=== ADD BALANCE API CALL ===');
-      console.log('Adding balance to portfolio:', portfolioId);
-      console.log('Amount:', amount);
-      console.log('API URL:', `${API_BASE_URL}/portfolios/${portfolioId}/add-balance`);
-      
-      const response = await fetch(`${API_BASE_URL}/portfolios/${portfolioId}/add-balance`, {
-        method: 'POST',
-        headers: this.getAuthHeaders(),
-        body: JSON.stringify({ amount }),
-      });
+      console.log("=== ADD BALANCE API CALL ===");
+      console.log("Adding balance to portfolio:", portfolioId);
+      console.log("Amount:", amount);
+      console.log(
+        "API URL:",
+        `${API_BASE_URL}/portfolios/${portfolioId}/add-balance`
+      );
 
-      console.log('Add balance response status:', response.status);
+      const response = await fetch(
+        `${API_BASE_URL}/portfolios/${portfolioId}/add-balance`,
+        {
+          method: "POST",
+          headers: this.getAuthHeaders(),
+          body: JSON.stringify({ amount }),
+        }
+      );
+
+      console.log("Add balance response status:", response.status);
 
       if (!response.ok) {
-        await this.handleErrorResponse(response, 'Failed to add balance to portfolio');
+        await this.handleErrorResponse(
+          response,
+          "Failed to add balance to portfolio"
+        );
       }
 
       const data = await response.json();
-      console.log('Add balance API response:', data);
-      
+      console.log("Add balance API response:", data);
+
       return data;
     } catch (error) {
-      console.error('Add balance error:', error);
-      if (error instanceof TypeError && error.message.includes('fetch')) {
-        throw new Error('Unable to connect to server. Please check your internet connection.');
+      console.error("Add balance error:", error);
+      if (error instanceof TypeError && error.message.includes("fetch")) {
+        throw new Error(
+          "Unable to connect to server. Please check your internet connection."
+        );
       }
       throw error;
     }
@@ -298,25 +347,30 @@ class PortfolioService {
 
   async deletePortfolio(portfolioId: string): Promise<void> {
     try {
-      console.log('=== DELETE PORTFOLIO API CALL ===');
-      console.log('Deleting portfolio:', portfolioId);
-      
-      const response = await fetch(`${API_BASE_URL}/portfolios/${portfolioId}`, {
-        method: 'DELETE',
-        headers: this.getAuthHeaders(),
-      });
+      console.log("=== DELETE PORTFOLIO API CALL ===");
+      console.log("Deleting portfolio:", portfolioId);
 
-      console.log('Delete portfolio response status:', response.status);
+      const response = await fetch(
+        `${API_BASE_URL}/portfolios/${portfolioId}`,
+        {
+          method: "DELETE",
+          headers: this.getAuthHeaders(),
+        }
+      );
+
+      console.log("Delete portfolio response status:", response.status);
 
       if (!response.ok) {
-        await this.handleErrorResponse(response, 'Failed to delete portfolio');
+        await this.handleErrorResponse(response, "Failed to delete portfolio");
       }
 
-      console.log('Portfolio deleted successfully');
+      console.log("Portfolio deleted successfully");
     } catch (error) {
-      console.error('Delete portfolio error:', error);
-      if (error instanceof TypeError && error.message.includes('fetch')) {
-        throw new Error('Unable to connect to server. Please check your internet connection.');
+      console.error("Delete portfolio error:", error);
+      if (error instanceof TypeError && error.message.includes("fetch")) {
+        throw new Error(
+          "Unable to connect to server. Please check your internet connection."
+        );
       }
       throw error;
     }

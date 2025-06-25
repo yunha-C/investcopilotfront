@@ -249,7 +249,9 @@ export const useInvestmentStore = create<InvestmentState>((set, get) => ({
       console.log("Portfolio request to API:", portfolioRequest);
 
       // Call the API to create portfolio
-      const apiResponse = await portfolioService.createPortfolio(portfolioRequest);
+      const apiResponse = await portfolioService.createPortfolio(
+        portfolioRequest
+      );
       console.log("API response received:", apiResponse);
 
       // Convert API response to internal format
@@ -292,11 +294,20 @@ export const useInvestmentStore = create<InvestmentState>((set, get) => ({
       console.log("API portfolios received:", apiPortfolios);
 
       // Convert API portfolios to internal format
-      const portfolios = apiPortfolios.map((apiPortfolio) =>
-        convertApiResponseToPortfolio(apiPortfolio)
-      );
+      const portfolios = apiPortfolios.map((apiPortfolio, index) => {
+        try {
+          console.log(`Converting portfolio ${index + 1}:`, apiPortfolio);
+          const converted = convertApiResponseToPortfolio(apiPortfolio);
+          console.log(`Converted portfolio ${index + 1}:`, converted);
+          return converted;
+        } catch (error) {
+          console.error(`Error converting portfolio ${index + 1}:`, error);
+          console.error("Failed portfolio data:", apiPortfolio);
+          throw error;
+        }
+      });
 
-      console.log("Converted portfolios:", portfolios);
+      console.log("All converted portfolios:", portfolios);
 
       // Set the first portfolio as active if we don't have one
       const currentPortfolio = get().portfolio;
@@ -458,9 +469,7 @@ export const useInvestmentStore = create<InvestmentState>((set, get) => ({
 
       // First check if portfolio exists in local state
       const { portfolios } = get();
-      const localPortfolio = portfolios.find(
-        (p) => p.id === portfolioId
-      );
+      const localPortfolio = portfolios.find((p) => p.id === portfolioId);
 
       if (localPortfolio) {
         console.log("Found portfolio in local state:", localPortfolio.name);
@@ -565,13 +574,13 @@ function getInitialInvestmentFromAnswers(
 
 function getExperienceYears(experience: string): number {
   const experienceYears = {
-    "none": 0,
-    "basic": 1,
-    "intermediate": 3,
-    "advanced": 7,
-    "expert": 15,
+    none: 0,
+    basic: 1,
+    intermediate: 3,
+    advanced: 7,
+    expert: 15,
   };
-  
+
   return experienceYears[experience as keyof typeof experienceYears] || 0;
 }
 
@@ -583,7 +592,7 @@ function getIncomeFromRange(income: string): number {
     "200k-500k": 350000,
     "500k+": 750000,
   };
-  
+
   return incomeRanges[income as keyof typeof incomeRanges] || 0;
 }
 
@@ -595,44 +604,69 @@ function getNetWorthFromRange(netWorth: string): number {
     "1m-5m": 3000000,
     "5m+": 10000000,
   };
-  
+
   return netWorthRanges[netWorth as keyof typeof netWorthRanges] || 0;
 }
 
 function convertApiResponseToPortfolio(
   apiResponse: PortfolioResponse
 ): Portfolio {
-  console.log("Converting API response to portfolio:", apiResponse);
+  console.log("=== CONVERTING API RESPONSE TO PORTFOLIO ===");
+  console.log("Full API response:", apiResponse);
+  console.log("Holdings data type:", typeof apiResponse.holdings);
+  console.log("Holdings data keys:", Object.keys(apiResponse.holdings || {}));
 
   // Parse investmentProfile JSON string
   let parsedProfile: InvestmentProfile;
   try {
-    console.log('Raw investmentProfile from API:', apiResponse.investmentProfile);
-    console.log('Type of investmentProfile:', typeof apiResponse.investmentProfile);
-    
-    if (typeof apiResponse.investmentProfile === 'string') {
-      parsedProfile = JSON.parse(apiResponse.investmentProfile);
-    } else if (apiResponse.investmentProfile && typeof apiResponse.investmentProfile === 'object') {
+    console.log(
+      "Raw investmentProfile from API:",
+      apiResponse.investmentProfile
+    );
+    console.log(
+      "Type of investmentProfile:",
+      typeof apiResponse.investmentProfile
+    );
+
+    if (typeof apiResponse.investmentProfile === "string") {
+      // Handle double-escaped JSON from database
+      let jsonString = apiResponse.investmentProfile;
+
+      // Remove outer quotes if they exist (triple quoted case)
+      if (jsonString.startsWith('"""') && jsonString.endsWith('"""')) {
+        jsonString = jsonString.slice(3, -3);
+      } else if (jsonString.startsWith('"') && jsonString.endsWith('"')) {
+        jsonString = jsonString.slice(1, -1);
+      }
+
+      // Unescape inner quotes
+      jsonString = jsonString.replace(/\\"/g, '"');
+
+      console.log("Cleaned JSON string:", jsonString);
+      parsedProfile = JSON.parse(jsonString);
+    } else if (
+      apiResponse.investmentProfile &&
+      typeof apiResponse.investmentProfile === "object"
+    ) {
       parsedProfile = apiResponse.investmentProfile as InvestmentProfile;
     } else {
-      throw new Error('Invalid investmentProfile format');
+      throw new Error("Invalid investmentProfile format");
     }
-    
-    console.log('Parsed investmentProfile:', parsedProfile);
-    
+
+    console.log("Parsed investmentProfile:", parsedProfile);
+
     // Validate required fields
     if (!parsedProfile.riskTolerance) {
-      console.warn('Missing riskTolerance in parsed profile, using default');
-      parsedProfile.riskTolerance = 'moderate';
+      console.warn("Missing riskTolerance in parsed profile, using default");
+      parsedProfile.riskTolerance = "moderate";
     }
-    
   } catch (error) {
-    console.error('Failed to parse investmentProfile:', error);
-    console.error('Raw data:', apiResponse.investmentProfile);
-    
+    console.error("Failed to parse investmentProfile:", error);
+    console.error("Raw data:", apiResponse.investmentProfile);
+
     // Fallback to default profile
     parsedProfile = {
-      riskTolerance: 'moderate',
+      riskTolerance: "moderate",
       investmentGoals: [],
       experience: {
         yearsExperience: 0,
@@ -647,7 +681,7 @@ function convertApiResponseToPortfolio(
         netWorth: 0,
         liquidAssets: 0,
         monthlyExpenses: 0,
-        employmentStatus: 'employed',
+        employmentStatus: "employed",
         hasEmergencyFund: false,
         hasDebt: false,
       },
@@ -658,28 +692,97 @@ function convertApiResponseToPortfolio(
         preferDividendStocks: false,
         internationalExposure: false,
         maxSinglePositionPercent: 10,
-        rebalanceFrequency: 'quarterly',
+        rebalanceFrequency: "quarterly",
       },
       questionsAnswered: false,
     };
   }
 
-  // Parse holdings from holdingsData (which is currently empty in your example)
+  // Parse holdings from holdingsData
   const holdings: Holding[] = [];
-  const holdingsArray = Object.values(apiResponse.holdingsData || {});
+  const holdingsData = apiResponse.holdings || {};
+  let holdingsArray: any[] = [];
 
-  // Calculate allocation based on real holdings or show cash
-  let allocation: Array<{ name: string; percentage: number; color: string }> = [];
+  if (Array.isArray(holdingsData)) {
+    holdingsArray = holdingsData.map((holding: any, index: number) => [
+      holding.symbol,
+      holding,
+    ]);
+  } else {
+    holdingsArray = Object.entries(holdingsData);
+  }
+
+  console.log("=== PROCESSING HOLDINGS DATA ===");
+  console.log("Holdings data from API:", holdingsData);
+  console.log("Holdings array length:", holdingsArray.length);
+  console.log("Holdings array entries:", holdingsArray);
+
+  // Convert holdings data to Holding format and calculate allocation
+  let allocation: Array<{ name: string; percentage: number; color: string }> =
+    [];
 
   if (holdingsArray.length > 0) {
-    // If we have actual holdings, use them
-    allocation = holdingsArray.map((holding: any, index) => ({
-      name: holding.symbol?.name || holding.symbol?.ticker || `Holding ${index + 1}`,
-      percentage: holding.currentAllocation?.percentage || 0,
-      color: getAssetColor("", index),
-    }));
+    // Parse actual holdings from the database format
+    holdingsArray.forEach(([ticker, holdingData]: [string, any], index) => {
+      console.log(`Processing holding ${ticker}:`, holdingData);
+
+      // Convert to Holding format
+      const holding: Holding = {
+        id: holdingData.id || `holding_${ticker}_${index}`,
+        symbol: {
+          ticker: ticker,
+          name: getTickerName(ticker), // Helper function to get full name
+          exchange: "US",
+        },
+        targetAllocation: {
+          percentage: holdingData.targetAllocation || 0,
+        },
+        currentAllocation: {
+          percentage: holdingData.currentAllocation || 0,
+        },
+        shares: holdingData.shares || 0,
+        marketValue: holdingData.marketValue || 0,
+        averageCostBasis: holdingData.averageCostBasis || 0,
+        createdAt: holdingData.createdAt || new Date().toISOString(),
+        updatedAt: holdingData.updatedAt || new Date().toISOString(),
+      };
+
+      holdings.push(holding);
+
+      // Create allocation entry
+      allocation.push({
+        name: getTickerName(ticker),
+        percentage: holdingData.currentAllocation || 0,
+        color: getAssetColor(ticker, index),
+      });
+    });
+
+    // Add cash allocation if holdings don't add up to 100%
+    const totalHoldingsPercentage = allocation.reduce(
+      (sum, item) => sum + item.percentage,
+      0
+    );
+    const cashPercentage = Math.max(0, 100 - totalHoldingsPercentage);
+
+    console.log("Total holdings percentage:", totalHoldingsPercentage);
+    console.log("Calculated cash percentage:", cashPercentage);
+
+    if (cashPercentage > 0) {
+      allocation.push({
+        name: "Cash",
+        percentage: Math.round(cashPercentage * 10) / 10, // Round to 1 decimal place
+        color: "#CBDCF3",
+      });
+    }
+
+    console.log("Converted holdings:", holdings);
+    console.log("Generated allocation:", allocation);
+    console.log(
+      "Total allocation percentage:",
+      allocation.reduce((sum, item) => sum + item.percentage, 0)
+    );
   } else {
-    // No holdings = all cash (this matches your database example)
+    // No holdings = all cash
     allocation = [
       {
         name: "Cash",
@@ -690,7 +793,9 @@ function convertApiResponseToPortfolio(
   }
 
   // Calculate risk score and level from parsed investment profile
-  const riskScore = calculateRiskScoreFromTolerance(parsedProfile.riskTolerance || "moderate");
+  const riskScore = calculateRiskScoreFromTolerance(
+    parsedProfile.riskTolerance || "moderate"
+  );
   const riskLevel = getRiskLevelFromScore(riskScore);
 
   // Calculate growth based on actual database values
@@ -705,7 +810,7 @@ function convertApiResponseToPortfolio(
     name: apiResponse.name,
     description: apiResponse.description,
     status: apiResponse.status,
-    holdingsData: apiResponse.holdingsData,
+    holdingsData: apiResponse.holdings,
     totalValue: apiResponse.totalValue, // Use actual totalValue from database
     rebalanceThreshold: apiResponse.rebalanceThreshold,
     created_at: apiResponse.created_at,
@@ -716,7 +821,7 @@ function convertApiResponseToPortfolio(
     cashBalance: apiResponse.cashBalance, // Use actual cashBalance from database
 
     // Computed/UI fields
-    holdings,
+    holdings, // Always pass holdings array, even if empty
     allocation,
     reasoning: generateReasoningFromProfile(parsedProfile, apiResponse.name),
     expectedReturn: calculateExpectedReturn(parsedProfile.riskTolerance),
@@ -727,6 +832,38 @@ function convertApiResponseToPortfolio(
     riskScore,
     monthlyFee: (apiResponse.totalValue * 0.0001) / 12,
   };
+}
+
+function getTickerName(ticker: string): string {
+  // Map common tickers to their full names
+  const tickerNames: Record<string, string> = {
+    VTI: "Vanguard Total Stock Market ETF",
+    VXUS: "Vanguard Total International Stock ETF",
+    BND: "Vanguard Total Bond Market ETF",
+    BNDX: "Vanguard Total International Bond ETF",
+    VNQ: "Vanguard Real Estate Index Fund ETF",
+    GSG: "iShares S&P GSCI Commodity-Indexed Trust",
+    SPY: "SPDR S&P 500 ETF Trust",
+    QQQ: "Invesco QQQ Trust",
+    IWM: "iShares Russell 2000 ETF",
+    EFA: "iShares MSCI EAFE ETF",
+    EEM: "iShares MSCI Emerging Markets ETF",
+    TLT: "iShares 20+ Year Treasury Bond ETF",
+    GLD: "SPDR Gold Shares",
+    SLV: "iShares Silver Trust",
+    USO: "United States Oil Fund",
+    DIA: "SPDR Dow Jones Industrial Average ETF Trust",
+    XLF: "Financial Select Sector SPDR Fund",
+    XLK: "Technology Select Sector SPDR Fund",
+    XLE: "Energy Select Sector SPDR Fund",
+    XLV: "Health Care Select Sector SPDR Fund",
+    ARKK: "ARK Innovation ETF",
+    VOO: "Vanguard S&P 500 ETF",
+    VEA: "Vanguard FTSE Developed Markets ETF",
+    VWO: "Vanguard FTSE Emerging Markets ETF",
+  };
+
+  return tickerNames[ticker] || ticker;
 }
 
 function getAssetColor(assetClass: string, index: number): string {
@@ -852,7 +989,6 @@ function getRiskLevelFromScore(riskScore: number): string {
   if (riskScore <= 4.5) return "High";
   return "Very High";
 }
-
 
 // Keep the original local generation function as fallback - used for local portfolio generation
 function calculateRiskScore(answers: QuestionnaireAnswers): number {

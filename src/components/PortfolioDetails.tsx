@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowLeft, TrendingUp, Calendar, ExternalLink, Calculator, Info, Trash2 } from 'lucide-react';
+import { ArrowLeft, TrendingUp, Calendar, ExternalLink, Calculator, Info } from 'lucide-react';
 import { useInvestmentStore } from '../store/investmentStore';
 import { PortfolioChart } from './PortfolioChart';
 
@@ -111,6 +111,12 @@ export const PortfolioDetails: React.FC = () => {
                   <h2 className="text-title-large font-headline font-semi-bold text-neutral-900 mb-6">
                     {portfolio.holdings && portfolio.holdings.length > 0 ? 'Current Holdings' : 'Current Allocation'}
                   </h2>
+                  {/* Debug info */}
+                  <div className="text-xs text-gray-500 mb-2">
+                    Holdings: {portfolio.holdings?.length || 0} | 
+                    Allocation: {portfolio.allocation?.length || 0} | 
+                    Has Holdings Data: {!!portfolio.holdingsData && Object.keys(portfolio.holdingsData).length > 0 ? 'Yes' : 'No'}
+                  </div>
                   <PortfolioChart 
                     allocation={portfolio.allocation} 
                     holdings={portfolio.holdings}
@@ -143,7 +149,7 @@ export const PortfolioDetails: React.FC = () => {
                         </div>
                         <div className="flex justify-between">
                           <span className="text-body-small text-neutral-600">Monthly Fee</span>
-                          <span className="text-body-small font-medium">${portfolio.monthlyFee.toFixed(2)}</span>
+                          <span className="text-body-small font-medium">${portfolio.monthlyFee?.toFixed(2) || '0.00'}</span>
                         </div>
                       </div>
                     </div>
@@ -161,11 +167,11 @@ export const PortfolioDetails: React.FC = () => {
                       </div>
                       <div className="flex justify-between">
                         <span className="text-body-small text-neutral-700">Monthly Fee</span>
-                        <span className="text-body-small font-medium text-neutral-800">${portfolio.monthlyFee.toFixed(2)}</span>
+                        <span className="text-body-small font-medium text-neutral-800">${portfolio.monthlyFee?.toFixed(2) || '0.00'}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-body-small text-neutral-700">Annual Fee</span>
-                        <span className="text-body-small font-medium text-neutral-800">${(portfolio.monthlyFee * 12).toFixed(2)}</span>
+                        <span className="text-body-small font-medium text-neutral-800">${((portfolio.monthlyFee || 0) * 12).toFixed(2)}</span>
                       </div>
                       <div className="pt-2 border-t border-neutral-300">
                         <div className="flex items-start gap-2">
@@ -182,6 +188,10 @@ export const PortfolioDetails: React.FC = () => {
                     <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-4">
                       {portfolio.holdings && portfolio.holdings.length > 0 ? 'Holdings Breakdown' : 'Asset Breakdown'}
                     </h3>
+                    {/* Debug holdings data */}
+                    <div className="text-xs text-gray-500 mb-2">
+                      Raw Holdings Data: {JSON.stringify(portfolio.holdingsData)}
+                    </div>
                     <div className="space-y-3">
                       {portfolio.holdings && portfolio.holdings.length > 0 ? (
                         portfolio.holdings.map((holding, index) => {
