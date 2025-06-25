@@ -267,16 +267,16 @@ export const Dashboard: React.FC = () => {
               <div className="bg-neutral-100 rounded-lg p-4">
                 <h4 className="text-label-large font-medium text-neutral-900 mb-2">Key Strategy Elements</h4>
                 <div className="flex flex-wrap gap-2">
-                  <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-body-small font-medium">
+                  <span className="px-3 py-1 rounded-full text-body-small font-medium" style={{ backgroundColor: '#042963', color: 'white' }}>
                     Risk Level: {portfolio.riskLevel}
                   </span>
-                  <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-body-small font-medium">
+                  <span className="px-3 py-1 rounded-full text-body-small font-medium" style={{ backgroundColor: '#044AA7', color: 'white' }}>
                     Target Return: {portfolio.expectedReturn}%
                   </span>
-                  <span className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-body-small font-medium">
+                  <span className="px-3 py-1 rounded-full text-body-small font-medium" style={{ backgroundColor: '#065AC7', color: 'white' }}>
                     Diversification: {portfolio.allocation.length} Assets
                   </span>
-                  <span className="px-3 py-1 bg-orange-100 text-orange-800 rounded-full text-body-small font-medium">
+                  <span className="px-3 py-1 rounded-full text-body-small font-medium" style={{ backgroundColor: '#6699DB', color: 'white' }}>
                     Fee: {portfolio.managementFee}% Annual
                   </span>
                 </div>
