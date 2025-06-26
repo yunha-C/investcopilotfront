@@ -193,11 +193,24 @@ export const Questionnaire: React.FC = () => {
   };
 
   const handleSectorsContinue = () => {
+    // Require at least one sector selection
+    if (sectors.length === 0) {
+      setValidationError('Please select at least one sector preference or "No sector preference".');
+      return;
+    }
+    
+    setValidationError(null);
     setShowSectors(false);
     setShowRestrictions(true);
   };
 
   const handleSubmit = async () => {
+    // Require at least one restriction selection
+    if (restrictions.length === 0) {
+      setValidationError('Please select at least one investment restriction or "No restrictions".');
+      return;
+    }
+
     const finalAnswers: QuestionnaireAnswers = {
       goal: answers.goal!,
       timeHorizon: answers.timeHorizon!,
@@ -304,7 +317,7 @@ export const Questionnaire: React.FC = () => {
                   Investment Restrictions
                 </h2>
                 <p className="text-body-medium text-neutral-600 mt-1">
-                  Optional: Select up to 3 investment restrictions you prefer
+                  <span className="text-red-600">*Required:</span> Select up to 3 investment restrictions you prefer
                   {restrictions.filter(r => r !== 'none').length > 0 && (
                     <span className="ml-2 text-neutral-500">
                       ({restrictions.filter(r => r !== 'none').length}/3 selected)
@@ -312,6 +325,12 @@ export const Questionnaire: React.FC = () => {
                   )}
                 </p>
               </div>
+
+              {validationError && (
+                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                  <p className="text-red-800 text-body-small">{validationError}</p>
+                </div>
+              )}
 
               <div className="space-y-2 mb-6">
                 {restrictionOptions.map((option) => {
@@ -426,7 +445,7 @@ export const Questionnaire: React.FC = () => {
                   Sector Preferences
                 </h2>
                 <p className="text-body-medium text-neutral-600 mt-1">
-                  Optional: Select up to 2 sectors you'd like to focus on
+                  <span className="text-red-600">*Required:</span> Select up to 2 sectors you'd like to focus on
                   {sectors.filter(s => s !== 'none').length > 0 && (
                     <span className="ml-2 text-neutral-500">
                       ({sectors.filter(s => s !== 'none').length}/2 selected)
@@ -434,6 +453,12 @@ export const Questionnaire: React.FC = () => {
                   )}
                 </p>
               </div>
+
+              {validationError && (
+                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                  <p className="text-red-800 text-body-small">{validationError}</p>
+                </div>
+              )}
 
               <div className="space-y-2 mb-6">
                 {sectorOptions.map((option) => {
