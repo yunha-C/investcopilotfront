@@ -80,6 +80,15 @@ class AuthService {
       }
     }
     
+    // Check for token expiry status codes
+    if (response.status === 401 || response.status === 403) {
+      if (errorMessage.toLowerCase().includes('token') || 
+          errorMessage.toLowerCase().includes('expired') ||
+          errorMessage.toLowerCase().includes('unauthorized')) {
+        errorMessage = 'Your session has expired. Please log in again.';
+      }
+    }
+    
     throw new Error(errorMessage);
   }
 
@@ -152,12 +161,17 @@ class AuthService {
         // Debug: Log the error response
         console.log('Login error response:', errorData);
         
-        // Handle your API's error format
-        if (response.status === 401 && errorData.message) {
-          if (errorData.message.toLowerCase().includes('invalid email or password')) {
+        // Handle token expiry and authentication errors
+        if (response.status === 401) {
+          if (errorData.message && errorData.message.toLowerCase().includes('invalid email or password')) {
             throw new Error(`Invalid email or password. Please check your credentials and try again. (Email: ${credentials.email})`);
+          } else if (errorData.detail && 
+                     (errorData.detail.toLowerCase().includes('token') ||
+                      errorData.detail.toLowerCase().includes('expired') ||
+                      errorData.detail.toLowerCase().includes('unauthorized'))) {
+            throw new Error('Your session has expired. Please log in again.');
           }
-          throw new Error(errorData.message);
+          throw new Error(errorData.message || errorData.detail || 'Authentication failed');
         }
         
         // Fallback to original error handling

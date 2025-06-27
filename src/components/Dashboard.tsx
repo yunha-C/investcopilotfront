@@ -1,14 +1,38 @@
-import React, { useState, useEffect } from 'react';
-import { TrendingUp, Plus, ExternalLink, ArrowLeft, Info, Shield, Calculator, Trash2 } from 'lucide-react';
-import { useInvestmentStore } from '../store/investmentStore';
-import { PortfolioChart } from './PortfolioChart';
+import React, { useState, useEffect } from "react";
+import {
+  TrendingUp,
+  Plus,
+  ExternalLink,
+  ArrowLeft,
+  Info,
+  Shield,
+  Calculator,
+  Trash2,
+  ArrowUpRight,
+  ArrowDownRight,
+  X,
+} from "lucide-react";
+import { useInvestmentStore } from "../store/investmentStore";
+import { PortfolioChart } from "./PortfolioChart";
 
 export const Dashboard: React.FC = () => {
-  const { activePortfolio, insights, setCurrentStep, deletePortfolio, updatePortfolioBalance, portfolios } = useInvestmentStore();
+  const {
+    activePortfolio,
+    insights,
+    setCurrentStep,
+    deletePortfolio,
+    updatePortfolioBalance,
+    portfolios,
+  } = useInvestmentStore();
   const [showInsightForm, setShowInsightForm] = useState(false);
-  const [insightUrl, setInsightUrl] = useState('');
-  const [portfolioValue, setPortfolioValue] = useState('');
+  const [insightUrl, setInsightUrl] = useState("");
+  const [portfolioValue, setPortfolioValue] = useState("");
   const [showAddValueForm, setShowAddValueForm] = useState(false);
+  const [selectedKeyword, setSelectedKeyword] = useState<{
+    term: string;
+    context: string;
+    details: string;
+  } | null>(null);
 
   // Use activePortfolio instead of portfolio
   const portfolio = activePortfolio;
@@ -16,19 +40,28 @@ export const Dashboard: React.FC = () => {
   console.log("=== DASHBOARD STATE DEBUG ===");
   console.log("activePortfolio:", activePortfolio?.id, activePortfolio?.name);
   console.log("Total portfolios:", portfolios.length);
-  console.log("Portfolio IDs:", portfolios.map(p => p.id));
+  console.log(
+    "Portfolio IDs:",
+    portfolios.map((p) => p.id)
+  );
 
   // Auto-select first portfolio if activePortfolio is missing but portfolios exist
   useEffect(() => {
     if (!activePortfolio && portfolios.length > 0) {
-      console.log("Dashboard: Auto-selecting first portfolio:", portfolios[0].id);
+      console.log(
+        "Dashboard: Auto-selecting first portfolio:",
+        portfolios[0].id
+      );
       const { setActivePortfolio } = useInvestmentStore.getState();
       setActivePortfolio(portfolios[0]);
     }
   }, [activePortfolio, portfolios]);
 
   if (!portfolio) {
-    console.log("Dashboard: No portfolio found, available portfolios:", portfolios.length);
+    console.log(
+      "Dashboard: No portfolio found, available portfolios:",
+      portfolios.length
+    );
     return (
       <div className="min-h-screen bg-gradient-to-br from-white/50 via-white/30 to-white/20">
         <div className="px-4 py-8">
@@ -38,26 +71,28 @@ export const Dashboard: React.FC = () => {
                 Portfolio Not Found
               </h1>
               <p className="text-body-large text-neutral-600 mb-6">
-                We couldn't find your portfolio. Please go back to home and try again.
+                We couldn't find your portfolio. Please go back to home and try
+                again.
               </p>
             </div>
             <button
-              onClick={() => setCurrentStep('home')}
+              onClick={() => setCurrentStep("home")}
               className="flex items-center gap-2 text-neutral-900 hover:text-neutral-700 mb-4 transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
               <span className="text-body-medium">Back to Home</span>
             </button>
-            
+
             <div className="text-center py-16">
               <h1 className="text-headline-large font-headline font-semi-bold text-neutral-900 mb-4">
                 No Portfolio Selected
               </h1>
               <p className="text-body-large text-neutral-600 mb-8">
-                Please select a portfolio from the home page to view its dashboard.
+                Please select a portfolio from the home page to view its
+                dashboard.
               </p>
               <button
-                onClick={() => setCurrentStep('home')}
+                onClick={() => setCurrentStep("home")}
                 className="bg-neutral-900 text-white py-3 px-6 rounded-lg text-label-large font-medium hover:bg-neutral-800 transition-colors"
               >
                 Go to Home
@@ -72,88 +107,109 @@ export const Dashboard: React.FC = () => {
   const handleAddInsight = (e: React.FormEvent) => {
     e.preventDefault();
     if (insightUrl.trim()) {
-      setCurrentStep('insight-analysis');
-      setInsightUrl('');
+      setCurrentStep("insight-analysis");
+      setInsightUrl("");
       setShowInsightForm(false);
     }
   };
 
   const handleBackToHome = () => {
-    setCurrentStep('home');
+    setCurrentStep("home");
   };
 
   const handleAddValue = async (e: React.FormEvent) => {
     e.preventDefault();
-    const value = parseFloat(portfolioValue.replace(/[,$]/g, ''));
+    const value = parseFloat(portfolioValue.replace(/[,$]/g, ""));
     if (value && value > 0) {
       try {
         await updatePortfolioBalance(portfolio.id, value);
-        
-        console.log("Portfolio balance updated successfully from Dashboard component");
-        
-        setPortfolioValue('');
+
+        console.log(
+          "Portfolio balance updated successfully from Dashboard component"
+        );
+
+        setPortfolioValue("");
         setShowAddValueForm(false);
       } catch (error) {
-        console.error('Failed to update portfolio balance:', error);
+        console.error("Failed to update portfolio balance:", error);
       }
     }
   };
 
   const handleDeletePortfolio = async () => {
-    if (confirm(`Are you sure you want to delete "${portfolio.name}"? This action cannot be undone.`)) {
+    if (
+      confirm(
+        `Are you sure you want to delete "${portfolio.name}"? This action cannot be undone.`
+      )
+    ) {
       try {
         await deletePortfolio(portfolio.id);
-        setCurrentStep('home');
+        setCurrentStep("home");
       } catch (error) {
-        console.error('Failed to delete portfolio:', error);
+        console.error("Failed to delete portfolio:", error);
         // Still navigate to home as the portfolio was likely deleted locally
-        setCurrentStep('home');
+        setCurrentStep("home");
       }
     }
   };
-
 
   const hasValue = portfolio.balance > 0;
 
   // Determine growth color based on value
   const getGrowthColor = (growth: number) => {
-    if (growth > 0) return 'text-positive';
-    if (growth < 0) return 'text-negative';
-    return 'text-neutral-600'; // Neutral color for 0 growth
+    if (growth > 0) return "text-positive";
+    if (growth < 0) return "text-negative";
+    return "text-neutral-600"; // Neutral color for 0 growth
   };
 
   // Generate growth chart for dashboard
   const generateDashboardGrowthChart = () => {
     const growth = portfolio.growth || 0;
     const isPositive = growth >= 0;
-    
+
     return (
       <div className="h-20 bg-gradient-to-b from-neutral-50/20 to-neutral-100/20 rounded-sm p-3 relative overflow-hidden mb-4">
-        <svg 
-          className="absolute inset-0 w-full h-full" 
-          viewBox="0 0 300 80" 
+        <svg
+          className="absolute inset-0 w-full h-full"
+          viewBox="0 0 300 80"
           preserveAspectRatio="none"
         >
           <defs>
-            <linearGradient id="dashboardGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor={isPositive ? "#044AA7" : "#f44336"} stopOpacity="0.08" />
-              <stop offset="100%" stopColor={isPositive ? "#044AA7" : "#f44336"} stopOpacity="0.01" />
+            <linearGradient
+              id="dashboardGradient"
+              x1="0%"
+              y1="0%"
+              x2="0%"
+              y2="100%"
+            >
+              <stop
+                offset="0%"
+                stopColor={isPositive ? "#044AA7" : "#f44336"}
+                stopOpacity="0.08"
+              />
+              <stop
+                offset="100%"
+                stopColor={isPositive ? "#044AA7" : "#f44336"}
+                stopOpacity="0.01"
+              />
             </linearGradient>
           </defs>
-          
+
           <path
-            d={isPositive 
-              ? "M0,60 C40,58 80,55 120,52 C160,49 200,46 240,43 C270,41 285,40 300,39 L300,80 L0,80 Z"
-              : "M0,39 C40,41 80,44 120,47 C160,50 200,53 240,56 C270,58 285,59 300,60 L300,80 L0,80 Z"
+            d={
+              isPositive
+                ? "M0,60 C40,58 80,55 120,52 C160,49 200,46 240,43 C270,41 285,40 300,39 L300,80 L0,80 Z"
+                : "M0,39 C40,41 80,44 120,47 C160,50 200,53 240,56 C270,58 285,59 300,60 L300,80 L0,80 Z"
             }
             fill="url(#dashboardGradient)"
             className="transition-all duration-1000 ease-out"
           />
-          
+
           <path
-            d={isPositive 
-              ? "M0,60 C40,58 80,55 120,52 C160,49 200,46 240,43 C270,41 285,40 300,39"
-              : "M0,39 C40,41 80,44 120,47 C160,50 200,53 240,56 C270,58 285,59 300,60"
+            d={
+              isPositive
+                ? "M0,60 C40,58 80,55 120,52 C160,49 200,46 240,43 C270,41 285,40 300,39"
+                : "M0,39 C40,41 80,44 120,47 C160,50 200,53 240,56 C270,58 285,59 300,60"
             }
             fill="none"
             stroke={isPositive ? "#044AA7" : "#f44336"}
@@ -165,6 +221,126 @@ export const Dashboard: React.FC = () => {
       </div>
     );
   };
+
+  // Generate mock trade simulation history with specific times
+  const generateTradeHistory = () => {
+    const now = new Date();
+    const trades = [
+      {
+        id: 1,
+        type: "buy",
+        asset: "VTI",
+        shares: 25,
+        price: 242.15,
+        reason: "Market dip opportunity",
+        time: new Date(now.getTime() - 2 * 60 * 60 * 1000).toLocaleTimeString(
+          "en-US",
+          {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+          }
+        ),
+        impact: "+0.3%",
+      },
+      {
+        id: 2,
+        type: "sell",
+        asset: "BND",
+        shares: 15,
+        price: 78.92,
+        reason: "Rising interest rates",
+        time: new Date(now.getTime() - 24 * 60 * 60 * 1000).toLocaleTimeString(
+          "en-US",
+          {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+          }
+        ),
+        impact: "-0.1%",
+      },
+      {
+        id: 3,
+        type: "buy",
+        asset: "VXUS",
+        shares: 18,
+        price: 58.34,
+        reason: "International diversification",
+        time: new Date(
+          now.getTime() - 3 * 24 * 60 * 60 * 1000
+        ).toLocaleTimeString("en-US", {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true,
+        }),
+        impact: "+0.2%",
+      },
+    ];
+
+    return trades;
+  };
+
+  // Generate AI reasoning keywords based on economic context
+  const generateAIReasoningKeywords = () => {
+    const keywords = [
+      {
+        term: "Fed Rate Pause",
+        context:
+          "Central bank maintaining current rates supports bond stability",
+        details:
+          "The Federal Reserve's decision to pause rate hikes signals confidence in current monetary policy effectiveness. This creates a favorable environment for fixed-income securities as yield uncertainty decreases, while also supporting equity valuations by reducing discount rate pressures. The AI agent interprets this as an opportunity to maintain or slightly increase bond allocations while monitoring for any dovish signals that might indicate future rate cuts.",
+      },
+      {
+        term: "Tech Earnings Beat",
+        context:
+          "Q4 technology sector outperformance driving growth allocation",
+        details:
+          "Major technology companies reporting earnings above analyst expectations, particularly in cloud computing, AI infrastructure, and software-as-a-service segments. The AI agent recognizes this as validation of the digital transformation thesis and adjusts portfolio weights toward technology-heavy ETFs. Strong revenue growth and margin expansion in the sector suggest continued outperformance potential, warranting increased allocation despite higher valuations.",
+      },
+      {
+        term: "Inflation Cooling",
+        context: "Declining CPI supports risk-on positioning",
+        details:
+          "Consumer Price Index showing consistent month-over-month declines, with core inflation approaching the Fed's 2% target. This disinflationary trend reduces the likelihood of aggressive monetary tightening and supports asset valuations across risk categories. The AI agent interprets this as a green light for increased equity exposure, particularly in growth-sensitive sectors that benefit from lower real interest rates and improved earnings multiples.",
+      },
+      {
+        term: "Dollar Weakness",
+        context: "Weakening USD benefits international equity exposure",
+        details:
+          "The US Dollar Index declining against major trading partners' currencies, improving the competitiveness of international investments when converted back to USD. This currency tailwind makes foreign equities more attractive on a relative basis, prompting the AI agent to increase allocations to international developed and emerging market ETFs. Weaker dollar also benefits US multinational corporations with significant overseas revenue exposure.",
+      },
+      {
+        term: "Energy Transition",
+        context: "Clean energy momentum driving ESG allocation adjustments",
+        details:
+          "Accelerating adoption of renewable energy technologies, supported by government incentives and declining costs of solar and wind power. The AI agent identifies this secular trend as a long-term investment opportunity, increasing allocations to clean energy ETFs and ESG-focused funds. The transition represents both a growth opportunity and a risk management strategy as traditional energy faces structural headwinds.",
+      },
+      {
+        term: "Supply Chain Recovery",
+        context: "Improving logistics supporting manufacturing stocks",
+        details:
+          "Global supply chain bottlenecks showing significant improvement, with shipping costs normalizing and inventory levels stabilizing across key industries. This operational efficiency recovery benefits manufacturing and industrial companies, prompting the AI agent to increase exposure to industrial sector ETFs. Improved supply chains also reduce input cost pressures, supporting margin expansion for goods-producing companies.",
+      },
+      {
+        term: "Credit Spreads Tightening",
+        context: "Corporate bond risk premiums compressing",
+        details:
+          "Investment-grade and high-yield credit spreads narrowing relative to Treasury yields, indicating improved market confidence in corporate creditworthiness. The AI agent interprets this as a signal to increase corporate bond allocations while reducing Treasury exposure. Tighter spreads suggest reduced default risk and potential for capital appreciation in credit-sensitive fixed income securities.",
+      },
+      {
+        term: "Volatility Compression",
+        context: "Low VIX supporting risk asset allocation",
+        details:
+          "The CBOE Volatility Index trading below historical averages, indicating reduced market fear and uncertainty. This low-volatility environment typically supports higher valuations for risk assets and encourages the AI agent to increase equity allocations. However, the agent also monitors for potential volatility spikes that could signal regime changes requiring rapid portfolio adjustments.",
+      },
+    ];
+
+    return keywords.slice(0, 6); // Show 6 keywords
+  };
+
+  const tradeHistory = generateTradeHistory();
+  const aiKeywords = generateAIReasoningKeywords();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white/50 via-white/30 to-white/20">
@@ -178,7 +354,7 @@ export const Dashboard: React.FC = () => {
               <ArrowLeft className="w-4 h-4" />
               <span className="text-body-medium">Back to Home</span>
             </button>
-            
+
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-headline-large font-headline font-semi-bold text-neutral-900 mb-2">
@@ -188,14 +364,12 @@ export const Dashboard: React.FC = () => {
                   Portfolio Dashboard & Analytics
                 </p>
               </div>
-              <div className="flex gap-2">
-              </div>
             </div>
           </div>
 
           {/* Main Portfolio Overview */}
           <div className="bg-white rounded-lg shadow-elevation-1 border border-neutral-200 p-8 mb-8">
-            <div className="grid lg:grid-cols-3 gap-8">
+            <div className="grid lg:grid-cols-2 gap-8">
               {/* Portfolio Value and Performance */}
               <div>
                 <div className="mb-6">
@@ -205,18 +379,31 @@ export const Dashboard: React.FC = () => {
                         ${portfolio.balance.toLocaleString()}
                       </p>
                       <div className="flex items-center gap-2 mt-1 mb-4">
-                        <TrendingUp className={`w-4 h-4 ${getGrowthColor(portfolio.growth || 0)}`} />
-                        <span className={`${getGrowthColor(portfolio.growth || 0)} text-label-large font-medium`}>
-                          {(portfolio.growth || 0) >= 0 ? '+' : ''}{(portfolio.growth || 0).toFixed(1)}%
+                        <TrendingUp
+                          className={`w-4 h-4 ${getGrowthColor(
+                            portfolio.growth || 0
+                          )}`}
+                        />
+                        <span
+                          className={`${getGrowthColor(
+                            portfolio.growth || 0
+                          )} text-label-large font-medium`}
+                        >
+                          {(portfolio.growth || 0) >= 0 ? "+" : ""}
+                          {(portfolio.growth || 0).toFixed(1)}%
                         </span>
-                        <span className="text-neutral-500 text-body-small">+$320.00</span>
+                        <span className="text-neutral-500 text-body-small">
+                          +$320.00
+                        </span>
                       </div>
                       {/* Growth Chart */}
                       {generateDashboardGrowthChart()}
                     </>
                   ) : (
                     <div className="text-center py-6">
-                      <p className="text-body-medium text-neutral-600 mb-4">No portfolio value set</p>
+                      <p className="text-body-medium text-neutral-600 mb-4">
+                        No portfolio value set
+                      </p>
                       <button
                         onClick={() => setShowAddValueForm(true)}
                         className="bg-neutral-900 text-white px-6 py-3 rounded-lg text-label-large font-medium hover:bg-neutral-800 transition-colors"
@@ -226,97 +413,186 @@ export const Dashboard: React.FC = () => {
                     </div>
                   )}
                 </div>
-                
+
                 {/* Key Metrics */}
                 <div className="space-y-3">
                   <div className="flex justify-between">
-                    <span className="text-body-medium text-neutral-600">Expected Return</span>
-                    <span className="text-body-medium font-medium">{portfolio.expectedReturn}%</span>
+                    <span className="text-body-medium text-neutral-600">
+                      Expected Return
+                    </span>
+                    <span className="text-body-medium font-medium">
+                      {portfolio.expectedReturn}%
+                    </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-body-medium text-neutral-600">Risk Level</span>
-                    <span className="text-body-medium font-medium">{portfolio.riskLevel}</span>
+                    <span className="text-body-medium text-neutral-600">
+                      Risk Level
+                    </span>
+                    <span className="text-body-medium font-medium">
+                      {portfolio.riskLevel}
+                    </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-body-medium text-neutral-600">Risk Score</span>
-                    <span className="text-body-medium font-medium">{portfolio.riskScore}/5</span>
+                    <span className="text-body-medium text-neutral-600">
+                      Risk Score
+                    </span>
+                    <span className="text-body-medium font-medium">
+                      {portfolio.riskScore}/5
+                    </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-body-medium text-neutral-600">Monthly Fee</span>
-                    <span className="text-body-medium font-medium">${(portfolio.monthlyFee || 0).toFixed(2)}</span>
+                    <span className="text-body-medium text-neutral-600">
+                      Monthly Fee
+                    </span>
+                    <span className="text-body-medium font-medium">
+                      ${(portfolio.monthlyFee || 0).toFixed(2)}
+                    </span>
                   </div>
                 </div>
               </div>
-              
-              {/* Portfolio Chart and Asset Breakdown */}
-              <div className="lg:col-span-2">
-                <div className="grid lg:grid-cols-2 gap-6">
-                  {/* Asset Allocation Chart */}
-                  <div>
-                    <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-4">
-                      Asset Allocation
-                    </h3>
-                    <PortfolioChart allocation={portfolio.allocation} size="small" />
-                  </div>
 
-                  {/* Asset Breakdown */}
-                  <div>
-                    <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-4">
-                      Asset Breakdown
-                    </h3>
-                    <div className="space-y-1">
-                      {portfolio.allocation.map((asset, index) => (
-                        <div key={index} className="flex items-center justify-between py-1">
-                          <div className="flex items-center gap-3">
-                            <div 
-                              className="w-4 h-4 rounded-full" 
-                              style={{ backgroundColor: asset.color }}
-                            />
-                            <span className="text-label-large font-medium text-neutral-800">{asset.name}</span>
-                          </div>
-                          <div className="text-right">
-                            <p className="text-label-large font-medium text-neutral-900">{asset.percentage}%</p>
-                            {hasValue && (
-                              <p className="text-body-small text-neutral-500">
-                                ${((portfolio.balance * asset.percentage) / 100).toLocaleString()}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                      ))}
+              {/* Asset Breakdown - No Chart */}
+              <div>
+                <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-4">
+                  Asset Breakdown
+                </h3>
+                <div className="space-y-1">
+                  {portfolio.allocation.map((asset, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between py-1"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div
+                          className="w-4 h-4 rounded-full"
+                          style={{ backgroundColor: asset.color }}
+                        />
+                        <span className="text-label-large font-medium text-neutral-800">
+                          {asset.name}
+                        </span>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-label-large font-medium text-neutral-900">
+                          {asset.percentage}%
+                        </p>
+                        {hasValue && (
+                          <p className="text-body-small text-neutral-500">
+                            $
+                            {(
+                              (portfolio.balance * asset.percentage) /
+                              100
+                            ).toLocaleString()}
+                          </p>
+                        )}
+                      </div>
                     </div>
-                  </div>
+                  ))}
                 </div>
               </div>
             </div>
           </div>
 
-          {/* AI Strategy Reasoning */}
+          {/* Trade Simulation History */}
+          <div className="bg-white rounded-lg shadow-elevation-1 border border-neutral-200 p-8 mb-8">
+            <div className="flex items-center gap-3 mb-4">
+              <TrendingUp className="w-5 h-5 text-neutral-700" />
+              <h3 className="text-title-large font-headline font-semi-bold text-neutral-900">
+                Trade Simulation History
+              </h3>
+            </div>
+            <div className="space-y-3">
+              {tradeHistory.map((trade) => (
+                <div
+                  key={trade.id}
+                  className="flex items-center justify-between p-4 bg-neutral-50 rounded-lg"
+                >
+                  <div className="flex items-center gap-4">
+                    <div
+                      className={`p-2 rounded-full ${
+                        trade.type === "buy"
+                          ? "bg-positive/10"
+                          : "bg-negative/10"
+                      }`}
+                    >
+                      {trade.type === "buy" ? (
+                        <ArrowUpRight
+                          className={`w-4 h-4 ${
+                            trade.type === "buy"
+                              ? "text-positive"
+                              : "text-negative"
+                          }`}
+                        />
+                      ) : (
+                        <ArrowDownRight
+                          className={`w-4 h-4 ${
+                            trade.type === "buy"
+                              ? "text-positive"
+                              : "text-negative"
+                          }`}
+                        />
+                      )}
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-label-large font-medium text-neutral-900">
+                          {trade.type.toUpperCase()} {trade.shares}{" "}
+                          {trade.asset}
+                        </span>
+                        <span className="text-body-small text-neutral-500">
+                          ${trade.price}
+                        </span>
+                      </div>
+                      <p className="text-body-small text-neutral-600">
+                        {trade.reason}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-body-small text-neutral-500">
+                      {trade.time}
+                    </p>
+                    <p
+                      className={`text-body-small font-medium ${
+                        trade.impact.startsWith("+")
+                          ? "text-positive"
+                          : "text-negative"
+                      }`}
+                    >
+                      {trade.impact}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* AI Simulation Reasoning */}
           <div className="bg-white rounded-lg shadow-elevation-1 border border-neutral-200 p-8 mb-8">
             <div className="flex items-center gap-3 mb-4">
               <Shield className="w-5 h-5 text-neutral-700" />
-              <h3 className="text-title-large font-headline font-semi-bold text-neutral-900">AI Strategy Reasoning</h3>
+              <h3 className="text-title-large font-headline font-semi-bold text-neutral-900">
+                AI Simulation Reasoning
+              </h3>
             </div>
             <div className="space-y-3">
               <p className="text-body-medium text-neutral-700 leading-relaxed">
                 {portfolio.reasoning}
               </p>
-              {/* Keyword Analysis */}
+              {/* AI Economic Context Keywords */}
               <div className="bg-neutral-100 rounded-lg p-4">
-                <h4 className="text-label-large font-medium text-neutral-900 mb-2">Key Strategy Elements</h4>
+                <h4 className="text-label-large font-medium text-neutral-900 mb-3">
+                  Economic Context Driving AI Decisions
+                </h4>
                 <div className="flex flex-wrap gap-2">
-                  <span className="px-3 py-1 rounded-full text-body-small font-medium" style={{ backgroundColor: '#042963', color: 'white' }}>
-                    Risk Level: {portfolio.riskLevel}
-                  </span>
-                  <span className="px-3 py-1 rounded-full text-body-small font-medium" style={{ backgroundColor: '#044AA7', color: 'white' }}>
-                    Target Return: {portfolio.expectedReturn}%
-                  </span>
-                  <span className="px-3 py-1 rounded-full text-body-small font-medium" style={{ backgroundColor: '#065AC7', color: 'white' }}>
-                    Diversification: {portfolio.allocation.length} Assets
-                  </span>
-                  <span className="px-3 py-1 rounded-full text-body-small font-medium" style={{ backgroundColor: '#6699DB', color: 'white' }}>
-                    Fee: {portfolio.managementFee}% Annual
-                  </span>
+                  {aiKeywords.map((keyword, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setSelectedKeyword(keyword)}
+                      className="px-3 py-1 rounded-full text-body-small font-medium bg-blue-600 hover:bg-blue-700 text-white transition-colors cursor-pointer"
+                    >
+                      {keyword.term}
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>
@@ -327,26 +603,42 @@ export const Dashboard: React.FC = () => {
             <div className="bg-white rounded-lg shadow-elevation-1 border border-neutral-200 p-6">
               <div className="flex items-center gap-3 mb-4">
                 <Calculator className="w-5 h-5 text-neutral-700" />
-                <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900">Fee Breakdown</h3>
+                <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900">
+                  Fee Breakdown
+                </h3>
               </div>
               <div className="space-y-3">
                 <div className="flex justify-between">
-                  <span className="text-body-small text-neutral-600">Annual Rate</span>
-                  <span className="text-body-small font-medium">{portfolio.managementFee}%</span>
+                  <span className="text-body-small text-neutral-600">
+                    Annual Rate
+                  </span>
+                  <span className="text-body-small font-medium">
+                    {portfolio.managementFee}%
+                  </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-body-small text-neutral-600">Monthly Fee</span>
-                  <span className="text-body-small font-medium">${(portfolio.monthlyFee || 0).toFixed(2)}</span>
+                  <span className="text-body-small text-neutral-600">
+                    Monthly Fee
+                  </span>
+                  <span className="text-body-small font-medium">
+                    ${(portfolio.monthlyFee || 0).toFixed(2)}
+                  </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-body-small text-neutral-600">Annual Fee</span>
-                  <span className="text-body-small font-medium">${((portfolio.monthlyFee || 0) * 12).toFixed(2)}</span>
+                  <span className="text-body-small text-neutral-600">
+                    Annual Fee
+                  </span>
+                  <span className="text-body-small font-medium">
+                    ${((portfolio.monthlyFee || 0) * 12).toFixed(2)}
+                  </span>
                 </div>
                 <div className="pt-2 border-t border-neutral-200">
                   <div className="flex items-start gap-2">
                     <Info className="w-4 h-4 text-neutral-600 mt-0.5 flex-shrink-0" />
                     <p className="text-body-small text-neutral-500">
-                      Fees are calculated monthly based on your current portfolio value and automatically deducted from your account.
+                      Fees are calculated monthly based on your current
+                      portfolio value and automatically deducted from your
+                      account.
                     </p>
                   </div>
                 </div>
@@ -356,7 +648,9 @@ export const Dashboard: React.FC = () => {
             {/* Market Insights */}
             <div className="bg-white rounded-lg shadow-elevation-1 border border-neutral-200 p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900">Market Insights</h3>
+                <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900">
+                  Market Insights
+                </h3>
                 <button
                   onClick={() => setShowInsightForm(true)}
                   className="p-2 bg-neutral-900 text-white rounded-lg hover:bg-neutral-800 transition-colors"
@@ -364,10 +658,12 @@ export const Dashboard: React.FC = () => {
                   <Plus className="w-4 h-4" />
                 </button>
               </div>
-              
+
               {insights.length === 0 ? (
                 <div className="text-center py-8">
-                  <p className="text-body-medium text-neutral-500 mb-4">No insights added yet</p>
+                  <p className="text-body-medium text-neutral-500 mb-4">
+                    No insights added yet
+                  </p>
                   <button
                     onClick={() => setShowInsightForm(true)}
                     className="text-neutral-900 hover:text-neutral-700 text-label-large font-medium"
@@ -378,15 +674,24 @@ export const Dashboard: React.FC = () => {
               ) : (
                 <div className="space-y-4 max-h-96 overflow-y-auto">
                   {insights.map((insight) => (
-                    <div key={insight.id} className="border border-neutral-200 rounded-lg p-4">
+                    <div
+                      key={insight.id}
+                      className="border border-neutral-200 rounded-lg p-4"
+                    >
                       <div className="flex items-start justify-between mb-2">
-                        <h4 className="text-label-large font-medium text-neutral-900">{insight.title}</h4>
-                        <span className="text-body-small text-neutral-500">{insight.date}</span>
+                        <h4 className="text-label-large font-medium text-neutral-900">
+                          {insight.title}
+                        </h4>
+                        <span className="text-body-small text-neutral-500">
+                          {insight.date}
+                        </span>
                       </div>
-                      <p className="text-body-small text-neutral-600 mb-2">{insight.impact}</p>
-                      <a 
-                        href={insight.url} 
-                        target="_blank" 
+                      <p className="text-body-small text-neutral-600 mb-2">
+                        {insight.impact}
+                      </p>
+                      <a
+                        href={insight.url}
+                        target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center gap-1 text-body-small text-neutral-900 hover:text-neutral-700"
                       >
@@ -428,12 +733,14 @@ export const Dashboard: React.FC = () => {
                       Initial Investment Amount
                     </label>
                     <div className="relative">
-                      <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-500">$</span>
+                      <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-500">
+                        $
+                      </span>
                       <input
                         type="text"
                         value={portfolioValue}
                         onChange={(e) => {
-                          const value = e.target.value.replace(/[^0-9.]/g, '');
+                          const value = e.target.value.replace(/[^0-9.]/g, "");
                           setPortfolioValue(value);
                         }}
                         placeholder="10,000"
@@ -486,7 +793,8 @@ export const Dashboard: React.FC = () => {
                       required
                     />
                     <p className="text-body-small text-neutral-500 mt-1">
-                      AI will analyze this content and suggest portfolio adjustments
+                      AI will analyze this content and suggest portfolio
+                      adjustments
                     </p>
                   </div>
                   <div className="flex gap-3">
@@ -505,6 +813,50 @@ export const Dashboard: React.FC = () => {
                     </button>
                   </div>
                 </form>
+              </div>
+            </div>
+          )}
+
+          {/* Keyword Detail Modal */}
+          {selectedKeyword && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+              <div className="bg-white rounded-lg p-6 w-full max-w-2xl shadow-elevation-3 max-h-[80vh] overflow-y-auto">
+                <div className="flex items-start justify-between mb-4">
+                  <div>
+                    <h3 className="text-title-large font-headline font-semi-bold text-neutral-900 mb-2">
+                      {selectedKeyword.term}
+                    </h3>
+                    <p className="text-body-medium text-neutral-600 font-medium">
+                      {selectedKeyword.context}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setSelectedKeyword(null)}
+                    className="p-2 hover:bg-neutral-100 rounded-lg transition-colors"
+                  >
+                    <X className="w-5 h-5 text-neutral-600" />
+                  </button>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <h4 className="text-label-large font-medium text-neutral-900 mb-2">
+                      Detailed Analysis
+                    </h4>
+                    <p className="text-body-medium text-neutral-700 leading-relaxed">
+                      {selectedKeyword.details}
+                    </p>
+                  </div>
+
+                  <div className="pt-4 border-t border-neutral-200">
+                    <button
+                      onClick={() => setSelectedKeyword(null)}
+                      className="w-full bg-neutral-900 text-white py-3 px-4 rounded-lg text-label-large font-medium hover:bg-neutral-800 transition-colors"
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           )}

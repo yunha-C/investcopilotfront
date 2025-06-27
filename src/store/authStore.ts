@@ -83,7 +83,22 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         error: null 
       });
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Login failed';
+      let errorMessage = 'Login failed';
+      
+      if (error instanceof Error) {
+        errorMessage = error.message;
+        
+        // Check for token expiry errors
+        if (error.message.toLowerCase().includes('token') && 
+            (error.message.toLowerCase().includes('expired') || 
+             error.message.toLowerCase().includes('invalid'))) {
+          errorMessage = 'Your session has expired. Please log in again.';
+          
+          // Clear any stored auth data
+          authService.logout();
+        }
+      }
+      
       set({ 
         isLoading: false, 
         error: errorMessage,
@@ -216,9 +231,27 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         localStorage.setItem('aivestie_user', JSON.stringify(userData));
         set({ user: userData, isAuthenticated: true, isLoading: false });
       } catch (error) {
-        // Refresh failed, clear auth state
+        // Refresh failed, clear auth state and show error
         authService.logout();
-        set({ user: null, isAuthenticated: false, isLoading: false });
+        
+        let errorMessage = 'Your session has expired. Please log in again.';
+        if (error instanceof Error && error.message) {
+          // Check if it's a token-related error
+          if (error.message.toLowerCase().includes('token') || 
+              error.message.toLowerCase().includes('expired') ||
+              error.message.toLowerCase().includes('unauthorized')) {
+            errorMessage = 'Your session has expired. Please log in again.';
+          } else {
+            errorMessage = `Authentication error: ${error.message}`;
+          }
+        }
+        
+        set({ 
+          user: null, 
+          isAuthenticated: false, 
+          isLoading: false,
+          error: errorMessage
+        });
       }
       return;
     }
@@ -242,13 +275,34 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         localStorage.setItem('aivestie_user', JSON.stringify(updatedUserData));
         set({ user: updatedUserData, isAuthenticated: true, isLoading: false });
       } catch (apiError) {
-        // API call failed, but token exists, use stored data
-        set({ user: userData, isAuthenticated: true, isLoading: false });
+        // Check if API error is due to token expiry
+        if (apiError instanceof Error && 
+            (apiError.message.toLowerCase().includes('token') ||
+             apiError.message.toLowerCase().includes('expired') ||
+             apiError.message.toLowerCase().includes('unauthorized'))) {
+          
+          // Token is expired, clear auth state
+          authService.logout();
+          set({ 
+            user: null, 
+            isAuthenticated: false, 
+            isLoading: false,
+            error: 'Your session has expired. Please log in again.'
+          });
+        } else {
+          // API call failed for other reasons, but token exists, use stored data
+          set({ user: userData, isAuthenticated: true, isLoading: false });
+        }
       }
     } catch (error) {
       // Invalid stored data, clear auth state
       authService.logout();
-      set({ user: null, isAuthenticated: false, isLoading: false });
+      set({ 
+        user: null, 
+        isAuthenticated: false, 
+        isLoading: false,
+        error: 'Authentication data is invalid. Please log in again.'
+      });
     }
   },
 
@@ -272,6 +326,21 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       }
     } catch (error) {
       console.error('Failed to update investment profile status:', error);
+      
+      // Check for token expiry in this error as well
+      if (error instanceof Error && 
+          (error.message.toLowerCase().includes('token') ||
+           error.message.toLowerCase().includes('expired') ||
+           error.message.toLowerCase().includes('unauthorized'))) {
+        
+        authService.logout();
+        set({ 
+          user: null, 
+          isAuthenticated: false, 
+          error: 'Your session has expired. Please log in again.'
+        });
+      }
+      
       throw error;
     }
   },

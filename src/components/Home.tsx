@@ -403,7 +403,7 @@ export const Home: React.FC = () => {
             <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-3">
               Portfolio Management
             </h3>
-            <p className="text-body-medium text-neutral-600">
+            <p className="text-body-medium text-neutral-600 font-light">
               Create and manage diversified investment portfolios based on your preferences.
             </p>
           </div>
@@ -441,7 +441,7 @@ export const Home: React.FC = () => {
             <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-3">
               Influence with Your Own Insight
             </h3>
-            <p className="text-body-medium text-neutral-600">
+            <p className="text-body-medium text-neutral-600 font-light">
               Share market insights and research to influence your AI-powered portfolio decisions.
             </p>
           </div>
@@ -487,7 +487,7 @@ export const Home: React.FC = () => {
             <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-3">
               AI Simulation
             </h3>
-            <p className="text-body-medium text-neutral-600">
+            <p className="text-body-medium text-neutral-600 font-light">
               Advanced AI algorithms simulate market conditions and optimize your investment strategy.
             </p>
           </div>
