@@ -12,26 +12,29 @@ export const PortfolioResults: React.FC = () => {
   const handleSavePortfolio = async () => {
     setIsSaving(true);
     try {
-      // Save portfolio to database
-      await savePortfolioToDatabase(portfolio);
+      // Save portfolio to database and get the updated portfolio
+      const savedPortfolio = await savePortfolioToDatabase(portfolio);
       
-      // Set the newly created portfolio as the active portfolio
-      setActivePortfolio(portfolio);
+      // Set the newly saved portfolio as the active portfolio
+      setActivePortfolio(savedPortfolio);
       
-      // Set initial investment
-      if (portfolio.id) {
-        await updatePortfolioBalance(portfolio.id, portfolio.cashBalance || 10000);
+      // Set initial investment using the saved portfolio
+      if (savedPortfolio.id) {
+        await updatePortfolioBalance(savedPortfolio.id, savedPortfolio.cashBalance || 10000);
       }
       setCurrentStep('dashboard');
     } catch (error) {
       console.error('Failed to save portfolio:', error);
-      // Still proceed to dashboard even if save fails, but set as active portfolio
-      setActivePortfolio(portfolio);
-      if (portfolio.id) {
-        try {
-          await updatePortfolioBalance(portfolio.id, portfolio.cashBalance || 10000);
-        } catch (updateError) {
-          console.error('Failed to set initial balance:', updateError);
+      // Still proceed to dashboard even if save fails, but use the latest portfolio from store
+      const latestPortfolio = useInvestmentStore.getState().portfolio;
+      if (latestPortfolio) {
+        setActivePortfolio(latestPortfolio);
+        if (latestPortfolio.id) {
+          try {
+            await updatePortfolioBalance(latestPortfolio.id, latestPortfolio.cashBalance || 10000);
+          } catch (updateError) {
+            console.error('Failed to set initial balance:', updateError);
+          }
         }
       }
       setCurrentStep('dashboard');
