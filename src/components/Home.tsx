@@ -328,7 +328,7 @@ export const Home: React.FC = () => {
                     <div className="w-16 h-16 rounded-full bg-neutral-100 group-hover:bg-neutral-200 flex items-center justify-center mx-auto mb-4 transition-colors">
                       <Plus className="w-8 h-8 text-neutral-600 group-hover:text-neutral-700 transition-colors" />
                     </div>
-                    <h3 className="text-title-large font-headline font-semi-bold text-neutral-900 mb-2">
+                    <h3 className="text-title-large font-headline font-medium text-neutral-900 mb-2">
                       Add Portfolio
                     </h3>
                     <p className="text-body-medium text-neutral-600 mb-2">
@@ -352,7 +352,7 @@ export const Home: React.FC = () => {
                   <div className="w-20 h-20 rounded-full bg-neutral-100 group-hover:bg-neutral-200 flex items-center justify-center mx-auto mb-4 transition-colors">
                     <Plus className="w-10 h-10 text-neutral-600 group-hover:text-neutral-700 transition-colors" />
                   </div>
-                  <h3 className="text-headline-medium font-headline font-semi-bold mb-3 text-neutral-900">
+                  <h3 className="text-headline-medium font-headline font-medium mb-3 text-neutral-900">
                     Add a Portfolio
                   </h3>
                   <p className="text-body-medium text-neutral-600">
