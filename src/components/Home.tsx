@@ -47,6 +47,7 @@ export const Home: React.FC = () => {
   const handleAddValue = (portfolioItem: any, e: React.MouseEvent) => {
     e.stopPropagation();
     setSelectedPortfolioForValue(portfolioItem);
+    setPortfolioValue(''); // Clear previous value
     setShowAddValueModal(true);
   };
 
@@ -57,6 +58,7 @@ export const Home: React.FC = () => {
       setIsAddingValue(true);
       try {
         await updatePortfolioBalance(selectedPortfolioForValue.id, value);
+        // Close modal and reset state after successful update
         setPortfolioValue('');
         setShowAddValueModal(false);
         setSelectedPortfolioForValue(null);
@@ -67,6 +69,13 @@ export const Home: React.FC = () => {
         setIsAddingValue(false);
       }
     }
+  };
+
+  const handleCloseModal = () => {
+    setShowAddValueModal(false);
+    setSelectedPortfolioForValue(null);
+    setPortfolioValue('');
+    setIsAddingValue(false);
   };
 
   const handleRebalancePortfolio = async (portfolioItem: any, e: React.MouseEvent) => {
@@ -354,6 +363,7 @@ export const Home: React.FC = () => {
                     placeholder="10,000"
                     className="w-full pl-8 pr-4 p-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-transparent text-body-medium"
                     required
+                    disabled={isAddingValue}
                   />
                 </div>
                 <p className="text-body-small text-neutral-500 mt-1">
@@ -374,11 +384,7 @@ export const Home: React.FC = () => {
                 <button
                   type="button"
                   disabled={isAddingValue}
-                  onClick={() => {
-                    setShowAddValueModal(false);
-                    setSelectedPortfolioForValue(null);
-                    setPortfolioValue('');
-                  }}
+                  onClick={handleCloseModal}
                   className="px-4 py-3 border border-neutral-300 rounded-lg hover:bg-neutral-100 transition-colors text-label-large disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Cancel
