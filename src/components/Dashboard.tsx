@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TrendingUp, Plus, ExternalLink, ArrowLeft, Info, Shield, Calculator, Trash2, RefreshCw } from 'lucide-react';
+import { TrendingUp, Plus, ExternalLink, ArrowLeft, Info, Shield, Calculator, Trash2, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { useInvestmentStore } from '../store/investmentStore';
 import { PortfolioChart } from './PortfolioChart';
 
@@ -89,7 +89,6 @@ export const Dashboard: React.FC = () => {
     }
   };
 
-
   const hasValue = portfolio.balance > 0;
 
   // Determine growth color based on value
@@ -143,6 +142,61 @@ export const Dashboard: React.FC = () => {
     );
   };
 
+  // Generate mock trade simulation history
+  const generateTradeHistory = () => {
+    const trades = [
+      {
+        id: 1,
+        type: 'buy',
+        asset: 'VTI',
+        shares: 25,
+        price: 242.15,
+        reason: 'Market dip opportunity',
+        time: '2 hours ago',
+        impact: '+0.3%'
+      },
+      {
+        id: 2,
+        type: 'sell',
+        asset: 'BND',
+        shares: 15,
+        price: 78.92,
+        reason: 'Rising interest rates',
+        time: '1 day ago',
+        impact: '-0.1%'
+      },
+      {
+        id: 3,
+        type: 'buy',
+        asset: 'VXUS',
+        shares: 18,
+        price: 58.34,
+        reason: 'International diversification',
+        time: '3 days ago',
+        impact: '+0.2%'
+      }
+    ];
+
+    return trades;
+  };
+
+  // Generate AI reasoning keywords based on economic context
+  const generateAIReasoningKeywords = () => {
+    const keywords = [
+      { term: 'Fed Rate Pause', context: 'Central bank maintaining current rates supports bond stability' },
+      { term: 'Tech Earnings Beat', context: 'Q4 technology sector outperformance driving growth allocation' },
+      { term: 'Inflation Cooling', context: 'Declining CPI supports risk-on positioning' },
+      { term: 'Dollar Weakness', context: 'Weakening USD benefits international equity exposure' },
+      { term: 'Energy Transition', context: 'Clean energy momentum driving ESG allocation adjustments' },
+      { term: 'Supply Chain Recovery', context: 'Improving logistics supporting manufacturing stocks' }
+    ];
+
+    return keywords.slice(0, 4); // Show 4 keywords
+  };
+
+  const tradeHistory = generateTradeHistory();
+  const aiKeywords = generateAIReasoningKeywords();
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-white/50 via-white/30 to-white/20">
       <div className="px-4 py-8">
@@ -165,23 +219,12 @@ export const Dashboard: React.FC = () => {
                   Portfolio Dashboard & Analytics
                 </p>
               </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => {
-                    // Action disabled - no API call
-                  }}
-                  className="p-3 border-2 border-neutral-400 text-neutral-700 rounded-lg hover:bg-neutral-100 transition-colors"
-                  title="Rebalance portfolio"
-                >
-                  <RefreshCw className="w-5 h-5" />
-                </button>
-              </div>
             </div>
           </div>
 
           {/* Main Portfolio Overview */}
           <div className="bg-white rounded-lg shadow-elevation-1 border border-neutral-200 p-8 mb-8">
-            <div className="grid lg:grid-cols-3 gap-8">
+            <div className="grid lg:grid-cols-2 gap-8">
               {/* Portfolio Value and Performance */}
               <div>
                 <div className="mb-6">
@@ -234,75 +277,98 @@ export const Dashboard: React.FC = () => {
                 </div>
               </div>
               
-              {/* Portfolio Chart and Asset Breakdown */}
-              <div className="lg:col-span-2">
-                <div className="grid lg:grid-cols-2 gap-6">
-                  {/* Asset Allocation Chart */}
-                  <div>
-                    <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-4">
-                      Asset Allocation
-                    </h3>
-                    <PortfolioChart allocation={portfolio.allocation} size="small" />
-                  </div>
-
-                  {/* Asset Breakdown */}
-                  <div>
-                    <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-4">
-                      Asset Breakdown
-                    </h3>
-                    <div className="space-y-1">
-                      {portfolio.allocation.map((asset, index) => (
-                        <div key={index} className="flex items-center justify-between py-1">
-                          <div className="flex items-center gap-3">
-                            <div 
-                              className="w-4 h-4 rounded-full" 
-                              style={{ backgroundColor: asset.color }}
-                            />
-                            <span className="text-label-large font-medium text-neutral-800">{asset.name}</span>
-                          </div>
-                          <div className="text-right">
-                            <p className="text-label-large font-medium text-neutral-900">{asset.percentage}%</p>
-                            {hasValue && (
-                              <p className="text-body-small text-neutral-500">
-                                ${((portfolio.balance * asset.percentage) / 100).toLocaleString()}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                      ))}
+              {/* Asset Breakdown - No Chart */}
+              <div>
+                <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-4">
+                  Asset Breakdown
+                </h3>
+                <div className="space-y-1">
+                  {portfolio.allocation.map((asset, index) => (
+                    <div key={index} className="flex items-center justify-between py-1">
+                      <div className="flex items-center gap-3">
+                        <div 
+                          className="w-4 h-4 rounded-full" 
+                          style={{ backgroundColor: asset.color }}
+                        />
+                        <span className="text-label-large font-medium text-neutral-800">{asset.name}</span>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-label-large font-medium text-neutral-900">{asset.percentage}%</p>
+                        {hasValue && (
+                          <p className="text-body-small text-neutral-500">
+                            ${((portfolio.balance * asset.percentage) / 100).toLocaleString()}
+                          </p>
+                        )}
+                      </div>
                     </div>
-                  </div>
+                  ))}
                 </div>
               </div>
             </div>
           </div>
 
-          {/* AI Strategy Reasoning */}
+          {/* Trade Simulation History */}
+          <div className="bg-white rounded-lg shadow-elevation-1 border border-neutral-200 p-8 mb-8">
+            <div className="flex items-center gap-3 mb-4">
+              <TrendingUp className="w-5 h-5 text-neutral-700" />
+              <h3 className="text-title-large font-headline font-semi-bold text-neutral-900">Trade Simulation History</h3>
+            </div>
+            <div className="space-y-3">
+              {tradeHistory.map((trade) => (
+                <div key={trade.id} className="flex items-center justify-between p-4 bg-neutral-50 rounded-lg">
+                  <div className="flex items-center gap-4">
+                    <div className={`p-2 rounded-full ${trade.type === 'buy' ? 'bg-positive/10' : 'bg-negative/10'}`}>
+                      {trade.type === 'buy' ? (
+                        <ArrowUpRight className={`w-4 h-4 ${trade.type === 'buy' ? 'text-positive' : 'text-negative'}`} />
+                      ) : (
+                        <ArrowDownRight className={`w-4 h-4 ${trade.type === 'buy' ? 'text-positive' : 'text-negative'}`} />
+                      )}
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-label-large font-medium text-neutral-900">
+                          {trade.type.toUpperCase()} {trade.shares} {trade.asset}
+                        </span>
+                        <span className="text-body-small text-neutral-500">@ ${trade.price}</span>
+                      </div>
+                      <p className="text-body-small text-neutral-600">{trade.reason}</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-body-small text-neutral-500">{trade.time}</p>
+                    <p className={`text-body-small font-medium ${trade.impact.startsWith('+') ? 'text-positive' : 'text-negative'}`}>
+                      {trade.impact}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* AI Simulation Reasoning */}
           <div className="bg-white rounded-lg shadow-elevation-1 border border-neutral-200 p-8 mb-8">
             <div className="flex items-center gap-3 mb-4">
               <Shield className="w-5 h-5 text-neutral-700" />
-              <h3 className="text-title-large font-headline font-semi-bold text-neutral-900">AI Strategy Reasoning</h3>
+              <h3 className="text-title-large font-headline font-semi-bold text-neutral-900">AI Simulation Reasoning</h3>
             </div>
             <div className="space-y-3">
               <p className="text-body-medium text-neutral-700 leading-relaxed">
                 {portfolio.reasoning}
               </p>
-              {/* Keyword Analysis */}
+              {/* AI Economic Context Keywords */}
               <div className="bg-neutral-100 rounded-lg p-4">
-                <h4 className="text-label-large font-medium text-neutral-900 mb-2">Key Strategy Elements</h4>
-                <div className="flex flex-wrap gap-2">
-                  <span className="px-3 py-1 rounded-full text-body-small font-medium" style={{ backgroundColor: '#042963', color: 'white' }}>
-                    Risk Level: {portfolio.riskLevel}
-                  </span>
-                  <span className="px-3 py-1 rounded-full text-body-small font-medium" style={{ backgroundColor: '#044AA7', color: 'white' }}>
-                    Target Return: {portfolio.expectedReturn}%
-                  </span>
-                  <span className="px-3 py-1 rounded-full text-body-small font-medium" style={{ backgroundColor: '#065AC7', color: 'white' }}>
-                    Diversification: {portfolio.allocation.length} Assets
-                  </span>
-                  <span className="px-3 py-1 rounded-full text-body-small font-medium" style={{ backgroundColor: '#6699DB', color: 'white' }}>
-                    Fee: {portfolio.managementFee}% Annual
-                  </span>
+                <h4 className="text-label-large font-medium text-neutral-900 mb-2">Economic Context Driving AI Decisions</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {aiKeywords.map((keyword, index) => (
+                    <div key={index} className="flex flex-col gap-1">
+                      <span className="px-3 py-1 rounded-full text-body-small font-medium bg-neutral-900 text-white w-fit">
+                        {keyword.term}
+                      </span>
+                      <p className="text-body-small text-neutral-600 ml-3">
+                        {keyword.context}
+                      </p>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
