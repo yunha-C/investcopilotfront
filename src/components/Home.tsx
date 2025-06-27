@@ -373,21 +373,40 @@ export const Home: React.FC = () => {
       {/* Features Section */}
       <div className="max-w-6xl mx-auto px-4 py-16">
         <div className="grid md:grid-cols-3 gap-8">
-          <div className="text-center">
-            <div className="w-fit mx-auto mb-4 flex items-center justify-center">
-              <span 
-                className="material-symbols-outlined select-none"
-                style={{ 
-                  fontSize: '64px',
-                  lineHeight: '1',
-                  color: '#3E4749',
-                  fontVariationSettings: "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48"
-                }}
-                aria-hidden="true"
-              >
-                bookmark_manager
-              </span>
+          {/* Portfolio Management */}
+          <div className="text-center relative">
+            {/* Floating Elements Container */}
+            <div className="relative w-fit mx-auto mb-6 h-24">
+              {/* Main Icon Circle */}
+              <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-white rounded-full shadow-elevation-2 flex items-center justify-center z-10">
+                <div className="w-8 h-8 bg-neutral-900 rounded-sm flex items-center justify-center">
+                  <div className="grid grid-cols-3 gap-0.5">
+                    <div className="w-1 h-1 bg-white rounded-full"></div>
+                    <div className="w-1 h-1 bg-white rounded-full"></div>
+                    <div className="w-1 h-1 bg-white rounded-full"></div>
+                    <div className="w-1 h-1 bg-white rounded-full"></div>
+                    <div className="w-1 h-1 bg-white rounded-full"></div>
+                    <div className="w-1 h-1 bg-white rounded-full"></div>
+                    <div className="w-1 h-1 bg-white rounded-full"></div>
+                    <div className="w-1 h-1 bg-white rounded-full"></div>
+                    <div className="w-1 h-1 bg-white rounded-full"></div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Floating Elements */}
+              <div className="absolute -top-2 -left-4 w-8 h-8 bg-white rounded-full shadow-elevation-1 flex items-center justify-center opacity-80">
+                <div className="w-3 h-3 bg-neutral-200 rounded-full"></div>
+              </div>
+              <div className="absolute -top-1 right-2 w-6 h-6 bg-white rounded-full shadow-elevation-1 flex items-center justify-center opacity-60">
+                <div className="w-2 h-2 bg-neutral-300 rounded-full"></div>
+              </div>
+              <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-white rounded-full shadow-elevation-1 flex items-center justify-center opacity-70">
+                <div className="w-4 h-4 bg-neutral-100 rounded-full"></div>
+              </div>
+              <div className="absolute bottom-0 -left-6 w-4 h-4 bg-white rounded-full shadow-elevation-1 opacity-50"></div>
             </div>
+            
             <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-3">
               Portfolio Management
             </h3>
@@ -396,21 +415,36 @@ export const Home: React.FC = () => {
             </p>
           </div>
 
-          <div className="text-center">
-            <div className="w-fit mx-auto mb-4 flex items-center justify-center">
-              <span 
-                className="material-symbols-outlined select-none"
-                style={{ 
-                  fontSize: '64px',
-                  lineHeight: '1',
-                  color: '#3E4749',
-                  fontVariationSettings: "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48"
-                }}
-                aria-hidden="true"
-              >
-                robot_2
-              </span>
+          {/* Influence with Your Own Insight */}
+          <div className="text-center relative">
+            {/* Floating Elements Container */}
+            <div className="relative w-fit mx-auto mb-6 h-24">
+              {/* Main Icon Circle */}
+              <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-white rounded-full shadow-elevation-2 flex items-center justify-center z-10">
+                <div className="w-8 h-8 bg-neutral-900 rounded-sm flex items-center justify-center">
+                  <div className="w-5 h-5 text-white flex items-center justify-center">
+                    <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Floating Elements - Brain/AI themed */}
+              <div className="absolute -top-3 -left-2 w-6 h-6 bg-white rounded-full shadow-elevation-1 flex items-center justify-center opacity-80">
+                <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+              </div>
+              <div className="absolute top-1 right-0 w-8 h-8 bg-white rounded-full shadow-elevation-1 flex items-center justify-center opacity-70">
+                <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+              </div>
+              <div className="absolute -bottom-1 -right-4 w-5 h-5 bg-white rounded-full shadow-elevation-1 flex items-center justify-center opacity-60">
+                <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+              </div>
+              <div className="absolute bottom-2 -left-5 w-7 h-7 bg-white rounded-full shadow-elevation-1 flex items-center justify-center opacity-50">
+                <div className="w-3 h-3 bg-orange-400 rounded-full"></div>
+              </div>
             </div>
+            
             <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-3">
               Influence with Your Own Insight
             </h3>
@@ -419,21 +453,44 @@ export const Home: React.FC = () => {
             </p>
           </div>
 
-          <div className="text-center">
-            <div className="w-fit mx-auto mb-4 flex items-center justify-center">
-              <span 
-                className="material-symbols-outlined select-none"
-                style={{ 
-                  fontSize: '64px',
-                  lineHeight: '1',
-                  color: '#3E4749',
-                  fontVariationSettings: "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48"
-                }}
-                aria-hidden="true"
-              >
-                bubble_chart
-              </span>
+          {/* AI Simulation */}
+          <div className="text-center relative">
+            {/* Floating Elements Container */}
+            <div className="relative w-fit mx-auto mb-6 h-24">
+              {/* Main Icon Circle */}
+              <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-white rounded-full shadow-elevation-2 flex items-center justify-center z-10">
+                <div className="w-8 h-8 bg-neutral-900 rounded-sm flex items-center justify-center">
+                  <div className="w-5 h-5 text-white flex items-center justify-center">
+                    <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
+                      <circle cx="6" cy="12" r="2"/>
+                      <circle cx="12" cy="6" r="2"/>
+                      <circle cx="12" cy="18" r="2"/>
+                      <circle cx="18" cy="12" r="2"/>
+                      <path d="M8 12h2m2-4h2m-2 8h2"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Floating Elements - Network/Connection themed */}
+              <div className="absolute -top-2 left-0 w-7 h-7 bg-white rounded-full shadow-elevation-1 flex items-center justify-center opacity-70">
+                <div className="w-3 h-3 bg-neutral-200 rounded-full"></div>
+              </div>
+              <div className="absolute top-0 -right-3 w-5 h-5 bg-white rounded-full shadow-elevation-1 flex items-center justify-center opacity-80">
+                <div className="w-2 h-2 bg-neutral-300 rounded-full"></div>
+              </div>
+              <div className="absolute -bottom-3 right-1 w-9 h-9 bg-white rounded-full shadow-elevation-1 flex items-center justify-center opacity-60">
+                <div className="w-4 h-4 bg-neutral-100 rounded-full"></div>
+              </div>
+              <div className="absolute bottom-1 -left-4 w-6 h-6 bg-white rounded-full shadow-elevation-1 flex items-center justify-center opacity-50">
+                <div className="w-2 h-2 bg-neutral-400 rounded-full"></div>
+              </div>
+              
+              {/* Connection Lines */}
+              <div className="absolute top-4 left-4 w-8 h-0.5 bg-neutral-200 opacity-30 transform rotate-45"></div>
+              <div className="absolute top-6 right-6 w-6 h-0.5 bg-neutral-200 opacity-30 transform -rotate-45"></div>
             </div>
+            
             <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-3">
               AI Simulation
             </h3>
