@@ -341,6 +341,7 @@ export const useInvestmentStore = create<InvestmentState>((set, get) => ({
       set({
         portfolio: updatedPortfolio,
         portfolios: updatedPortfolios,
+        activePortfolio: updatedPortfolio, // Set the newly saved portfolio as active
       });
 
       console.log("Portfolio saved successfully");
@@ -355,6 +356,7 @@ export const useInvestmentStore = create<InvestmentState>((set, get) => ({
       set({
         portfolio: portfolio,
         portfolios: updatedPortfolios,
+        activePortfolio: portfolio, // Set as active even in fallback case
       });
 
       // Return the original portfolio for fallback operations

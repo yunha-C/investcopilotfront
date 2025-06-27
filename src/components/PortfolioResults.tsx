@@ -4,7 +4,7 @@ import { useInvestmentStore } from '../store/investmentStore';
 import { PortfolioChart } from './PortfolioChart';
 
 export const PortfolioResults: React.FC = () => {
-  const { portfolio, questionnaireAnalysis, setCurrentStep, updatePortfolioBalance, savePortfolioToDatabase, setActivePortfolio } = useInvestmentStore();
+  const { portfolio, questionnaireAnalysis, setCurrentStep, savePortfolioToDatabase } = useInvestmentStore();
   const [isSaving, setIsSaving] = useState(false);
 
   if (!portfolio) return null;
@@ -12,31 +12,32 @@ export const PortfolioResults: React.FC = () => {
   const handleSavePortfolio = async () => {
     setIsSaving(true);
     try {
-      // Save portfolio to database and get the updated portfolio
+      console.log("=== SAVING PORTFOLIO FROM RESULTS ===");
+      console.log("Portfolio to save:", portfolio);
+      
+      // Save portfolio to database - this will also set it as activePortfolio
       const savedPortfolio = await savePortfolioToDatabase(portfolio);
       
-      // Set the newly saved portfolio as the active portfolio
-      setActivePortfolio(savedPortfolio);
+      console.log("Portfolio saved successfully:", savedPortfolio);
+      console.log("Portfolio ID:", savedPortfolio.id);
+      console.log("Portfolio already has cash balance:", savedPortfolio.cashBalance);
       
-      // Set initial investment using the saved portfolio
-      if (savedPortfolio.id) {
-        await updatePortfolioBalance(savedPortfolio.id, savedPortfolio.cashBalance || 10000);
-      }
+      // Portfolio is created with correct balance from the API, no need to call add-balance
+      
+      console.log("Navigating to dashboard...");
       setCurrentStep('dashboard');
     } catch (error) {
       console.error('Failed to save portfolio:', error);
-      // Still proceed to dashboard even if save fails, but use the latest portfolio from store
-      const latestPortfolio = useInvestmentStore.getState().portfolio;
-      if (latestPortfolio) {
-        setActivePortfolio(latestPortfolio);
-        if (latestPortfolio.id) {
-          try {
-            await updatePortfolioBalance(latestPortfolio.id, latestPortfolio.cashBalance || 10000);
-          } catch (updateError) {
-            console.error('Failed to set initial balance:', updateError);
-          }
-        }
+      
+      // Get the latest state from the store
+      const { portfolio: latestPortfolio } = useInvestmentStore.getState();
+      
+      if (latestPortfolio && latestPortfolio.id) {
+        console.log("Using fallback portfolio:", latestPortfolio.id);
+        console.log("Fallback portfolio already has cash balance:", latestPortfolio.cashBalance);
+        // Portfolio already has correct balance, no need to call add-balance
       }
+      
       setCurrentStep('dashboard');
     } finally {
       setIsSaving(false);

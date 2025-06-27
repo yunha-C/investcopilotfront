@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { TrendingUp, Plus, ExternalLink, ArrowLeft, Info, Shield, Calculator, Trash2, RefreshCw } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { TrendingUp, Plus, ExternalLink, ArrowLeft, Info, Shield, Calculator, Trash2 } from 'lucide-react';
 import { useInvestmentStore } from '../store/investmentStore';
 import { PortfolioChart } from './PortfolioChart';
 
 export const Dashboard: React.FC = () => {
-  const { activePortfolio, insights, setCurrentStep, deletePortfolio, updatePortfolioBalance } = useInvestmentStore();
+  const { activePortfolio, insights, setCurrentStep, deletePortfolio, updatePortfolioBalance, portfolios } = useInvestmentStore();
   const [showInsightForm, setShowInsightForm] = useState(false);
   const [insightUrl, setInsightUrl] = useState('');
   const [portfolioValue, setPortfolioValue] = useState('');
@@ -13,11 +13,34 @@ export const Dashboard: React.FC = () => {
   // Use activePortfolio instead of portfolio
   const portfolio = activePortfolio;
 
+  console.log("=== DASHBOARD STATE DEBUG ===");
+  console.log("activePortfolio:", activePortfolio?.id, activePortfolio?.name);
+  console.log("Total portfolios:", portfolios.length);
+  console.log("Portfolio IDs:", portfolios.map(p => p.id));
+
+  // Auto-select first portfolio if activePortfolio is missing but portfolios exist
+  useEffect(() => {
+    if (!activePortfolio && portfolios.length > 0) {
+      console.log("Dashboard: Auto-selecting first portfolio:", portfolios[0].id);
+      const { setActivePortfolio } = useInvestmentStore.getState();
+      setActivePortfolio(portfolios[0]);
+    }
+  }, [activePortfolio, portfolios]);
+
   if (!portfolio) {
+    console.log("Dashboard: No portfolio found, available portfolios:", portfolios.length);
     return (
       <div className="min-h-screen bg-gradient-to-br from-white/50 via-white/30 to-white/20">
         <div className="px-4 py-8">
           <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-8">
+              <h1 className="text-display-medium font-headline font-bold text-neutral-900 mb-4">
+                Portfolio Not Found
+              </h1>
+              <p className="text-body-large text-neutral-600 mb-6">
+                We couldn't find your portfolio. Please go back to home and try again.
+              </p>
+            </div>
             <button
               onClick={() => setCurrentStep('home')}
               className="flex items-center gap-2 text-neutral-900 hover:text-neutral-700 mb-4 transition-colors"
@@ -166,15 +189,6 @@ export const Dashboard: React.FC = () => {
                 </p>
               </div>
               <div className="flex gap-2">
-                <button
-                  onClick={() => {
-                    // Action disabled - no API call
-                  }}
-                  className="p-3 border-2 border-neutral-400 text-neutral-700 rounded-lg hover:bg-neutral-100 transition-colors"
-                  title="Rebalance portfolio"
-                >
-                  <RefreshCw className="w-5 h-5" />
-                </button>
               </div>
             </div>
           </div>
