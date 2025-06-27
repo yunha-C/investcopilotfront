@@ -453,30 +453,54 @@ export const useInvestmentStore = create<InvestmentState>((set, get) => ({
       );
       console.log("Portfolio balance updated via API:", updatedPortfolioData);
 
+      // Validate API response
+      if (!updatedPortfolioData || !updatedPortfolioData.id) {
+        throw new Error("Invalid API response: missing portfolio data");
+      }
+
+      if (updatedPortfolioData.id !== portfolioId) {
+        console.warn("API returned different portfolio ID than expected");
+      }
+
       // Convert API response back to internal format
-      const updatedPortfolio =
+      const convertedPortfolio =
         convertApiResponseToPortfolio(updatedPortfolioData);
 
       // Update the portfolios array with the API response
       const updatedPortfolios = portfolios.map((p) => {
         if (p.id === portfolioId) {
-          return updatedPortfolio;
+          return convertedPortfolio;
         }
         return p;
       });
 
-      // Update activePortfolio if it matches the updated portfolio
+      // Update activePortfolio and portfolio if they match the updated portfolio
+      const { portfolio } = get();
       let updatedActivePortfolio = activePortfolio;
-      if (activePortfolio && activePortfolio.id === portfolioId) {
-        updatedActivePortfolio =
-          updatedPortfolios.find((p) => p.id === portfolioId) ||
-          activePortfolio;
+      let updatedPortfolio = portfolio;
+      
+      const newPortfolioData = updatedPortfolios.find((p) => p.id === portfolioId);
+      
+      if (activePortfolio && activePortfolio.id === portfolioId && newPortfolioData) {
+        updatedActivePortfolio = newPortfolioData;
       }
+      
+      if (portfolio && portfolio.id === portfolioId && newPortfolioData) {
+        updatedPortfolio = newPortfolioData;
+      }
+
+      console.log("=== UPDATING PORTFOLIO STATE ===");
+      console.log("Updated portfolios:", updatedPortfolios.length);
+      console.log("Updated activePortfolio:", updatedActivePortfolio?.name, updatedActivePortfolio?.totalValue);
+      console.log("Updated portfolio:", updatedPortfolio?.name, updatedPortfolio?.totalValue);
 
       set({
         portfolios: updatedPortfolios,
         activePortfolio: updatedActivePortfolio,
+        portfolio: updatedPortfolio,
       });
+
+      console.log("=== PORTFOLIO UPDATE COMPLETE ===");
     } catch (error) {
       console.error("Failed to update portfolio balance:", error);
       const errorMessage =
@@ -789,6 +813,8 @@ function convertApiResponseToPortfolio(
       apiResponse.investmentProfile &&
       typeof apiResponse.investmentProfile === "object"
     ) {
+      // Handle object format (new API response)
+      console.log("Using investmentProfile as object");
       parsedProfile = apiResponse.investmentProfile as InvestmentProfile;
     } else {
       throw new Error("Invalid investmentProfile format");
@@ -841,30 +867,22 @@ function convertApiResponseToPortfolio(
 
   // Parse holdings from holdingsData
   const holdings: Holding[] = [];
-  const holdingsData = apiResponse.holdings || {};
-  let holdingsArray: any[] = [];
-
-  if (Array.isArray(holdingsData)) {
-    holdingsArray = holdingsData.map((holding: any) => [
-      holding.symbol,
-      holding,
-    ]);
-  } else {
-    holdingsArray = Object.entries(holdingsData);
-  }
-
+  const holdingsData = apiResponse.holdings || [];
+  
   console.log("=== PROCESSING HOLDINGS DATA ===");
   console.log("Holdings data from API:", holdingsData);
-  console.log("Holdings array length:", holdingsArray.length);
-  console.log("Holdings array entries:", holdingsArray);
+  console.log("Holdings array length:", holdingsData.length);
+  console.log("Holdings data type:", typeof holdingsData);
+  console.log("Is holdings array?", Array.isArray(holdingsData));
 
   // Convert holdings data to Holding format and calculate allocation
   let allocation: Array<{ name: string; percentage: number; color: string }> =
     [];
 
-  if (holdingsArray.length > 0) {
-    // Parse actual holdings from the database format
-    holdingsArray.forEach(([ticker, holdingData]: [string, any], holdingIndex) => {
+  if (Array.isArray(holdingsData) && holdingsData.length > 0) {
+    // Parse holdings from new array format
+    holdingsData.forEach((holdingData: any, holdingIndex: number) => {
+      const ticker = holdingData.symbol;
       console.log(`Processing holding ${ticker}:`, holdingData);
 
       // Convert to Holding format
@@ -897,30 +915,42 @@ function convertApiResponseToPortfolio(
         color: getAssetColor(ticker, holdingIndex),
       });
     });
+  } else if (!Array.isArray(holdingsData) && holdingsData && typeof holdingsData === "object") {
+    // Handle legacy object format for backwards compatibility
+    const holdingsArray = Object.entries(holdingsData);
+    holdingsArray.forEach(([ticker, holdingData]: [string, any], holdingIndex) => {
+      console.log(`Processing legacy holding ${ticker}:`, holdingData);
 
-    // Add cash allocation based on actual cash balance from API
-    const totalValue = apiResponse.totalValue || 0;
-    const cashBalance = apiResponse.cashBalance || 0;
-    const cashPercentage = totalValue > 0 ? (cashBalance / totalValue) * 100 : 0;
+      // Convert to Holding format
+      const holding: Holding = {
+        id: holdingData.id || `holding_${ticker}_${holdingIndex}`,
+        symbol: {
+          ticker: ticker,
+          name: getTickerName(ticker),
+          exchange: "US",
+        },
+        targetAllocation: {
+          percentage: holdingData.targetAllocation || 0,
+        },
+        currentAllocation: {
+          percentage: holdingData.currentAllocation || 0,
+        },
+        shares: holdingData.shares || 0,
+        marketValue: holdingData.marketValue || 0,
+        averageCostBasis: holdingData.averageCostBasis || 0,
+        createdAt: holdingData.createdAt || new Date().toISOString(),
+        updatedAt: holdingData.updatedAt || new Date().toISOString(),
+      };
 
-    console.log("Total portfolio value:", totalValue);
-    console.log("Cash balance:", cashBalance);
-    console.log("Calculated cash percentage:", cashPercentage);
+      holdings.push(holding);
 
-    if (cashPercentage > 0) {
+      // Create allocation entry
       allocation.push({
-        name: "Cash",
-        percentage: Math.round(cashPercentage * 10) / 10, // Round to 1 decimal place
-        color: "#CBDCF3",
+        name: getTickerName(ticker),
+        percentage: holdingData.currentAllocation || 0,
+        color: getAssetColor(ticker, holdingIndex),
       });
-    }
-
-    console.log("Converted holdings:", holdings);
-    console.log("Generated allocation:", allocation);
-    console.log(
-      "Total allocation percentage:",
-      allocation.reduce((sum, item) => sum + item.percentage, 0)
-    );
+    });
   } else {
     // No holdings = all cash
     allocation = [
@@ -932,6 +962,55 @@ function convertApiResponseToPortfolio(
     ];
   }
 
+  // Add cash allocation for portfolios with holdings (if there's any cash balance)
+  if ((Array.isArray(holdingsData) && holdingsData.length > 0) || 
+      (!Array.isArray(holdingsData) && holdingsData && typeof holdingsData === "object" && Object.keys(holdingsData).length > 0)) {
+    
+    const totalValue = apiResponse.totalValue || 0;
+    const cashBalance = apiResponse.cashBalance || 0;
+    const cashPercentage = totalValue > 0 ? (cashBalance / totalValue) * 100 : 0;
+
+    console.log("=== ADDING CASH ALLOCATION ===");
+    console.log("Total portfolio value:", totalValue);
+    console.log("Cash balance:", cashBalance);
+    console.log("Calculated cash percentage:", cashPercentage);
+
+    // Always add cash allocation if there's any cash balance, even if small
+    if (cashBalance > 0) {
+      allocation.push({
+        name: "Cash",
+        percentage: Math.round(cashPercentage * 10) / 10, // Round to 1 decimal place
+        color: "#CBDCF3",
+      });
+
+      console.log("Added cash allocation:", {
+        name: "Cash",
+        percentage: Math.round(cashPercentage * 10) / 10,
+        color: "#CBDCF3"
+      });
+    }
+
+    // Ensure allocation percentages add up to 100% (or close to it due to rounding)
+    const totalPercentage = allocation.reduce((sum, item) => sum + item.percentage, 0);
+    console.log("Total allocation percentage before adjustment:", totalPercentage);
+    
+    if (Math.abs(totalPercentage - 100) > 0.1 && allocation.length > 0) {
+      console.warn(`Allocation percentages don't add up to 100%: ${totalPercentage}%`);
+      // Adjust the largest allocation slightly to reach 100%
+      const largestAllocation = allocation.reduce((max, item) => 
+        item.percentage > max.percentage ? item : max
+      );
+      const adjustment = 100 - totalPercentage;
+      largestAllocation.percentage += adjustment;
+      largestAllocation.percentage = Math.round(largestAllocation.percentage * 10) / 10;
+      
+      console.log(`Adjusted ${largestAllocation.name} by ${adjustment}% to reach 100%`);
+    }
+
+    console.log("Final allocation:", allocation);
+    console.log("Final total percentage:", allocation.reduce((sum, item) => sum + item.percentage, 0));
+  }
+
   // Calculate risk score and level from parsed investment profile
   const riskScore = calculateRiskScoreFromTolerance(
     parsedProfile.riskTolerance || "moderate"
@@ -940,7 +1019,7 @@ function convertApiResponseToPortfolio(
 
   // Calculate growth based on actual database values
   // Since we don't have initial investment data, assume no growth for cash-only portfolios
-  const growth = holdingsArray.length > 0 ? 0 : 0; // Set to 0 for cash-only portfolios
+  const growth = holdingsData.length > 0 ? 0 : 0; // Set to 0 for cash-only portfolios
 
   return {
     // Database fields - use actual values from database
@@ -952,11 +1031,13 @@ function convertApiResponseToPortfolio(
     status: apiResponse.status,
     holdingsData: apiResponse.holdings,
     totalValue: apiResponse.totalValue, // Use actual totalValue from database
-    rebalanceThreshold: apiResponse.rebalanceThreshold,
-    created_at: apiResponse.created_at,
-    updated_at: apiResponse.updated_at,
-    created_by: apiResponse.created_by,
-    updated_by: apiResponse.updated_by,
+    rebalanceThreshold: typeof apiResponse.rebalanceThreshold === 'string' 
+      ? parseFloat(apiResponse.rebalanceThreshold) 
+      : apiResponse.rebalanceThreshold,
+    created_at: apiResponse.created_at || apiResponse.createdAt || '',
+    updated_at: apiResponse.updated_at || apiResponse.updatedAt || '',
+    created_by: apiResponse.created_by || apiResponse.createdBy || '',
+    updated_by: apiResponse.updated_by || apiResponse.updatedBy || '',
     investmentProfile: parsedProfile, // Use parsed profile object
     cashBalance: apiResponse.cashBalance, // Use actual cashBalance from database
 

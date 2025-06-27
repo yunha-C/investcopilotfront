@@ -4,7 +4,7 @@ import { useInvestmentStore } from '../store/investmentStore';
 import { PortfolioChart } from './PortfolioChart';
 
 export const Dashboard: React.FC = () => {
-  const { activePortfolio, insights, setCurrentStep, deletePortfolio } = useInvestmentStore();
+  const { activePortfolio, insights, setCurrentStep, deletePortfolio, updatePortfolioBalance } = useInvestmentStore();
   const [showInsightForm, setShowInsightForm] = useState(false);
   const [insightUrl, setInsightUrl] = useState('');
   const [portfolioValue, setPortfolioValue] = useState('');
@@ -64,8 +64,10 @@ export const Dashboard: React.FC = () => {
     const value = parseFloat(portfolioValue.replace(/[,$]/g, ''));
     if (value && value > 0) {
       try {
-        const { updatePortfolioBalance } = useInvestmentStore.getState();
         await updatePortfolioBalance(portfolio.id, value);
+        
+        console.log("Portfolio balance updated successfully from Dashboard component");
+        
         setPortfolioValue('');
         setShowAddValueForm(false);
       } catch (error) {

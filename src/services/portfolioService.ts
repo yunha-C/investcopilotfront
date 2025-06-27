@@ -116,15 +116,34 @@ export interface PortfolioResponse {
   name: string;
   description?: string;
   status: string;
-  holdings: Record<string, any>[]; // JSON object containing holdings
+  holdings: Array<{
+    id: string;
+    symbol: string;
+    targetAllocation: number;
+    currentAllocation: number;
+    shares: number;
+    marketValue: number;
+    averageCostBasis: number;
+    purchasePrice?: number;
+    marketPrice?: number;
+    createdAt: string;
+    updatedAt: string;
+  }>; // Array of holding objects
   totalValue: number;
-  rebalanceThreshold: number;
-  created_at: string;
-  updated_at: string;
-  created_by: string;
-  updated_by: string;
-  investmentProfile: string; // JSON string from database
+  rebalanceThreshold: string | number;
+  // Support both old and new field names for backwards compatibility
+  created_at?: string;
+  updated_at?: string;
+  created_by?: string;
+  updated_by?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  createdBy?: string;
+  updatedBy?: string;
+  investmentProfile: string | object; // Can be JSON string or object
   cashBalance: number;
+  questionnaireAnalysis?: any;
+  hasCompletedInvestmentProfile?: boolean;
 }
 
 export interface QuestionnaireAnalysisRequest {
@@ -411,7 +430,14 @@ class PortfolioService {
       const data = await response.json();
       console.log("Add balance API response:", data);
 
-      return data;
+      // Extract portfolio data from nested response
+      if (data.portfolio) {
+        console.log("Extracted portfolio data:", data.portfolio);
+        return data.portfolio;
+      } else {
+        console.log("No nested portfolio found, returning data as-is");
+        return data;
+      }
     } catch (error) {
       console.error("Add balance error:", error);
       if (error instanceof TypeError && error.message.includes("fetch")) {

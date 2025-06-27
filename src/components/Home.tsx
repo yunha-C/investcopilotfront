@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Plus, TrendingUp, ArrowRight, AlertCircle, RefreshCw } from 'lucide-react';
+import { Plus, TrendingUp, ArrowRight, AlertCircle } from 'lucide-react';
 import { useInvestmentStore } from '../store/investmentStore';
 
 export const Home: React.FC = () => {
@@ -55,6 +55,9 @@ export const Home: React.FC = () => {
       setIsAddingValue(true);
       try {
         await updatePortfolioBalance(selectedPortfolioForValue.id, value);
+        
+        console.log("Portfolio balance updated successfully from Home component");
+        
         // Close modal and reset state after successful update
         setPortfolioValue('');
         setShowAddValueModal(false);
@@ -216,16 +219,6 @@ export const Home: React.FC = () => {
                         </div>
                       </div>
                       <div className="flex items-center gap-1">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            // Action disabled - no API call
-                          }}
-                          className="p-2 text-neutral-400 hover:text-neutral-600 hover:bg-neutral-50 rounded-lg transition-colors"
-                          title="Rebalance portfolio"
-                        >
-                          <RefreshCw className="w-4 h-4" />
-                        </button>
                         <button
                           onClick={() => handleViewPortfolio(portfolioItem)}
                           className="p-2 text-neutral-400 hover:text-neutral-600 hover:bg-neutral-50 rounded-lg transition-colors"

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowLeft, TrendingUp, Calendar, ExternalLink, Calculator, Info, RefreshCw } from 'lucide-react';
+import { ArrowLeft, TrendingUp, Calendar, ExternalLink, Calculator, Info } from 'lucide-react';
 import { useInvestmentStore } from '../store/investmentStore';
 import { PortfolioChart } from './PortfolioChart';
 
@@ -96,15 +96,6 @@ export const PortfolioDetails: React.FC = () => {
                   </div>
                 </div>
                 <div className="flex gap-3">
-                  <button
-                    onClick={() => {
-                      // Action disabled - no API call
-                    }}
-                    className="p-3 border-2 border-neutral-400 text-neutral-700 rounded-lg hover:bg-neutral-100 transition-colors"
-                    title="Rebalance portfolio"
-                  >
-                    <RefreshCw className="w-5 h-5" />
-                  </button>
                   <button
                     onClick={handleModify}
                     className="px-6 py-3 border-2 border-neutral-400 text-neutral-700 rounded-lg text-label-large font-medium hover:bg-neutral-100 transition-colors"
