@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Target, Clock, TrendingUp, User, Brain, Briefcase, DollarSign, Shield, AlertTriangle, BookOpen, Home, Check, ArrowLeft } from 'lucide-react';
 import { useInvestmentStore, QuestionnaireAnswers } from '../store/investmentStore';
-import { useAuthStore } from '../store/authStore';
 import { ProgressIndicator } from './ProgressIndicator';
 
 const questions = [
@@ -137,9 +136,9 @@ export const Questionnaire: React.FC = () => {
   const [showSectors, setShowSectors] = useState(false);
   const [showRestrictions, setShowRestrictions] = useState(false);
   const [validationError, setValidationError] = useState<string | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
   
-  const { generatePortfolio, setCurrentStep } = useInvestmentStore();
-  const { updateInvestmentProfileStatus } = useAuthStore();
+  const { generatePortfolio, setCurrentStep, isLoading } = useInvestmentStore();
 
   const handleAnswer = (questionId: string, value: string) => {
     const newAnswers = { ...answers, [questionId]: value };
@@ -211,44 +210,33 @@ export const Questionnaire: React.FC = () => {
       return;
     }
 
-    const finalAnswers: QuestionnaireAnswers = {
-      goal: answers.goal!,
-      timeHorizon: answers.timeHorizon!,
-      riskTolerance: answers.riskTolerance!,
-      experience: answers.experience!,
-      income: answers.income!,
-      netWorth: answers.netWorth!,
-      liquidityNeeds: answers.liquidityNeeds!,
-      insights: answers.insights!,
-      sectors: sectors.length > 0 ? sectors : undefined,
-      restrictions: restrictions.length > 0 ? restrictions : undefined,
-    };
-    
-    console.log('Questionnaire completed, generating portfolio...');
-    
-    // Generate portfolio first (this sets currentStep to 'results')
-    generatePortfolio(finalAnswers);
-    
-    // Update the user's investment profile completion status in the background
-    // This is a non-critical operation that shouldn't block the user experience
-    setTimeout(async () => {
-      try {
-        await updateInvestmentProfileStatus(true);
-        console.log('Investment profile marked as completed');
-      } catch (error) {
-        // Silently handle the error - this is a background operation
-        // The user has already successfully generated their portfolio
-        console.log('Failed to update investment profile status (non-critical):', error);
-        
-        // Optionally store this information locally for retry later
-        try {
-          localStorage.setItem('aivestie_profile_completion_pending', 'true');
-        } catch (storageError) {
-          // Even localStorage might fail, but that's okay
-          console.log('Could not store profile completion status locally:', storageError);
-        }
-      }
-    }, 100);
+    setIsAnalyzing(true);
+    setValidationError(null);
+
+    try {
+      const finalAnswers: QuestionnaireAnswers = {
+        goal: answers.goal!,
+        timeHorizon: answers.timeHorizon!,
+        riskTolerance: answers.riskTolerance!,
+        experience: answers.experience!,
+        income: answers.income!,
+        netWorth: answers.netWorth!,
+        liquidityNeeds: answers.liquidityNeeds!,
+        insights: answers.insights!,
+        sectors: sectors.length > 0 ? sectors : undefined,
+        restrictions: restrictions.length > 0 ? restrictions : undefined,
+      };
+      
+      console.log('Questionnaire completed, generating portfolio...');
+      
+      // Generate portfolio (this sets currentStep to 'results')
+      await generatePortfolio(finalAnswers);
+    } catch (error) {
+      console.error('Portfolio generation failed:', error);
+      setValidationError('Failed to generate portfolio. Please try again.');
+    } finally {
+      setIsAnalyzing(false);
+    }
   };
 
   const handleExitQuestionnaire = () => {
@@ -405,9 +393,17 @@ export const Questionnaire: React.FC = () => {
                 
                 <button
                   onClick={handleSubmit}
-                  className="bg-neutral-900 text-white py-3 px-6 rounded-lg text-label-large font-medium hover:bg-neutral-800 transition-colors"
+                  disabled={isAnalyzing || isLoading}
+                  className="bg-neutral-900 text-white py-3 px-6 rounded-lg text-label-large font-medium hover:bg-neutral-800 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Generate My Portfolio
+                  {isAnalyzing || isLoading ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      Analyzing Portfolio...
+                    </>
+                  ) : (
+                    'Generate My Portfolio'
+                  )}
                 </button>
               </div>
             </div>

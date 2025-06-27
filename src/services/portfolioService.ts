@@ -2,15 +2,47 @@ const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "https://investment-api.duckdns.org";
 
 export interface CreatePortfolioRequest {
+  accountId?: string;
   name: string;
-  riskTolerance: string;
-  investmentGoal: string;
-  timeHorizon: string;
-  initialInvestment: number;
-  monthlyContribution?: number;
-  sectors?: string[];
-  restrictions?: string[];
-  questionnaire?: {
+  description?: string;
+  rebalanceThreshold?: number;
+  investmentQuestionnaire: {
+    riskTolerance: string;
+    investmentGoals: Array<{
+      type: string;
+      timeHorizonYears: number;
+      targetAmount: number;
+      priority: string;
+    }>;
+    experience: {
+      yearsExperience: number;
+      hasStockExperience: boolean;
+      hasBondExperience: boolean;
+      hasOptionsExperience: boolean;
+      hasInternationalExperience: boolean;
+      hasAlternativeExperience: boolean;
+    };
+    financialSituation: {
+      annualIncome: number;
+      netWorth: number;
+      liquidAssets: number;
+      monthlyExpenses: number;
+      employmentStatus: string;
+      hasEmergencyFund: boolean;
+      hasDebt: boolean;
+      debtAmount?: number;
+    };
+    preferences: {
+      preferredSectors: string[];
+      excludedSectors: string[];
+      esgFocused: boolean;
+      preferDividendStocks: boolean;
+      internationalExposure: boolean;
+      maxSinglePositionPercent: number;
+      rebalanceFrequency: string;
+    };
+  };
+  questionnaireAnswers: {
     goal: string;
     timeHorizon: string;
     riskTolerance: string;
@@ -19,9 +51,10 @@ export interface CreatePortfolioRequest {
     netWorth: string;
     liquidityNeeds: string;
     insights: string;
-    sectors?: string[];
-    restrictions?: string[];
+    sectorPreferences: string[];
+    restrictions: string[];
   };
+  questionnaireAnalysis: QuestionnaireAnalysisResponse;
 }
 
 export interface Holding {
@@ -92,6 +125,51 @@ export interface PortfolioResponse {
   updated_by: string;
   investmentProfile: string; // JSON string from database
   cashBalance: number;
+}
+
+export interface QuestionnaireAnalysisRequest {
+  questionnaire: string; // JSON string of questionnaire answers
+}
+
+export interface QuestionnaireAnalysisResponse {
+  risk_score: number;
+  risk_level: string;
+  portfolio_strategy_name: string;
+  analysis_details: {
+    detailed_analysis: string;
+    questionnaire_breakdown: {
+      primary_factors: {
+        investment_goal: string;
+        time_horizon: string;
+        risk_tolerance: string;
+      };
+      supporting_factors: {
+        experience_level: string;
+        income_level: string;
+        net_worth: string;
+        liquidity_needs: string;
+      };
+      preferences: {
+        sector_preferences: string[];
+        investment_restrictions: string[];
+        market_insights: string;
+      };
+    };
+    investment_recommendations: {
+      profile_name?: string;
+      core_strategy?: string;
+      asset_allocation: string;
+      base_allocation?: Record<string, number>;
+      investment_focus: string;
+      recommended_products: string[];
+      time_horizon_fit: string;
+      volatility_expectation?: string;
+      expected_return?: string;
+      risk_controls?: Record<string, string>;
+      description?: string;
+    };
+    strategy_rationale: string;
+  };
 }
 
 export interface ApiError {
@@ -367,6 +445,81 @@ class PortfolioService {
       console.log("Portfolio deleted successfully");
     } catch (error) {
       console.error("Delete portfolio error:", error);
+      if (error instanceof TypeError && error.message.includes("fetch")) {
+        throw new Error(
+          "Unable to connect to server. Please check your internet connection."
+        );
+      }
+      throw error;
+    }
+  }
+
+  async analyzeQuestionnaire(
+    questionnaireData: QuestionnaireAnalysisRequest
+  ): Promise<QuestionnaireAnalysisResponse> {
+    try {
+      console.log("=== ANALYZE QUESTIONNAIRE API CALL ===");
+      console.log("Analyzing questionnaire with data:", questionnaireData);
+      console.log("API URL:", `${API_BASE_URL}/portfolios/analyze-questionnaire`);
+
+      const response = await fetch(`${API_BASE_URL}/portfolios/analyze-questionnaire`, {
+        method: "POST",
+        headers: this.getAuthHeaders(),
+        body: JSON.stringify(questionnaireData),
+      });
+
+      console.log("Analyze questionnaire response status:", response.status);
+      console.log(
+        "Analyze questionnaire response headers:",
+        Object.fromEntries(response.headers.entries())
+      );
+
+      if (!response.ok) {
+        await this.handleErrorResponse(response, "Failed to analyze questionnaire");
+      }
+
+      const data = await response.json();
+      console.log("Analyze questionnaire API response:", data);
+
+      return data;
+    } catch (error) {
+      console.error("Analyze questionnaire error:", error);
+      if (error instanceof TypeError && error.message.includes("fetch")) {
+        throw new Error(
+          "Unable to connect to server. Please check your internet connection."
+        );
+      }
+      throw error;
+    }
+  }
+
+  async rebalancePortfolio(portfolioId: string): Promise<PortfolioResponse> {
+    try {
+      console.log("=== REBALANCE PORTFOLIO API CALL ===");
+      console.log("Rebalancing portfolio:", portfolioId);
+      console.log("API URL:", `${API_BASE_URL}/portfolios/${portfolioId}/rebalance`);
+
+      const response = await fetch(`${API_BASE_URL}/portfolios/${portfolioId}/rebalance`, {
+        method: "POST",
+        headers: this.getAuthHeaders(),
+      });
+
+      console.log("Rebalance portfolio response status:", response.status);
+      console.log(
+        "Rebalance portfolio response headers:",
+        Object.fromEntries(response.headers.entries())
+      );
+
+      if (!response.ok) {
+        await this.handleErrorResponse(response, "Failed to rebalance portfolio");
+      }
+
+      const data = await response.json();
+      console.log("Rebalance portfolio API response:", data);
+
+      return data;
+    } catch (error) {
+      console.error("Rebalance portfolio error:", error);
       if (error instanceof TypeError && error.message.includes("fetch")) {
         throw new Error(
           "Unable to connect to server. Please check your internet connection."

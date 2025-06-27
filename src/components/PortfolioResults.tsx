@@ -4,7 +4,7 @@ import { useInvestmentStore } from '../store/investmentStore';
 import { PortfolioChart } from './PortfolioChart';
 
 export const PortfolioResults: React.FC = () => {
-  const { portfolio, setCurrentStep, updatePortfolioBalance, savePortfolioToDatabase } = useInvestmentStore();
+  const { portfolio, questionnaireAnalysis, setCurrentStep, updatePortfolioBalance, savePortfolioToDatabase } = useInvestmentStore();
   const [isSaving, setIsSaving] = useState(false);
 
   if (!portfolio) return null;
@@ -168,13 +168,123 @@ export const PortfolioResults: React.FC = () => {
                 </div>
               </div>
 
-              <div className="grid lg:grid-cols-2 gap-8 mb-8">
-                <div className="p-6 bg-neutral-100 rounded-lg">
-                  <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-3">AI Strategy Reasoning</h3>
-                  <p className="text-body-medium text-neutral-700 leading-relaxed">
-                    {generateConciseReasoning()}
-                  </p>
-                </div>
+              <div className="space-y-8 mb-8">
+                {/* Detailed Analysis Section */}
+                {questionnaireAnalysis && (
+                  <div className="p-6 bg-neutral-100 rounded-lg">
+                    <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-4">Detailed Portfolio Analysis</h3>
+                    <div className="prose prose-sm text-neutral-700 leading-relaxed whitespace-pre-line">
+                      {questionnaireAnalysis.analysis_details.detailed_analysis}
+                    </div>
+                  </div>
+                )}
+
+                {/* Investment Recommendations */}
+                {questionnaireAnalysis && (
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div className="p-6 bg-neutral-100 rounded-lg">
+                      <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-4">Investment Strategy</h3>
+                      <div className="space-y-3">
+                        {questionnaireAnalysis.analysis_details.investment_recommendations.profile_name && (
+                          <div>
+                            <p className="text-body-small text-neutral-600 font-medium">Profile</p>
+                            <p className="text-body-medium text-neutral-800">{questionnaireAnalysis.analysis_details.investment_recommendations.profile_name}</p>
+                          </div>
+                        )}
+                        {questionnaireAnalysis.analysis_details.investment_recommendations.core_strategy && (
+                          <div>
+                            <p className="text-body-small text-neutral-600 font-medium">Core Strategy</p>
+                            <p className="text-body-medium text-neutral-800">{questionnaireAnalysis.analysis_details.investment_recommendations.core_strategy}</p>
+                          </div>
+                        )}
+                        <div>
+                          <p className="text-body-small text-neutral-600 font-medium">Investment Focus</p>
+                          <p className="text-body-medium text-neutral-800">{questionnaireAnalysis.analysis_details.investment_recommendations.investment_focus}</p>
+                        </div>
+                        <div>
+                          <p className="text-body-small text-neutral-600 font-medium">Time Horizon Fit</p>
+                          <p className="text-body-medium text-neutral-800">{questionnaireAnalysis.analysis_details.investment_recommendations.time_horizon_fit}</p>
+                        </div>
+                        {questionnaireAnalysis.analysis_details.investment_recommendations.expected_return && (
+                          <div>
+                            <p className="text-body-small text-neutral-600 font-medium">Expected Return</p>
+                            <p className="text-body-medium text-neutral-800">{questionnaireAnalysis.analysis_details.investment_recommendations.expected_return}</p>
+                          </div>
+                        )}
+                        {questionnaireAnalysis.analysis_details.investment_recommendations.volatility_expectation && (
+                          <div>
+                            <p className="text-body-small text-neutral-600 font-medium">Expected Volatility</p>
+                            <p className="text-body-medium text-neutral-800">{questionnaireAnalysis.analysis_details.investment_recommendations.volatility_expectation}</p>
+                          </div>
+                        )}
+                        <div>
+                          <p className="text-body-small text-neutral-600 font-medium">Recommended Products</p>
+                          <ul className="list-disc list-inside text-body-small text-neutral-700 space-y-1">
+                            {questionnaireAnalysis.analysis_details.investment_recommendations.recommended_products.map((product, index) => (
+                              <li key={index}>{product}</li>
+                            ))}
+                          </ul>
+                        </div>
+                        {questionnaireAnalysis.analysis_details.investment_recommendations.risk_controls && (
+                          <div>
+                            <p className="text-body-small text-neutral-600 font-medium">Risk Controls</p>
+                            <div className="grid grid-cols-2 gap-2 text-body-small text-neutral-700">
+                              {Object.entries(questionnaireAnalysis.analysis_details.investment_recommendations.risk_controls).map(([key, value]) => (
+                                <div key={key} className="flex justify-between">
+                                  <span>{key}:</span>
+                                  <span className="font-medium">{value}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="p-6 bg-neutral-100 rounded-lg">
+                      <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-4">Your Profile Summary</h3>
+                      <div className="space-y-3">
+                        <div>
+                          <p className="text-body-small text-neutral-600 font-medium">Primary Factors</p>
+                          <div className="text-body-small text-neutral-700 space-y-1">
+                            <p>• Goal: {questionnaireAnalysis.analysis_details.questionnaire_breakdown.primary_factors.investment_goal}</p>
+                            <p>• Time Horizon: {questionnaireAnalysis.analysis_details.questionnaire_breakdown.primary_factors.time_horizon}</p>
+                            <p>• Risk Tolerance: {questionnaireAnalysis.analysis_details.questionnaire_breakdown.primary_factors.risk_tolerance}</p>
+                          </div>
+                        </div>
+                        <div>
+                          <p className="text-body-small text-neutral-600 font-medium">Financial Profile</p>
+                          <div className="text-body-small text-neutral-700 space-y-1">
+                            <p>• Experience: {questionnaireAnalysis.analysis_details.questionnaire_breakdown.supporting_factors.experience_level}</p>
+                            <p>• Income: {questionnaireAnalysis.analysis_details.questionnaire_breakdown.supporting_factors.income_level}</p>
+                            <p>• Net Worth: {questionnaireAnalysis.analysis_details.questionnaire_breakdown.supporting_factors.net_worth}</p>
+                            <p>• Liquidity Needs: {questionnaireAnalysis.analysis_details.questionnaire_breakdown.supporting_factors.liquidity_needs}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Strategy Rationale */}
+                {questionnaireAnalysis && (
+                  <div className="p-6 bg-neutral-100 rounded-lg">
+                    <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-3">Strategy Rationale</h3>
+                    <p className="text-body-medium text-neutral-700 leading-relaxed">
+                      {questionnaireAnalysis.analysis_details.strategy_rationale}
+                    </p>
+                  </div>
+                )}
+
+                {/* Fallback for when analysis is not available */}
+                {!questionnaireAnalysis && (
+                  <div className="p-6 bg-neutral-100 rounded-lg">
+                    <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-3">AI Strategy Reasoning</h3>
+                    <p className="text-body-medium text-neutral-700 leading-relaxed">
+                      {generateConciseReasoning()}
+                    </p>
+                  </div>
+                )}
 
                 <div className="p-6 bg-neutral-100 rounded-lg">
                   <div className="flex items-center gap-2 mb-3">

@@ -5,6 +5,8 @@ import {
   PortfolioResponse,
   Holding,
   InvestmentProfile,
+  QuestionnaireAnalysisRequest,
+  QuestionnaireAnalysisResponse,
 } from "../services/portfolioService";
 
 export interface QuestionnaireAnswers {
@@ -76,6 +78,7 @@ interface InvestmentState {
     | "portfolio-details"
     | "insight-analysis";
   questionnaire: QuestionnaireAnswers | null;
+  questionnaireAnalysis: QuestionnaireAnalysisResponse | null;
   portfolio: Portfolio | null;
   activePortfolio: Portfolio | null; // Currently selected portfolio for dashboard
   portfolios: Portfolio[];
@@ -97,6 +100,7 @@ interface InvestmentState {
   deletePortfolio: (portfolioId: string) => Promise<void>;
   setActivePortfolio: (portfolio: Portfolio) => void;
   loadPortfolioById: (portfolioId: string) => Promise<Portfolio>;
+  rebalancePortfolio: (portfolioId: string) => Promise<void>;
   clearError: () => void;
   setError: (error: string) => void;
 }
@@ -104,6 +108,7 @@ interface InvestmentState {
 export const useInvestmentStore = create<InvestmentState>((set, get) => ({
   currentStep: "home",
   questionnaire: null,
+  questionnaireAnalysis: null,
   portfolio: null,
   activePortfolio: null,
   portfolios: [],
@@ -130,14 +135,38 @@ export const useInvestmentStore = create<InvestmentState>((set, get) => ({
         );
       }
 
-      // For now, create a basic portfolio structure for the results page
-      // This will be saved to the database when the user confirms
+      // First, analyze the questionnaire using the new API endpoint
+      console.log("=== ANALYZING QUESTIONNAIRE ===");
+      const questionnaireForAnalysis = {
+        investment_goal: answers.goal,
+        time_horizon: answers.timeHorizon,
+        risk_tolerance: answers.riskTolerance,
+        experience_level: answers.experience,
+        income_level: answers.income,
+        net_worth: answers.netWorth,
+        liquidity_needs: answers.liquidityNeeds,
+        market_insights: answers.insights,
+        sector_preferences: answers.sectors || [],
+        investment_restrictions: answers.restrictions || [],
+      };
+
+      const analysisRequest: QuestionnaireAnalysisRequest = {
+        questionnaire: JSON.stringify(questionnaireForAnalysis),
+      };
+
+      const analysis = await portfolioService.analyzeQuestionnaire(analysisRequest);
+      console.log("Questionnaire analysis received:", analysis);
+
+      // Store the analysis in state
+      set({ questionnaireAnalysis: analysis });
+
+      // Create portfolio structure using analysis results
       console.log("### Debug", answers);
       const portfolio: Portfolio = {
         // Database fields (will be set when saved)
         id: `temp_${Date.now()}`,
         userId: "",
-        name: generatePortfolioName(answers, portfolios),
+        name: analysis.portfolio_strategy_name || generatePortfolioName(answers, portfolios),
         status: "draft",
         holdingsData: {},
         totalValue: getInitialInvestmentFromAnswers(answers),
@@ -189,17 +218,18 @@ export const useInvestmentStore = create<InvestmentState>((set, get) => ({
         },
         cashBalance: getInitialInvestmentFromAnswers(answers),
 
-        // Computed/UI fields
-        allocation: generateDefaultAllocation(answers.riskTolerance),
-        reasoning: `This portfolio is designed based on your ${answers.riskTolerance} risk tolerance and ${answers.goal} investment goal.`,
+        // Computed/UI fields - use analysis results
+        allocation: parseAllocationFromAnalysis(
+          analysis.analysis_details.investment_recommendations.asset_allocation,
+          analysis.analysis_details.investment_recommendations.base_allocation
+        ) || generateDefaultAllocation(answers.riskTolerance),
+        reasoning: analysis.analysis_details.detailed_analysis || `This portfolio is designed based on your ${answers.riskTolerance} risk tolerance and ${answers.goal} investment goal.`,
         expectedReturn: calculateExpectedReturn(answers.riskTolerance),
         managementFee: 0.01,
-        riskLevel: getRiskLevelFromScore(
-          calculateRiskScoreFromTolerance(answers.riskTolerance)
-        ),
+        riskLevel: analysis.risk_level || getRiskLevelFromScore(analysis.risk_score || calculateRiskScoreFromTolerance(answers.riskTolerance)),
         balance: getInitialInvestmentFromAnswers(answers),
         growth: 0,
-        riskScore: calculateRiskScoreFromTolerance(answers.riskTolerance),
+        riskScore: analysis.risk_score || calculateRiskScoreFromTolerance(answers.riskTolerance),
         monthlyFee: (getInitialInvestmentFromAnswers(answers) * 0.0001) / 12,
       };
 
@@ -227,23 +257,70 @@ export const useInvestmentStore = create<InvestmentState>((set, get) => ({
       console.log("=== SAVING PORTFOLIO TO DATABASE ===");
       console.log("Portfolio to save:", portfolio);
 
-      // Extract data from questionnaire for creating portfolio request
-      const questionnaire = get().questionnaire;
+      // Extract data from questionnaire and analysis
+      const { questionnaire, questionnaireAnalysis } = get();
       if (!questionnaire) {
         throw new Error("No questionnaire data available");
       }
+      if (!questionnaireAnalysis) {
+        throw new Error("No questionnaire analysis available");
+      }
 
-      // Convert local portfolio to API format using questionnaire data
+      // Convert questionnaire data to new API format
       const portfolioRequest: CreatePortfolioRequest = {
         name: portfolio.name,
-        riskTolerance: questionnaire.riskTolerance,
-        investmentGoal: questionnaire.goal,
-        timeHorizon: questionnaire.timeHorizon,
-        initialInvestment: portfolio.totalValue || 10000,
-        monthlyContribution: 0,
-        sectors: questionnaire.sectors?.filter((s) => s !== "none"),
-        restrictions: questionnaire.restrictions?.filter((r) => r !== "none"),
-        questionnaire: questionnaire,
+        description: questionnaireAnalysis.analysis_details.investment_recommendations.description || 
+                    `${questionnaireAnalysis.risk_level} risk portfolio for ${questionnaire.goal}`,
+        rebalanceThreshold: 5.0,
+        investmentQuestionnaire: {
+          riskTolerance: questionnaire.riskTolerance,
+          investmentGoals: [{
+            type: questionnaire.goal,
+            timeHorizonYears: getTimeHorizonYears(questionnaire.timeHorizon),
+            targetAmount: 0,
+            priority: "primary"
+          }],
+          experience: {
+            yearsExperience: getExperienceYears(questionnaire.experience),
+            hasStockExperience: ["intermediate", "advanced", "expert"].includes(questionnaire.experience),
+            hasBondExperience: ["intermediate", "advanced", "expert"].includes(questionnaire.experience),
+            hasOptionsExperience: ["advanced", "expert"].includes(questionnaire.experience),
+            hasInternationalExperience: ["advanced", "expert"].includes(questionnaire.experience),
+            hasAlternativeExperience: ["expert"].includes(questionnaire.experience),
+          },
+          financialSituation: {
+            annualIncome: getIncomeFromRange(questionnaire.income),
+            netWorth: getNetWorthFromRange(questionnaire.netWorth),
+            liquidAssets: 0,
+            monthlyExpenses: 0,
+            employmentStatus: "employed",
+            hasEmergencyFund: false,
+            hasDebt: false,
+            debtAmount: 0,
+          },
+          preferences: {
+            preferredSectors: questionnaire.sectors?.filter((s) => s !== "none") || [],
+            excludedSectors: questionnaire.restrictions?.filter((r) => r !== "none") || [],
+            esgFocused: questionnaire.sectors?.includes("esg") || false,
+            preferDividendStocks: questionnaire.goal === "income",
+            internationalExposure: true,
+            maxSinglePositionPercent: 10,
+            rebalanceFrequency: "quarterly",
+          },
+        },
+        questionnaireAnswers: {
+          goal: questionnaire.goal,
+          timeHorizon: questionnaire.timeHorizon,
+          riskTolerance: questionnaire.riskTolerance,
+          experience: questionnaire.experience,
+          income: questionnaire.income,
+          netWorth: questionnaire.netWorth,
+          liquidityNeeds: questionnaire.liquidityNeeds,
+          insights: questionnaire.insights,
+          sectorPreferences: questionnaire.sectors || [],
+          restrictions: questionnaire.restrictions || [],
+        },
+        questionnaireAnalysis: questionnaireAnalysis,
       };
 
       console.log("Portfolio request to API:", portfolioRequest);
@@ -498,6 +575,58 @@ export const useInvestmentStore = create<InvestmentState>((set, get) => ({
     }
   },
 
+  rebalancePortfolio: async (portfolioId) => {
+    const { portfolios, activePortfolio } = get();
+
+    try {
+      console.log("=== REBALANCING PORTFOLIO ===");
+      console.log("Portfolio ID:", portfolioId);
+
+      // Find the portfolio to rebalance
+      const portfolioToRebalance = portfolios.find((p) => p.id === portfolioId);
+
+      if (!portfolioToRebalance) {
+        throw new Error("Portfolio not found");
+      }
+
+      // Call the API to rebalance portfolio
+      const rebalancedPortfolioData = await portfolioService.rebalancePortfolio(portfolioId);
+      console.log("Portfolio rebalanced via API:", rebalancedPortfolioData);
+
+      // Convert API response back to internal format
+      const updatedPortfolio = convertApiResponseToPortfolio(rebalancedPortfolioData);
+
+      // Update the portfolios array with the rebalanced portfolio
+      const updatedPortfolios = portfolios.map((p) => {
+        if (p.id === portfolioId) {
+          return updatedPortfolio;
+        }
+        return p;
+      });
+
+      // Update activePortfolio if it matches the rebalanced portfolio
+      let updatedActivePortfolio = activePortfolio;
+      if (activePortfolio && activePortfolio.id === portfolioId) {
+        updatedActivePortfolio = updatedPortfolio;
+      }
+
+      set({
+        portfolios: updatedPortfolios,
+        activePortfolio: updatedActivePortfolio,
+      });
+
+      console.log("Portfolio rebalanced successfully");
+    } catch (error) {
+      console.error("Failed to rebalance portfolio:", error);
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to rebalance portfolio";
+      set({ error: errorMessage });
+      throw error;
+    }
+  },
+
   clearError: () => set({ error: null }),
 
   setError: (error) => set({ error }),
@@ -582,6 +711,18 @@ function getExperienceYears(experience: string): number {
   };
 
   return experienceYears[experience as keyof typeof experienceYears] || 0;
+}
+
+function getTimeHorizonYears(timeHorizon: string): number {
+  const timeHorizonYears = {
+    "<1": 0,
+    "1-3": 2,
+    "3-5": 4,
+    "5-10": 7,
+    "10+": 15,
+  };
+
+  return timeHorizonYears[timeHorizon as keyof typeof timeHorizonYears] || 5;
 }
 
 function getIncomeFromRange(income: string): number {
@@ -704,7 +845,7 @@ function convertApiResponseToPortfolio(
   let holdingsArray: any[] = [];
 
   if (Array.isArray(holdingsData)) {
-    holdingsArray = holdingsData.map((holding: any, index: number) => [
+    holdingsArray = holdingsData.map((holding: any) => [
       holding.symbol,
       holding,
     ]);
@@ -723,12 +864,12 @@ function convertApiResponseToPortfolio(
 
   if (holdingsArray.length > 0) {
     // Parse actual holdings from the database format
-    holdingsArray.forEach(([ticker, holdingData]: [string, any], index) => {
+    holdingsArray.forEach(([ticker, holdingData]: [string, any], holdingIndex) => {
       console.log(`Processing holding ${ticker}:`, holdingData);
 
       // Convert to Holding format
       const holding: Holding = {
-        id: holdingData.id || `holding_${ticker}_${index}`,
+        id: holdingData.id || `holding_${ticker}_${holdingIndex}`,
         symbol: {
           ticker: ticker,
           name: getTickerName(ticker), // Helper function to get full name
@@ -753,7 +894,7 @@ function convertApiResponseToPortfolio(
       allocation.push({
         name: getTickerName(ticker),
         percentage: holdingData.currentAllocation || 0,
-        color: getAssetColor(ticker, index),
+        color: getAssetColor(ticker, holdingIndex),
       });
     });
 
@@ -1040,6 +1181,52 @@ function calculateRiskScore(answers: QuestionnaireAnswers): number {
   score += wealthScore * 0.1;
 
   return Math.round(score * 10) / 10; // Round to 1 decimal place
+}
+
+function parseAllocationFromAnalysis(assetAllocation: string, baseAllocation?: Record<string, number>): Portfolio["allocation"] | null {
+  try {
+    // First try to use base_allocation if available
+    if (baseAllocation && Object.keys(baseAllocation).length > 0) {
+      const allocations: Portfolio["allocation"] = [];
+      Object.entries(baseAllocation).forEach(([symbol, percentage], index) => {
+        const name = getTickerName(symbol);
+        const color = getAssetColor(symbol.toLowerCase(), index);
+        
+        allocations.push({
+          name,
+          percentage,
+          color
+        });
+      });
+      return allocations;
+    }
+
+    // Fall back to parsing asset allocation string like "70% Total Market, 15% Value ETFs, 10% Momentum, 5% Cash Buffer"
+    if (!assetAllocation) return null;
+    
+    const allocations: Portfolio["allocation"] = [];
+    const parts = assetAllocation.split(',').map(part => part.trim());
+    
+    parts.forEach((part, index) => {
+      const match = part.match(/(\d+)%\s*(.+)/);
+      if (match) {
+        const percentage = parseInt(match[1]);
+        const name = match[2].trim();
+        const color = getAssetColor(name.toLowerCase(), index);
+        
+        allocations.push({
+          name,
+          percentage,
+          color
+        });
+      }
+    });
+    
+    return allocations.length > 0 ? allocations : null;
+  } catch (error) {
+    console.error('Failed to parse allocation from analysis:', error);
+    return null;
+  }
 }
 
 function generateInsightFromUrl(

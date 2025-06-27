@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
-import { TrendingUp, Plus, ExternalLink, ArrowLeft, Info, Shield, Calculator, Trash2 } from 'lucide-react';
+import { TrendingUp, Plus, ExternalLink, ArrowLeft, Info, Shield, Calculator, Trash2, RefreshCw, BarChart3 } from 'lucide-react';
 import { useInvestmentStore } from '../store/investmentStore';
 import { PortfolioChart } from './PortfolioChart';
 
 export const Dashboard: React.FC = () => {
-  const { activePortfolio, insights, setCurrentStep, deletePortfolio } = useInvestmentStore();
+  const { activePortfolio, insights, setCurrentStep, deletePortfolio, rebalancePortfolio } = useInvestmentStore();
   const [showInsightForm, setShowInsightForm] = useState(false);
   const [insightUrl, setInsightUrl] = useState('');
   const [portfolioValue, setPortfolioValue] = useState('');
   const [showAddValueForm, setShowAddValueForm] = useState(false);
+  const [isRebalancing, setIsRebalancing] = useState(false);
 
   // Use activePortfolio instead of portfolio
   const portfolio = activePortfolio;
@@ -74,10 +75,29 @@ export const Dashboard: React.FC = () => {
     }
   };
 
-  const handleDeletePortfolio = () => {
+  const handleDeletePortfolio = async () => {
     if (confirm(`Are you sure you want to delete "${portfolio.name}"? This action cannot be undone.`)) {
-      deletePortfolio(portfolio.id);
-      setCurrentStep('home');
+      try {
+        await deletePortfolio(portfolio.id);
+        setCurrentStep('home');
+      } catch (error) {
+        console.error('Failed to delete portfolio:', error);
+        // Still navigate to home as the portfolio was likely deleted locally
+        setCurrentStep('home');
+      }
+    }
+  };
+
+  const handleRebalancePortfolio = async () => {
+    setIsRebalancing(true);
+    try {
+      await rebalancePortfolio(portfolio.id);
+      console.log('Portfolio rebalanced successfully:', portfolio.name);
+    } catch (error) {
+      console.error('Failed to rebalance portfolio:', error);
+      // Error is handled by the store, but we can add user feedback here if needed
+    } finally {
+      setIsRebalancing(false);
     }
   };
 
@@ -155,6 +175,26 @@ export const Dashboard: React.FC = () => {
                 <p className="text-body-large text-neutral-600">
                   Portfolio Dashboard & Analytics
                 </p>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    // TODO: Implement market data refresh action
+                    console.log('Refresh market data for portfolio:', portfolio.name);
+                  }}
+                  className="p-3 border-2 border-neutral-400 text-neutral-700 rounded-lg hover:bg-neutral-100 transition-colors"
+                  title="Refresh market data"
+                >
+                  <BarChart3 className="w-5 h-5" />
+                </button>
+                <button
+                  onClick={handleRebalancePortfolio}
+                  disabled={isRebalancing}
+                  className="p-3 border-2 border-neutral-400 text-neutral-700 rounded-lg hover:bg-neutral-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Rebalance portfolio"
+                >
+                  <RefreshCw className={`w-5 h-5 ${isRebalancing ? 'animate-spin' : ''}`} />
+                </button>
               </div>
             </div>
           </div>

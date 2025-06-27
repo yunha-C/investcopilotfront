@@ -1,10 +1,11 @@
-import React from 'react';
-import { ArrowLeft, TrendingUp, Calendar, ExternalLink, Calculator, Info } from 'lucide-react';
+import React, { useState } from 'react';
+import { ArrowLeft, TrendingUp, Calendar, ExternalLink, Calculator, Info, RefreshCw, BarChart3 } from 'lucide-react';
 import { useInvestmentStore } from '../store/investmentStore';
 import { PortfolioChart } from './PortfolioChart';
 
 export const PortfolioDetails: React.FC = () => {
-  const { activePortfolio, insights, setCurrentStep, deletePortfolio } = useInvestmentStore();
+  const { activePortfolio, insights, setCurrentStep, deletePortfolio, rebalancePortfolio } = useInvestmentStore();
+  const [isRebalancing, setIsRebalancing] = useState(false);
 
   // Use activePortfolio instead of portfolio
   const portfolio = activePortfolio;
@@ -50,10 +51,29 @@ export const PortfolioDetails: React.FC = () => {
     setCurrentStep('questionnaire');
   };
 
-  const handleDeletePortfolio = () => {
+  const handleDeletePortfolio = async () => {
     if (confirm(`Are you sure you want to delete "${portfolio.name}"? This action cannot be undone.`)) {
-      deletePortfolio(portfolio.id);
-      setCurrentStep('home');
+      try {
+        await deletePortfolio(portfolio.id);
+        setCurrentStep('home');
+      } catch (error) {
+        console.error('Failed to delete portfolio:', error);
+        // Still navigate to home as the portfolio was likely deleted locally
+        setCurrentStep('home');
+      }
+    }
+  };
+
+  const handleRebalancePortfolio = async () => {
+    setIsRebalancing(true);
+    try {
+      await rebalancePortfolio(portfolio.id);
+      console.log('Portfolio rebalanced successfully:', portfolio.name);
+    } catch (error) {
+      console.error('Failed to rebalance portfolio:', error);
+      // Error is handled by the store, but we can add user feedback here if needed
+    } finally {
+      setIsRebalancing(false);
     }
   };
 
@@ -89,6 +109,24 @@ export const PortfolioDetails: React.FC = () => {
                   </div>
                 </div>
                 <div className="flex gap-3">
+                  <button
+                    onClick={() => {
+                      // TODO: Implement market data refresh action
+                      console.log('Refresh market data for portfolio:', portfolio.name);
+                    }}
+                    className="p-3 border-2 border-neutral-400 text-neutral-700 rounded-lg hover:bg-neutral-100 transition-colors"
+                    title="Refresh market data"
+                  >
+                    <BarChart3 className="w-5 h-5" />
+                  </button>
+                  <button
+                    onClick={handleRebalancePortfolio}
+                    disabled={isRebalancing}
+                    className="p-3 border-2 border-neutral-400 text-neutral-700 rounded-lg hover:bg-neutral-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    title="Rebalance portfolio"
+                  >
+                    <RefreshCw className={`w-5 h-5 ${isRebalancing ? 'animate-spin' : ''}`} />
+                  </button>
                   <button
                     onClick={handleModify}
                     className="px-6 py-3 border-2 border-neutral-400 text-neutral-700 rounded-lg text-label-large font-medium hover:bg-neutral-100 transition-colors"

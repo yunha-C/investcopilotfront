@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Plus, TrendingUp, ArrowRight, AlertCircle } from 'lucide-react';
+import { Plus, TrendingUp, ArrowRight, AlertCircle, RefreshCw, BarChart3 } from 'lucide-react';
 import { useInvestmentStore } from '../store/investmentStore';
 import { useAuthStore } from '../store/authStore';
 
 export const Home: React.FC = () => {
-  const { setCurrentStep, portfolio, portfolios, isLoading, error, clearError, updatePortfolioBalance, setActivePortfolio } = useInvestmentStore();
+  const { setCurrentStep, portfolio, portfolios, isLoading, error, clearError, updatePortfolioBalance, setActivePortfolio, rebalancePortfolio } = useInvestmentStore();
   const { user } = useAuthStore();
   const [selectedTimeframe, setSelectedTimeframe] = useState('All');
   const [showAddValueModal, setShowAddValueModal] = useState(false);
   const [selectedPortfolioForValue, setSelectedPortfolioForValue] = useState<any>(null);
+  const [rebalancingPortfolioId, setRebalancingPortfolioId] = useState<string | null>(null);
   const [portfolioValue, setPortfolioValue] = useState('');
   const [isAddingValue, setIsAddingValue] = useState(false);
 
@@ -65,6 +66,20 @@ export const Home: React.FC = () => {
       } finally {
         setIsAddingValue(false);
       }
+    }
+  };
+
+  const handleRebalancePortfolio = async (portfolioItem: any, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setRebalancingPortfolioId(portfolioItem.id);
+    try {
+      await rebalancePortfolio(portfolioItem.id);
+      console.log('Portfolio rebalanced successfully:', portfolioItem.name);
+    } catch (error) {
+      console.error('Failed to rebalance portfolio:', error);
+      // Error is handled by the store, but we can add user feedback here if needed
+    } finally {
+      setRebalancingPortfolioId(null);
     }
   };
 
@@ -207,13 +222,34 @@ export const Home: React.FC = () => {
                           <span>{portfolioItem.riskScore || 3}/5</span>
                         </div>
                       </div>
-                      <button
-                        onClick={() => handleViewPortfolio(portfolioItem)}
-                        className="p-2 text-neutral-400 hover:text-neutral-600 hover:bg-neutral-50 rounded-lg transition-colors"
-                        title="View portfolio"
-                      >
-                        <ArrowRight className="w-4 h-4" />
-                      </button>
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            // TODO: Implement market data refresh action
+                            console.log('Refresh market data for portfolio:', portfolioItem.name);
+                          }}
+                          className="p-2 text-neutral-400 hover:text-neutral-600 hover:bg-neutral-50 rounded-lg transition-colors"
+                          title="Refresh market data"
+                        >
+                          <BarChart3 className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={(e) => handleRebalancePortfolio(portfolioItem, e)}
+                          disabled={rebalancingPortfolioId === portfolioItem.id}
+                          className="p-2 text-neutral-400 hover:text-neutral-600 hover:bg-neutral-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          title="Rebalance portfolio"
+                        >
+                          <RefreshCw className={`w-4 h-4 ${rebalancingPortfolioId === portfolioItem.id ? 'animate-spin' : ''}`} />
+                        </button>
+                        <button
+                          onClick={() => handleViewPortfolio(portfolioItem)}
+                          className="p-2 text-neutral-400 hover:text-neutral-600 hover:bg-neutral-50 rounded-lg transition-colors"
+                          title="View portfolio"
+                        >
+                          <ArrowRight className="w-4 h-4" />
+                        </button>
+                      </div>
                     </div>
                     
                     {/* Portfolio Value */}
