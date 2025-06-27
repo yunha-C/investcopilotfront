@@ -414,7 +414,7 @@ export const Dashboard: React.FC = () => {
                         onClick={() => setShowAddValueForm(true)}
                         className="bg-neutral-900 text-white px-6 py-3 rounded-lg text-label-large font-medium hover:bg-neutral-800 transition-colors"
                       >
-                        Add Portfolio Value
+                        Add Virtual Portfolio Value
                       </button>
                     </div>
                   )}
@@ -552,7 +552,7 @@ export const Dashboard: React.FC = () => {
                           {(trade.type === "buy" || trade.type === "sell") &&
                             trade.price !== null && (
                               <span className="text-body-small text-neutral-500">
-                                @ ${trade.price}
+                                ${trade.price}
                               </span>
                             )}
                           {trade.type === "deposit" &&
@@ -737,12 +737,12 @@ export const Dashboard: React.FC = () => {
             <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
               <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-elevation-3">
                 <h3 className="text-title-large font-headline font-semi-bold text-neutral-900 mb-4">
-                  Add Portfolio Value
+                  Add Virtual Portfolio Value
                 </h3>
                 <form onSubmit={handleAddValue}>
                   <div className="mb-4">
                     <label className="block text-label-large font-medium text-neutral-700 mb-2">
-                      Initial Investment Amount
+                      Virtual Investment Amount
                     </label>
                     <div className="relative">
                       <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-500">
@@ -761,7 +761,7 @@ export const Dashboard: React.FC = () => {
                       />
                     </div>
                     <p className="text-body-small text-neutral-500 mt-1">
-                      Enter the amount you want to invest in this portfolio
+                      Enter the virtual amount you want to simulate investing in this portfolio
                     </p>
                   </div>
                   <div className="flex gap-3">
@@ -773,7 +773,7 @@ export const Dashboard: React.FC = () => {
                       {isAddingValue && (
                         <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                       )}
-                      {isAddingValue ? "Adding..." : "Add Value"}
+                      {isAddingValue ? "Adding..." : "Add Virtual Value"}
                     </button>
                     <button
                       type="button"

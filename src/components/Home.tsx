@@ -312,7 +312,7 @@ export const Home: React.FC = () => {
                       onClick={(e) => handleAddValue(portfolioItem, e)}
                       className="w-full bg-neutral-100 hover:bg-neutral-200 text-neutral-900 py-3 px-4 rounded-lg text-label-large font-medium transition-colors"
                     >
-                      Add Value
+                      Add Virtual Value
                     </button>
                   </div>
                 </div>
@@ -370,10 +370,10 @@ export const Home: React.FC = () => {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-elevation-3">
             <h3 className="text-title-large font-headline font-semi-bold text-neutral-900 mb-4">
-              Add Portfolio Value
+              Add Virtual Portfolio Value
             </h3>
             <p className="text-body-medium text-neutral-600 mb-4">
-              Adding value to:{" "}
+              Adding virtual value to:{" "}
               <span className="font-medium text-neutral-900">
                 {selectedPortfolioForValue?.name}
               </span>
@@ -381,7 +381,7 @@ export const Home: React.FC = () => {
             <form onSubmit={handleSaveValue}>
               <div className="mb-4">
                 <label className="block text-label-large font-medium text-neutral-700 mb-2">
-                  Investment Amount
+                  Virtual Investment Amount
                 </label>
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-500">
@@ -401,7 +401,7 @@ export const Home: React.FC = () => {
                   />
                 </div>
                 <p className="text-body-small text-neutral-500 mt-1">
-                  Enter the amount you want to invest in this portfolio
+                  Enter the virtual amount you want to simulate investing in this portfolio
                 </p>
               </div>
               <div className="flex gap-3">
@@ -413,7 +413,7 @@ export const Home: React.FC = () => {
                   {isAddingValue && (
                     <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   )}
-                  {isAddingValue ? "Adding..." : "Add Value"}
+                  {isAddingValue ? "Adding..." : "Add Virtual Value"}
                 </button>
                 <button
                   type="button"
