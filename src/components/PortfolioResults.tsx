@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TrendingUp, DollarSign, Shield, ArrowLeft, Calculator, Info } from 'lucide-react';
+import { TrendingUp, Shield, ArrowLeft, Calculator, Info } from 'lucide-react';
 import { useInvestmentStore } from '../store/investmentStore';
 import { PortfolioChart } from './PortfolioChart';
 
@@ -17,7 +17,7 @@ export const PortfolioResults: React.FC = () => {
       
       // Set initial investment
       if (portfolio.id) {
-        await updatePortfolioBalance(portfolio.id, portfolio.initialInvestment || 10000);
+        await updatePortfolioBalance(portfolio.id, portfolio.cashBalance || 10000);
       }
       setCurrentStep('dashboard');
     } catch (error) {
@@ -25,7 +25,7 @@ export const PortfolioResults: React.FC = () => {
       // Still proceed to dashboard even if save fails
       if (portfolio.id) {
         try {
-          await updatePortfolioBalance(portfolio.id, portfolio.initialInvestment || 10000);
+          await updatePortfolioBalance(portfolio.id, portfolio.cashBalance || 10000);
         } catch (updateError) {
           console.error('Failed to set initial balance:', updateError);
         }
@@ -55,7 +55,7 @@ export const PortfolioResults: React.FC = () => {
 
   // Generate concise reasoning based on portfolio characteristics
   const generateConciseReasoning = () => {
-    const riskLevel = portfolio.riskLevel.toLowerCase();
+    const riskLevel = (portfolio.riskLevel || 'Moderate').toLowerCase();
     const expectedReturn = portfolio.expectedReturn;
     
     if (riskLevel.includes('conservative') || riskLevel.includes('low')) {
@@ -93,7 +93,7 @@ export const PortfolioResults: React.FC = () => {
                 <div className="text-right">
                   <div className="text-body-small text-neutral-600">Risk Score</div>
                   <div className="text-headline-medium font-headline font-semi-bold text-neutral-900">{portfolio.riskScore}/5</div>
-                  <div className="text-body-small text-neutral-600">{portfolio.riskLevel} Risk</div>
+                  <div className="text-body-small text-neutral-600">{portfolio.riskLevel || 'Moderate'} Risk</div>
                 </div>
               </div>
             </div>
@@ -120,7 +120,7 @@ export const PortfolioResults: React.FC = () => {
                       </div>
                       <div>
                         <p className="text-body-small text-neutral-600">Risk Level</p>
-                        <p className="text-title-medium font-headline font-semi-bold text-neutral-800">{portfolio.riskLevel}</p>
+                        <p className="text-title-medium font-headline font-semi-bold text-neutral-800">{portfolio.riskLevel || 'Moderate'}</p>
                       </div>
                     </div>
                   </div>

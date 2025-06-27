@@ -4,12 +4,11 @@ import { useInvestmentStore } from '../store/investmentStore';
 import { PortfolioChart } from './PortfolioChart';
 
 export const Dashboard: React.FC = () => {
-  const { activePortfolio, insights, setCurrentStep, deletePortfolio, rebalancePortfolio } = useInvestmentStore();
+  const { activePortfolio, insights, setCurrentStep, deletePortfolio } = useInvestmentStore();
   const [showInsightForm, setShowInsightForm] = useState(false);
   const [insightUrl, setInsightUrl] = useState('');
   const [portfolioValue, setPortfolioValue] = useState('');
   const [showAddValueForm, setShowAddValueForm] = useState(false);
-  const [isRebalancing, setIsRebalancing] = useState(false);
 
   // Use activePortfolio instead of portfolio
   const portfolio = activePortfolio;
@@ -88,18 +87,6 @@ export const Dashboard: React.FC = () => {
     }
   };
 
-  const handleRebalancePortfolio = async () => {
-    setIsRebalancing(true);
-    try {
-      await rebalancePortfolio(portfolio.id);
-      console.log('Portfolio rebalanced successfully:', portfolio.name);
-    } catch (error) {
-      console.error('Failed to rebalance portfolio:', error);
-      // Error is handled by the store, but we can add user feedback here if needed
-    } finally {
-      setIsRebalancing(false);
-    }
-  };
 
   const hasValue = portfolio.balance > 0;
 
@@ -240,7 +227,7 @@ export const Dashboard: React.FC = () => {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-body-medium text-neutral-600">Monthly Fee</span>
-                    <span className="text-body-medium font-medium">${portfolio.monthlyFee.toFixed(2)}</span>
+                    <span className="text-body-medium font-medium">${(portfolio.monthlyFee || 0).toFixed(2)}</span>
                   </div>
                 </div>
               </div>
@@ -333,11 +320,11 @@ export const Dashboard: React.FC = () => {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-body-small text-neutral-600">Monthly Fee</span>
-                  <span className="text-body-small font-medium">${portfolio.monthlyFee.toFixed(2)}</span>
+                  <span className="text-body-small font-medium">${(portfolio.monthlyFee || 0).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-body-small text-neutral-600">Annual Fee</span>
-                  <span className="text-body-small font-medium">${(portfolio.monthlyFee * 12).toFixed(2)}</span>
+                  <span className="text-body-small font-medium">${((portfolio.monthlyFee || 0) * 12).toFixed(2)}</span>
                 </div>
                 <div className="pt-2 border-t border-neutral-200">
                   <div className="flex items-start gap-2">

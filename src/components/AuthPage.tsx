@@ -137,7 +137,6 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
         await login(formData.email, formData.password);
       } else {
         const currentEmail = formData.email;
-        const currentPassword = formData.password;
         await register(formData.firstName, formData.lastName, formData.email, formData.password);
         
         // If registration was successful but didn't auto-authenticate, 

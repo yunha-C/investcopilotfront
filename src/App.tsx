@@ -11,7 +11,7 @@ import { InsightAnalysis } from './components/InsightAnalysis';
 import { Home } from './components/Home';
 
 function App() {
-  const { currentStep, updatePortfolioBalance, setCurrentStep, portfolio, loadUserPortfolios } = useInvestmentStore();
+  const { currentStep, setCurrentStep, portfolio, loadUserPortfolios } = useInvestmentStore();
   const { isAuthenticated, checkAuthStatus, user, isLoading } = useAuthStore();
 
   // Check authentication status on app load

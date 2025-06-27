@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { ArrowLeft, TrendingUp, Calendar, ExternalLink, Calculator, Info, RefreshCw } from 'lucide-react';
 import { useInvestmentStore } from '../store/investmentStore';
 import { PortfolioChart } from './PortfolioChart';
 
 export const PortfolioDetails: React.FC = () => {
-  const { activePortfolio, insights, setCurrentStep, deletePortfolio, rebalancePortfolio } = useInvestmentStore();
-  const [isRebalancing, setIsRebalancing] = useState(false);
+  const { activePortfolio, insights, setCurrentStep, deletePortfolio } = useInvestmentStore();
 
   // Use activePortfolio instead of portfolio
   const portfolio = activePortfolio;
@@ -64,18 +63,6 @@ export const PortfolioDetails: React.FC = () => {
     }
   };
 
-  const handleRebalancePortfolio = async () => {
-    setIsRebalancing(true);
-    try {
-      await rebalancePortfolio(portfolio.id);
-      console.log('Portfolio rebalanced successfully:', portfolio.name);
-    } catch (error) {
-      console.error('Failed to rebalance portfolio:', error);
-      // Error is handled by the store, but we can add user feedback here if needed
-    } finally {
-      setIsRebalancing(false);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white/50 via-white/30 to-white/20">

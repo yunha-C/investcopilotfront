@@ -7,7 +7,6 @@ export const InsightAnalysis: React.FC = () => {
   const { portfolio, setCurrentStep, addInsight } = useInvestmentStore();
   const [isAnalyzing, setIsAnalyzing] = useState(true);
   const [analysisResult, setAnalysisResult] = useState<any>(null);
-  const [selectedAction, setSelectedAction] = useState<'rebalance' | 'save' | null>(null);
 
   // Simulate AI analysis
   useEffect(() => {

@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { authService, AuthResponse } from '../services/authService';
+import { authService } from '../services/authService';
 
 interface User {
   id: string;
@@ -205,12 +205,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         // Try to refresh the token
         const response = await authService.refreshToken();
         const userData = {
-          id: response.user.id,
-          firstName: response.user.firstName,
-          lastName: response.user.lastName,
-          email: response.user.email,
-          createdAt: response.user.createdAt,
-          updatedAt: response.user.updatedAt,
+          id: response.user?.id || '',
+          firstName: response.user?.firstName || '',
+          lastName: response.user?.lastName || '',
+          email: response.user?.email || '',
+          createdAt: response.user?.createdAt || '',
+          updatedAt: response.user?.updatedAt || '',
         };
         
         localStorage.setItem('aivestie_user', JSON.stringify(userData));
@@ -231,12 +231,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       try {
         const freshUserData = await authService.getCurrentUser();
         const updatedUserData = {
-          id: freshUserData.id,
-          firstName: freshUserData.firstName,
-          lastName: freshUserData.lastName,
-          email: freshUserData.email,
-          createdAt: freshUserData.createdAt,
-          updatedAt: freshUserData.updatedAt,
+          id: freshUserData?.id || '',
+          firstName: freshUserData?.firstName || '',
+          lastName: freshUserData?.lastName || '',
+          email: freshUserData?.email || '',
+          createdAt: freshUserData?.createdAt || '',
+          updatedAt: freshUserData?.updatedAt || '',
         };
         
         localStorage.setItem('aivestie_user', JSON.stringify(updatedUserData));

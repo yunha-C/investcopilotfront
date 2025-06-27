@@ -1130,58 +1130,6 @@ function getRiskLevelFromScore(riskScore: number): string {
   return "Very High";
 }
 
-// Keep the original local generation function as fallback - used for local portfolio generation
-function calculateRiskScore(answers: QuestionnaireAnswers): number {
-  let score = 0;
-
-  // Risk tolerance (40% weight)
-  const riskWeights = {
-    "very-low": 1,
-    low: 2,
-    moderate: 3,
-    high: 4,
-    "very-high": 5,
-  };
-  score +=
-    (riskWeights[answers.riskTolerance as keyof typeof riskWeights] || 3) * 0.4;
-
-  // Time horizon (30% weight)
-  const timeWeights = {
-    "<1": 1,
-    "1-3": 2,
-    "3-5": 3,
-    "5-10": 4,
-    "10+": 5,
-  };
-  score +=
-    (timeWeights[answers.timeHorizon as keyof typeof timeWeights] || 3) * 0.3;
-
-  // Experience (20% weight)
-  const expWeights = {
-    none: 1,
-    basic: 2,
-    intermediate: 3,
-    advanced: 4,
-    expert: 5,
-  };
-  score +=
-    (expWeights[answers.experience as keyof typeof expWeights] || 2) * 0.2;
-
-  // Income/Net worth (10% weight)
-  const wealthScore =
-    answers.netWorth === "5m+"
-      ? 5
-      : answers.netWorth === "1m-5m"
-      ? 4
-      : answers.netWorth === "500k-1m"
-      ? 3
-      : answers.netWorth === "100k-500k"
-      ? 2
-      : 1;
-  score += wealthScore * 0.1;
-
-  return Math.round(score * 10) / 10; // Round to 1 decimal place
-}
 
 function parseAllocationFromAnalysis(assetAllocation: string, baseAllocation?: Record<string, number>): Portfolio["allocation"] | null {
   try {

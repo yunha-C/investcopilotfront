@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Target, Clock, TrendingUp, User, Brain, Briefcase, DollarSign, Shield, AlertTriangle, BookOpen, Home, Check, ArrowLeft } from 'lucide-react';
+import { Target, Clock, TrendingUp, Brain, DollarSign, AlertTriangle, BookOpen, Home, Check, ArrowLeft } from 'lucide-react';
 import { useInvestmentStore, QuestionnaireAnswers } from '../store/investmentStore';
 import { ProgressIndicator } from './ProgressIndicator';
 
@@ -245,7 +245,7 @@ export const Questionnaire: React.FC = () => {
 
   const handleNextQuestion = () => {
     const currentQ = questions[currentQuestion];
-    const currentAnswer = answers[currentQ?.id];
+    const currentAnswer = currentQ?.id ? answers[currentQ.id as keyof QuestionnaireAnswers] : undefined;
     
     if (!currentAnswer) {
       setValidationError('Please select an answer before continuing.');
@@ -269,7 +269,7 @@ export const Questionnaire: React.FC = () => {
   };
 
   const currentQ = questions[currentQuestion];
-  const currentAnswer = answers[currentQ?.id];
+  const currentAnswer = currentQ?.id ? answers[currentQ.id as keyof QuestionnaireAnswers] : undefined;
 
   const stepLabels = ['Goals', 'Timeline', 'Risk', 'Experience', 'Income', 'Assets', 'Liquidity', 'Management', 'Sectors', 'Restrictions'];
 
@@ -385,7 +385,7 @@ export const Questionnaire: React.FC = () => {
 
               <div className="flex justify-between">
                 <button
-                  onClick={() => setShowRestrictions(false) || setShowSectors(true)}
+                  onClick={() => { setShowRestrictions(false); setShowSectors(true); }}
                   className="px-6 py-3 bg-neutral-100 text-neutral-900 rounded-lg text-label-large font-medium hover:bg-neutral-200 transition-colors border border-neutral-300"
                 >
                   Previous Question
@@ -518,7 +518,7 @@ export const Questionnaire: React.FC = () => {
 
               <div className="flex justify-between">
                 <button
-                  onClick={() => setShowSectors(false) || setCurrentQuestion(questions.length - 1)}
+                  onClick={() => { setShowSectors(false); setCurrentQuestion(questions.length - 1); }}
                   className="px-6 py-3 bg-neutral-100 text-neutral-900 rounded-lg text-label-large font-medium hover:bg-neutral-200 transition-colors border border-neutral-300"
                 >
                   Previous Question

@@ -1,15 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Plus, TrendingUp, ArrowRight, AlertCircle, RefreshCw } from 'lucide-react';
 import { useInvestmentStore } from '../store/investmentStore';
-import { useAuthStore } from '../store/authStore';
 
 export const Home: React.FC = () => {
-  const { setCurrentStep, portfolio, portfolios, isLoading, error, clearError, updatePortfolioBalance, setActivePortfolio, rebalancePortfolio } = useInvestmentStore();
-  const { user } = useAuthStore();
+  const { setCurrentStep, portfolios, isLoading, error, clearError, updatePortfolioBalance, setActivePortfolio } = useInvestmentStore();
   const [selectedTimeframe, setSelectedTimeframe] = useState('All');
   const [showAddValueModal, setShowAddValueModal] = useState(false);
   const [selectedPortfolioForValue, setSelectedPortfolioForValue] = useState<any>(null);
-  const [rebalancingPortfolioId, setRebalancingPortfolioId] = useState<string | null>(null);
   const [portfolioValue, setPortfolioValue] = useState('');
   const [isAddingValue, setIsAddingValue] = useState(false);
 
@@ -78,19 +75,6 @@ export const Home: React.FC = () => {
     setIsAddingValue(false);
   };
 
-  const handleRebalancePortfolio = async (portfolioItem: any, e: React.MouseEvent) => {
-    e.stopPropagation();
-    setRebalancingPortfolioId(portfolioItem.id);
-    try {
-      await rebalancePortfolio(portfolioItem.id);
-      console.log('Portfolio rebalanced successfully:', portfolioItem.name);
-    } catch (error) {
-      console.error('Failed to rebalance portfolio:', error);
-      // Error is handled by the store, but we can add user feedback here if needed
-    } finally {
-      setRebalancingPortfolioId(null);
-    }
-  };
 
   // Calculate total portfolio value and growth using real database data
   const totalValue = portfolios.reduce((sum, p) => sum + (p.totalValue || 0), 0);
@@ -213,7 +197,7 @@ export const Home: React.FC = () => {
           {portfolios.length > 0 ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {/* Portfolio Cards */}
-              {portfolios.map((portfolioItem, index) => (
+              {portfolios.map((portfolioItem) => (
                 <div 
                   key={portfolioItem.id}
                   className="bg-white border border-neutral-200 rounded-xl shadow-elevation-1 overflow-hidden group hover:shadow-elevation-2 transition-all duration-200 flex flex-col"
