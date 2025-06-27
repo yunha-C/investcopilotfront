@@ -36,6 +36,7 @@ export const Dashboard: React.FC = () => {
     context: string;
     details: string;
   } | null>(null);
+  const [isAddingValue, setIsAddingValue] = useState(false);
 
   // Use activePortfolio instead of portfolio
   const portfolio = activePortfolio as Portfolio;
@@ -124,17 +125,15 @@ export const Dashboard: React.FC = () => {
     e.preventDefault();
     const value = parseFloat(portfolioValue.replace(/[,$]/g, ""));
     if (value && value > 0) {
+      setIsAddingValue(true);
       try {
         await updatePortfolioBalance(portfolio.id, value);
-
-        console.log(
-          "Portfolio balance updated successfully from Dashboard component"
-        );
-
         setPortfolioValue("");
         setShowAddValueForm(false);
       } catch (error) {
         console.error("Failed to update portfolio balance:", error);
+      } finally {
+        setIsAddingValue(false);
       }
     }
   };
@@ -768,14 +767,19 @@ export const Dashboard: React.FC = () => {
                   <div className="flex gap-3">
                     <button
                       type="submit"
-                      className="flex-1 bg-neutral-900 text-white py-3 px-4 rounded-lg text-label-large font-medium hover:bg-neutral-800 transition-colors"
+                      disabled={isAddingValue}
+                      className="flex-1 bg-neutral-900 text-white py-3 px-4 rounded-lg text-label-large font-medium hover:bg-neutral-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                     >
-                      Add Value
+                      {isAddingValue && (
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      )}
+                      {isAddingValue ? "Adding..." : "Add Value"}
                     </button>
                     <button
                       type="button"
                       onClick={() => setShowAddValueForm(false)}
-                      className="px-4 py-3 border border-neutral-300 rounded-lg hover:bg-neutral-100 transition-colors text-label-large"
+                      disabled={isAddingValue}
+                      className="px-4 py-3 border border-neutral-300 rounded-lg hover:bg-neutral-100 transition-colors text-label-large disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       Cancel
                     </button>
