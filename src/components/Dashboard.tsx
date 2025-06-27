@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TrendingUp, Plus, ExternalLink, ArrowLeft, Info, Shield, Calculator, Trash2, RefreshCw, BarChart3 } from 'lucide-react';
+import { TrendingUp, Plus, ExternalLink, ArrowLeft, Info, Shield, Calculator, Trash2, RefreshCw } from 'lucide-react';
 import { useInvestmentStore } from '../store/investmentStore';
 import { PortfolioChart } from './PortfolioChart';
 
@@ -179,21 +179,12 @@ export const Dashboard: React.FC = () => {
               <div className="flex gap-2">
                 <button
                   onClick={() => {
-                    // TODO: Implement market data refresh action
-                    console.log('Refresh market data for portfolio:', portfolio.name);
+                    // Action disabled - no API call
                   }}
                   className="p-3 border-2 border-neutral-400 text-neutral-700 rounded-lg hover:bg-neutral-100 transition-colors"
-                  title="Refresh market data"
-                >
-                  <BarChart3 className="w-5 h-5" />
-                </button>
-                <button
-                  onClick={handleRebalancePortfolio}
-                  disabled={isRebalancing}
-                  className="p-3 border-2 border-neutral-400 text-neutral-700 rounded-lg hover:bg-neutral-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   title="Rebalance portfolio"
                 >
-                  <RefreshCw className={`w-5 h-5 ${isRebalancing ? 'animate-spin' : ''}`} />
+                  <RefreshCw className="w-5 h-5" />
                 </button>
               </div>
             </div>

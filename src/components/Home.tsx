@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Plus, TrendingUp, ArrowRight, AlertCircle, RefreshCw, BarChart3 } from 'lucide-react';
+import { Plus, TrendingUp, ArrowRight, AlertCircle, RefreshCw } from 'lucide-react';
 import { useInvestmentStore } from '../store/investmentStore';
 import { useAuthStore } from '../store/authStore';
 
@@ -235,21 +235,12 @@ export const Home: React.FC = () => {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            // TODO: Implement market data refresh action
-                            console.log('Refresh market data for portfolio:', portfolioItem.name);
+                            // Action disabled - no API call
                           }}
                           className="p-2 text-neutral-400 hover:text-neutral-600 hover:bg-neutral-50 rounded-lg transition-colors"
-                          title="Refresh market data"
-                        >
-                          <BarChart3 className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={(e) => handleRebalancePortfolio(portfolioItem, e)}
-                          disabled={rebalancingPortfolioId === portfolioItem.id}
-                          className="p-2 text-neutral-400 hover:text-neutral-600 hover:bg-neutral-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                           title="Rebalance portfolio"
                         >
-                          <RefreshCw className={`w-4 h-4 ${rebalancingPortfolioId === portfolioItem.id ? 'animate-spin' : ''}`} />
+                          <RefreshCw className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleViewPortfolio(portfolioItem)}
