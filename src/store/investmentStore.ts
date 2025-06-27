@@ -90,7 +90,7 @@ interface InvestmentState {
   setCurrentStep: (step: InvestmentState["currentStep"]) => void;
   setQuestionnaireAnswers: (answers: QuestionnaireAnswers) => void;
   generatePortfolio: (answers: QuestionnaireAnswers) => Promise<void>;
-  savePortfolioToDatabase: (portfolio: Portfolio) => Promise<void>;
+  savePortfolioToDatabase: (portfolio: Portfolio) => Promise<Portfolio>;
   loadUserPortfolios: (userId: string) => Promise<void>;
   addInsight: (url: string) => void;
   updatePortfolioBalance: (
@@ -344,6 +344,7 @@ export const useInvestmentStore = create<InvestmentState>((set, get) => ({
       });
 
       console.log("Portfolio saved successfully");
+      return updatedPortfolio;
     } catch (error) {
       console.error("Failed to save portfolio to database:", error);
 
@@ -356,7 +357,8 @@ export const useInvestmentStore = create<InvestmentState>((set, get) => ({
         portfolios: updatedPortfolios,
       });
 
-      throw error; // Re-throw to let caller handle
+      // Return the original portfolio for fallback operations
+      return portfolio;
     }
   },
 

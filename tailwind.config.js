@@ -57,10 +57,10 @@ export default {
         }
       },
       fontFamily: {
-        // Material Design 3 Typography with Degular for headlines
+        // Material Design 3 Typography with Satoshi for headlines
         sans: ['Inter', 'Helvetica', 'Arial', 'system-ui', 'sans-serif'],
-        display: ['Degular', 'Inter', 'system-ui', 'sans-serif'],
-        headline: ['Degular', 'Inter', 'system-ui', 'sans-serif'],
+        display: ['Satoshi', 'Inter', 'system-ui', 'sans-serif'],
+        headline: ['Satoshi', 'Inter', 'system-ui', 'sans-serif'],
         body: ['Helvetica', 'Arial', 'system-ui', 'sans-serif'],
       },
       fontSize: {
