@@ -12,8 +12,11 @@ import {
   ArrowDownRight,
   X,
 } from "lucide-react";
-import { useInvestmentStore } from "../store/investmentStore";
-import { PortfolioChart } from "./PortfolioChart";
+import {
+  useInvestmentStore,
+  Transaction,
+  Portfolio,
+} from "../store/investmentStore";
 
 export const Dashboard: React.FC = () => {
   const {
@@ -35,7 +38,7 @@ export const Dashboard: React.FC = () => {
   } | null>(null);
 
   // Use activePortfolio instead of portfolio
-  const portfolio = activePortfolio;
+  const portfolio = activePortfolio as Portfolio;
 
   console.log("=== DASHBOARD STATE DEBUG ===");
   console.log("activePortfolio:", activePortfolio?.id, activePortfolio?.name);
@@ -222,65 +225,6 @@ export const Dashboard: React.FC = () => {
     );
   };
 
-  // Generate mock trade simulation history with specific times
-  const generateTradeHistory = () => {
-    const now = new Date();
-    const trades = [
-      {
-        id: 1,
-        type: "buy",
-        asset: "VTI",
-        shares: 25,
-        price: 242.15,
-        reason: "Market dip opportunity",
-        time: new Date(now.getTime() - 2 * 60 * 60 * 1000).toLocaleTimeString(
-          "en-US",
-          {
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: true,
-          }
-        ),
-        impact: "+0.3%",
-      },
-      {
-        id: 2,
-        type: "sell",
-        asset: "BND",
-        shares: 15,
-        price: 78.92,
-        reason: "Rising interest rates",
-        time: new Date(now.getTime() - 24 * 60 * 60 * 1000).toLocaleTimeString(
-          "en-US",
-          {
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: true,
-          }
-        ),
-        impact: "-0.1%",
-      },
-      {
-        id: 3,
-        type: "buy",
-        asset: "VXUS",
-        shares: 18,
-        price: 58.34,
-        reason: "International diversification",
-        time: new Date(
-          now.getTime() - 3 * 24 * 60 * 60 * 1000
-        ).toLocaleTimeString("en-US", {
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: true,
-        }),
-        impact: "+0.2%",
-      },
-    ];
-
-    return trades;
-  };
-
   // Generate AI reasoning keywords based on economic context
   const generateAIReasoningKeywords = () => {
     const keywords = [
@@ -339,7 +283,51 @@ export const Dashboard: React.FC = () => {
     return keywords.slice(0, 6); // Show 6 keywords
   };
 
-  const tradeHistory = generateTradeHistory();
+  // Use real buy/sell/deposit transactions for trade history
+  const tradeHistory = ((portfolio.transactions || []) as Transaction[])
+    .filter(
+      (tx: Transaction) =>
+        tx.type === "buy" || tx.type === "sell" || tx.type === "deposit"
+    )
+    .map((tx: Transaction) => {
+      if (tx.type === "deposit") {
+        return {
+          id: tx.id,
+          type: tx.type,
+          amount: tx.amount ? parseFloat(tx.amount) : null,
+          reason: tx.description || "",
+          time: tx.createdAt
+            ? new Date(tx.createdAt).toLocaleString("en-US", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: true,
+              })
+            : "",
+        };
+      }
+      return {
+        id: tx.id,
+        type: tx.type,
+        asset: tx.symbol,
+        shares: tx.quantity ? parseFloat(tx.quantity) : null,
+        price: tx.price ? parseFloat(tx.price) : null,
+        reason: tx.description || "",
+        time: tx.createdAt
+          ? new Date(tx.createdAt).toLocaleString("en-US", {
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: true,
+            })
+          : "",
+      };
+    });
+
   const aiKeywords = generateAIReasoningKeywords();
 
   return (
@@ -381,20 +369,39 @@ export const Dashboard: React.FC = () => {
                       <div className="flex items-center gap-2 mt-1 mb-4">
                         <TrendingUp
                           className={`w-4 h-4 ${getGrowthColor(
-                            portfolio.growth || 0
+                            portfolio.profitLossPercentage || 0
                           )}`}
                         />
                         <span
                           className={`${getGrowthColor(
-                            portfolio.growth || 0
+                            portfolio.profitLossPercentage || 0
                           )} text-label-large font-medium`}
                         >
-                          {(portfolio.growth || 0) >= 0 ? "+" : ""}
-                          {(portfolio.growth || 0).toFixed(1)}%
+                          {(portfolio.profitLossPercentage || 0) >= 0
+                            ? "+"
+                            : ""}
+                          {(portfolio.profitLossPercentage || 0).toFixed(2)}%
                         </span>
-                        <span className="text-neutral-500 text-body-small">
-                          +$320.00
-                        </span>
+                        {typeof portfolio.profitLossAmount === "number" && (
+                          <span
+                            className={`ml-2 text-label-small font-medium ${
+                              portfolio.profitLossAmount > 0
+                                ? "text-green-600"
+                                : portfolio.profitLossAmount < 0
+                                ? "text-red-600"
+                                : "text-neutral-600"
+                            }`}
+                          >
+                            {portfolio.profitLossAmount > 0 ? "+" : ""}
+                            {portfolio.profitLossAmount < 0 ? "-" : ""}$
+                            {Math.abs(
+                              portfolio.profitLossAmount
+                            ).toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            })}
+                          </span>
+                        )}
                       </div>
                       {/* Growth Chart */}
                       {generateDashboardGrowthChart()}
@@ -501,68 +508,74 @@ export const Dashboard: React.FC = () => {
               </h3>
             </div>
             <div className="space-y-3">
-              {tradeHistory.map((trade) => (
-                <div
-                  key={trade.id}
-                  className="flex items-center justify-between p-4 bg-neutral-50 rounded-lg"
-                >
-                  <div className="flex items-center gap-4">
-                    <div
-                      className={`p-2 rounded-full ${
-                        trade.type === "buy"
-                          ? "bg-positive/10"
-                          : "bg-negative/10"
-                      }`}
-                    >
-                      {trade.type === "buy" ? (
-                        <ArrowUpRight
-                          className={`w-4 h-4 ${
-                            trade.type === "buy"
-                              ? "text-positive"
-                              : "text-negative"
-                          }`}
-                        />
-                      ) : (
-                        <ArrowDownRight
-                          className={`w-4 h-4 ${
-                            trade.type === "buy"
-                              ? "text-positive"
-                              : "text-negative"
-                          }`}
-                        />
-                      )}
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-label-large font-medium text-neutral-900">
-                          {trade.type.toUpperCase()} {trade.shares}{" "}
-                          {trade.asset}
-                        </span>
-                        <span className="text-body-small text-neutral-500">
-                          ${trade.price}
-                        </span>
+              {tradeHistory.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-body-medium text-neutral-500 mb-4">
+                    No trade history yet
+                  </p>
+                </div>
+              ) : (
+                tradeHistory.map((trade: any) => (
+                  <div
+                    key={trade.id}
+                    className="flex items-center justify-between p-4 bg-neutral-50 rounded-lg"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div
+                        className={`p-2 rounded-full ${
+                          trade.type === "buy"
+                            ? "bg-positive/10"
+                            : trade.type === "sell"
+                            ? "bg-negative/10"
+                            : "bg-blue-100"
+                        }`}
+                      >
+                        {trade.type === "buy" ? (
+                          <ArrowUpRight className="w-4 h-4 text-positive" />
+                        ) : trade.type === "sell" ? (
+                          <ArrowDownRight className="w-4 h-4 text-negative" />
+                        ) : (
+                          <Plus className="w-4 h-4 text-blue-600" />
+                        )}
                       </div>
-                      <p className="text-body-small text-neutral-600">
-                        {trade.reason}
+                      <div>
+                        <div className="flex items-center gap-2">
+                          {trade.type === "deposit" ? (
+                            <span className="text-label-large font-medium text-blue-700">
+                              Deposit
+                            </span>
+                          ) : (
+                            <span className="text-label-large font-medium text-neutral-900">
+                              {trade.type.toUpperCase()} {trade.shares}{" "}
+                              {trade.asset}
+                            </span>
+                          )}
+                          {(trade.type === "buy" || trade.type === "sell") &&
+                            trade.price !== null && (
+                              <span className="text-body-small text-neutral-500">
+                                @ ${trade.price}
+                              </span>
+                            )}
+                          {trade.type === "deposit" &&
+                            trade.amount !== null && (
+                              <span className="text-body-small text-blue-700 font-medium">
+                                +${trade.amount}
+                              </span>
+                            )}
+                        </div>
+                        <p className="text-body-small text-neutral-600">
+                          {trade.reason}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-body-small text-neutral-500">
+                        {trade.time}
                       </p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-body-small text-neutral-500">
-                      {trade.time}
-                    </p>
-                    <p
-                      className={`text-body-small font-medium ${
-                        trade.impact.startsWith("+")
-                          ? "text-positive"
-                          : "text-negative"
-                      }`}
-                    >
-                      {trade.impact}
-                    </p>
-                  </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
 

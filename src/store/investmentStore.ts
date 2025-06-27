@@ -22,6 +22,21 @@ export interface QuestionnaireAnswers {
   restrictions?: string[];
 }
 
+export interface Transaction {
+  id: string;
+  type: string; // 'buy' | 'sell' | 'deposit' | 'withdrawal' etc.
+  status: string;
+  symbol?: string | null;
+  quantity?: string | null;
+  price?: string | null;
+  amount?: string | null;
+  fee?: string | null;
+  description?: string;
+  metadata?: Record<string, any>;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Portfolio {
   // Database fields
   id: string;
@@ -55,6 +70,9 @@ export interface Portfolio {
   growth: number;
   riskScore?: number;
   monthlyFee?: number;
+  transactions?: Transaction[];
+  profitLossPercentage?: number;
+  profitLossAmount?: number;
 }
 
 export interface Insight {
@@ -154,7 +172,9 @@ export const useInvestmentStore = create<InvestmentState>((set, get) => ({
         questionnaire: JSON.stringify(questionnaireForAnalysis),
       };
 
-      const analysis = await portfolioService.analyzeQuestionnaire(analysisRequest);
+      const analysis = await portfolioService.analyzeQuestionnaire(
+        analysisRequest
+      );
       console.log("Questionnaire analysis received:", analysis);
 
       // Store the analysis in state
@@ -166,7 +186,9 @@ export const useInvestmentStore = create<InvestmentState>((set, get) => ({
         // Database fields (will be set when saved)
         id: `temp_${Date.now()}`,
         userId: "",
-        name: analysis.portfolio_strategy_name || generatePortfolioName(answers, portfolios),
+        name:
+          analysis.portfolio_strategy_name ||
+          generatePortfolioName(answers, portfolios),
         status: "draft",
         holdingsData: {},
         totalValue: getInitialInvestmentFromAnswers(answers),
@@ -219,17 +241,28 @@ export const useInvestmentStore = create<InvestmentState>((set, get) => ({
         cashBalance: getInitialInvestmentFromAnswers(answers),
 
         // Computed/UI fields - use analysis results
-        allocation: parseAllocationFromAnalysis(
-          analysis.analysis_details.investment_recommendations.asset_allocation,
-          analysis.analysis_details.investment_recommendations.base_allocation
-        ) || generateDefaultAllocation(answers.riskTolerance),
-        reasoning: analysis.analysis_details.detailed_analysis || `This portfolio is designed based on your ${answers.riskTolerance} risk tolerance and ${answers.goal} investment goal.`,
+        allocation:
+          parseAllocationFromAnalysis(
+            analysis.analysis_details.investment_recommendations
+              .asset_allocation,
+            analysis.analysis_details.investment_recommendations.base_allocation
+          ) || generateDefaultAllocation(answers.riskTolerance),
+        reasoning:
+          analysis.analysis_details.detailed_analysis ||
+          `This portfolio is designed based on your ${answers.riskTolerance} risk tolerance and ${answers.goal} investment goal.`,
         expectedReturn: calculateExpectedReturn(answers.riskTolerance),
         managementFee: 0.01,
-        riskLevel: analysis.risk_level || getRiskLevelFromScore(analysis.risk_score || calculateRiskScoreFromTolerance(answers.riskTolerance)),
+        riskLevel:
+          analysis.risk_level ||
+          getRiskLevelFromScore(
+            analysis.risk_score ||
+              calculateRiskScoreFromTolerance(answers.riskTolerance)
+          ),
         balance: getInitialInvestmentFromAnswers(answers),
         growth: 0,
-        riskScore: analysis.risk_score || calculateRiskScoreFromTolerance(answers.riskTolerance),
+        riskScore:
+          analysis.risk_score ||
+          calculateRiskScoreFromTolerance(answers.riskTolerance),
         monthlyFee: (getInitialInvestmentFromAnswers(answers) * 0.0001) / 12,
       };
 
@@ -269,24 +302,38 @@ export const useInvestmentStore = create<InvestmentState>((set, get) => ({
       // Convert questionnaire data to new API format
       const portfolioRequest: CreatePortfolioRequest = {
         name: portfolio.name,
-        description: questionnaireAnalysis.analysis_details.investment_recommendations.description || 
-                    `${questionnaireAnalysis.risk_level} risk portfolio for ${questionnaire.goal}`,
+        description:
+          questionnaireAnalysis.analysis_details.investment_recommendations
+            .description ||
+          `${questionnaireAnalysis.risk_level} risk portfolio for ${questionnaire.goal}`,
         rebalanceThreshold: 5.0,
         investmentQuestionnaire: {
           riskTolerance: questionnaire.riskTolerance,
-          investmentGoals: [{
-            type: questionnaire.goal,
-            timeHorizonYears: getTimeHorizonYears(questionnaire.timeHorizon),
-            targetAmount: 0,
-            priority: "primary"
-          }],
+          investmentGoals: [
+            {
+              type: questionnaire.goal,
+              timeHorizonYears: getTimeHorizonYears(questionnaire.timeHorizon),
+              targetAmount: 0,
+              priority: "primary",
+            },
+          ],
           experience: {
             yearsExperience: getExperienceYears(questionnaire.experience),
-            hasStockExperience: ["intermediate", "advanced", "expert"].includes(questionnaire.experience),
-            hasBondExperience: ["intermediate", "advanced", "expert"].includes(questionnaire.experience),
-            hasOptionsExperience: ["advanced", "expert"].includes(questionnaire.experience),
-            hasInternationalExperience: ["advanced", "expert"].includes(questionnaire.experience),
-            hasAlternativeExperience: ["expert"].includes(questionnaire.experience),
+            hasStockExperience: ["intermediate", "advanced", "expert"].includes(
+              questionnaire.experience
+            ),
+            hasBondExperience: ["intermediate", "advanced", "expert"].includes(
+              questionnaire.experience
+            ),
+            hasOptionsExperience: ["advanced", "expert"].includes(
+              questionnaire.experience
+            ),
+            hasInternationalExperience: ["advanced", "expert"].includes(
+              questionnaire.experience
+            ),
+            hasAlternativeExperience: ["expert"].includes(
+              questionnaire.experience
+            ),
           },
           financialSituation: {
             annualIncome: getIncomeFromRange(questionnaire.income),
@@ -299,8 +346,10 @@ export const useInvestmentStore = create<InvestmentState>((set, get) => ({
             debtAmount: 0,
           },
           preferences: {
-            preferredSectors: questionnaire.sectors?.filter((s) => s !== "none") || [],
-            excludedSectors: questionnaire.restrictions?.filter((r) => r !== "none") || [],
+            preferredSectors:
+              questionnaire.sectors?.filter((s) => s !== "none") || [],
+            excludedSectors:
+              questionnaire.restrictions?.filter((r) => r !== "none") || [],
             esgFocused: questionnaire.sectors?.includes("esg") || false,
             preferDividendStocks: questionnaire.goal === "income",
             internationalExposure: true,
@@ -451,24 +500,14 @@ export const useInvestmentStore = create<InvestmentState>((set, get) => ({
       }
 
       // Use the new add-balance endpoint with the actual portfolio ID
-      const updatedPortfolioData = await portfolioService.addBalance(
-        portfolioToUpdate.id,
-        amount
+      await portfolioService.addBalance(portfolioToUpdate.id, amount);
+      // Always fetch the full portfolio after adding balance to ensure transactions are present
+      const fullPortfolioResponse = await portfolioService.getPortfolioById(
+        portfolioToUpdate.id
       );
-      console.log("Portfolio balance updated via API:", updatedPortfolioData);
-
-      // Validate API response
-      if (!updatedPortfolioData || !updatedPortfolioData.id) {
-        throw new Error("Invalid API response: missing portfolio data");
-      }
-
-      if (updatedPortfolioData.id !== portfolioId) {
-        console.warn("API returned different portfolio ID than expected");
-      }
-
-      // Convert API response back to internal format
-      const convertedPortfolio =
-        convertApiResponseToPortfolio(updatedPortfolioData);
+      const convertedPortfolio = convertApiResponseToPortfolio(
+        fullPortfolioResponse
+      );
 
       // Update the portfolios array with the API response
       const updatedPortfolios = portfolios.map((p) => {
@@ -482,29 +521,28 @@ export const useInvestmentStore = create<InvestmentState>((set, get) => ({
       const { portfolio } = get();
       let updatedActivePortfolio = activePortfolio;
       let updatedPortfolio = portfolio;
-      
-      const newPortfolioData = updatedPortfolios.find((p) => p.id === portfolioId);
-      
-      if (activePortfolio && activePortfolio.id === portfolioId && newPortfolioData) {
+
+      const newPortfolioData = updatedPortfolios.find(
+        (p) => p.id === portfolioId
+      );
+
+      if (
+        activePortfolio &&
+        activePortfolio.id === portfolioId &&
+        newPortfolioData
+      ) {
         updatedActivePortfolio = newPortfolioData;
       }
-      
+
       if (portfolio && portfolio.id === portfolioId && newPortfolioData) {
         updatedPortfolio = newPortfolioData;
       }
-
-      console.log("=== UPDATING PORTFOLIO STATE ===");
-      console.log("Updated portfolios:", updatedPortfolios.length);
-      console.log("Updated activePortfolio:", updatedActivePortfolio?.name, updatedActivePortfolio?.totalValue);
-      console.log("Updated portfolio:", updatedPortfolio?.name, updatedPortfolio?.totalValue);
 
       set({
         portfolios: updatedPortfolios,
         activePortfolio: updatedActivePortfolio,
         portfolio: updatedPortfolio,
       });
-
-      console.log("=== PORTFOLIO UPDATE COMPLETE ===");
     } catch (error) {
       console.error("Failed to update portfolio balance:", error);
       const errorMessage =
@@ -618,11 +656,15 @@ export const useInvestmentStore = create<InvestmentState>((set, get) => ({
       }
 
       // Call the API to rebalance portfolio
-      const rebalancedPortfolioData = await portfolioService.rebalancePortfolio(portfolioId);
+      const rebalancedPortfolioData = await portfolioService.rebalancePortfolio(
+        portfolioId
+      );
       console.log("Portfolio rebalanced via API:", rebalancedPortfolioData);
 
       // Convert API response back to internal format
-      const updatedPortfolio = convertApiResponseToPortfolio(rebalancedPortfolioData);
+      const updatedPortfolio = convertApiResponseToPortfolio(
+        rebalancedPortfolioData
+      );
 
       // Update the portfolios array with the rebalanced portfolio
       const updatedPortfolios = portfolios.map((p) => {
@@ -872,7 +914,7 @@ function convertApiResponseToPortfolio(
   // Parse holdings from holdingsData
   const holdings: Holding[] = [];
   const holdingsData = apiResponse.holdings || [];
-  
+
   console.log("=== PROCESSING HOLDINGS DATA ===");
   console.log("Holdings data from API:", holdingsData);
   console.log("Holdings array length:", holdingsData.length);
@@ -919,42 +961,48 @@ function convertApiResponseToPortfolio(
         color: getAssetColor(ticker, holdingIndex),
       });
     });
-  } else if (!Array.isArray(holdingsData) && holdingsData && typeof holdingsData === "object") {
+  } else if (
+    !Array.isArray(holdingsData) &&
+    holdingsData &&
+    typeof holdingsData === "object"
+  ) {
     // Handle legacy object format for backwards compatibility
     const holdingsArray = Object.entries(holdingsData);
-    holdingsArray.forEach(([ticker, holdingData]: [string, any], holdingIndex) => {
-      console.log(`Processing legacy holding ${ticker}:`, holdingData);
+    holdingsArray.forEach(
+      ([ticker, holdingData]: [string, any], holdingIndex) => {
+        console.log(`Processing legacy holding ${ticker}:`, holdingData);
 
-      // Convert to Holding format
-      const holding: Holding = {
-        id: holdingData.id || `holding_${ticker}_${holdingIndex}`,
-        symbol: {
-          ticker: ticker,
+        // Convert to Holding format
+        const holding: Holding = {
+          id: holdingData.id || `holding_${ticker}_${holdingIndex}`,
+          symbol: {
+            ticker: ticker,
+            name: getTickerName(ticker),
+            exchange: "US",
+          },
+          targetAllocation: {
+            percentage: holdingData.targetAllocation || 0,
+          },
+          currentAllocation: {
+            percentage: holdingData.currentAllocation || 0,
+          },
+          shares: holdingData.shares || 0,
+          marketValue: holdingData.marketValue || 0,
+          averageCostBasis: holdingData.averageCostBasis || 0,
+          createdAt: holdingData.createdAt || new Date().toISOString(),
+          updatedAt: holdingData.updatedAt || new Date().toISOString(),
+        };
+
+        holdings.push(holding);
+
+        // Create allocation entry
+        allocation.push({
           name: getTickerName(ticker),
-          exchange: "US",
-        },
-        targetAllocation: {
-          percentage: holdingData.targetAllocation || 0,
-        },
-        currentAllocation: {
           percentage: holdingData.currentAllocation || 0,
-        },
-        shares: holdingData.shares || 0,
-        marketValue: holdingData.marketValue || 0,
-        averageCostBasis: holdingData.averageCostBasis || 0,
-        createdAt: holdingData.createdAt || new Date().toISOString(),
-        updatedAt: holdingData.updatedAt || new Date().toISOString(),
-      };
-
-      holdings.push(holding);
-
-      // Create allocation entry
-      allocation.push({
-        name: getTickerName(ticker),
-        percentage: holdingData.currentAllocation || 0,
-        color: getAssetColor(ticker, holdingIndex),
-      });
-    });
+          color: getAssetColor(ticker, holdingIndex),
+        });
+      }
+    );
   } else {
     // No holdings = all cash
     allocation = [
@@ -967,12 +1015,17 @@ function convertApiResponseToPortfolio(
   }
 
   // Add cash allocation for portfolios with holdings (if there's any cash balance)
-  if ((Array.isArray(holdingsData) && holdingsData.length > 0) || 
-      (!Array.isArray(holdingsData) && holdingsData && typeof holdingsData === "object" && Object.keys(holdingsData).length > 0)) {
-    
+  if (
+    (Array.isArray(holdingsData) && holdingsData.length > 0) ||
+    (!Array.isArray(holdingsData) &&
+      holdingsData &&
+      typeof holdingsData === "object" &&
+      Object.keys(holdingsData).length > 0)
+  ) {
     const totalValue = apiResponse.totalValue || 0;
     const cashBalance = apiResponse.cashBalance || 0;
-    const cashPercentage = totalValue > 0 ? (cashBalance / totalValue) * 100 : 0;
+    const cashPercentage =
+      totalValue > 0 ? (cashBalance / totalValue) * 100 : 0;
 
     console.log("=== ADDING CASH ALLOCATION ===");
     console.log("Total portfolio value:", totalValue);
@@ -990,29 +1043,43 @@ function convertApiResponseToPortfolio(
       console.log("Added cash allocation:", {
         name: "Cash",
         percentage: Math.round(cashPercentage * 10) / 10,
-        color: "#CBDCF3"
+        color: "#CBDCF3",
       });
     }
 
     // Ensure allocation percentages add up to 100% (or close to it due to rounding)
-    const totalPercentage = allocation.reduce((sum, item) => sum + item.percentage, 0);
-    console.log("Total allocation percentage before adjustment:", totalPercentage);
-    
+    const totalPercentage = allocation.reduce(
+      (sum, item) => sum + item.percentage,
+      0
+    );
+    console.log(
+      "Total allocation percentage before adjustment:",
+      totalPercentage
+    );
+
     if (Math.abs(totalPercentage - 100) > 0.1 && allocation.length > 0) {
-      console.warn(`Allocation percentages don't add up to 100%: ${totalPercentage}%`);
+      console.warn(
+        `Allocation percentages don't add up to 100%: ${totalPercentage}%`
+      );
       // Adjust the largest allocation slightly to reach 100%
-      const largestAllocation = allocation.reduce((max, item) => 
+      const largestAllocation = allocation.reduce((max, item) =>
         item.percentage > max.percentage ? item : max
       );
       const adjustment = 100 - totalPercentage;
       largestAllocation.percentage += adjustment;
-      largestAllocation.percentage = Math.round(largestAllocation.percentage * 10) / 10;
-      
-      console.log(`Adjusted ${largestAllocation.name} by ${adjustment}% to reach 100%`);
+      largestAllocation.percentage =
+        Math.round(largestAllocation.percentage * 10) / 10;
+
+      console.log(
+        `Adjusted ${largestAllocation.name} by ${adjustment}% to reach 100%`
+      );
     }
 
     console.log("Final allocation:", allocation);
-    console.log("Final total percentage:", allocation.reduce((sum, item) => sum + item.percentage, 0));
+    console.log(
+      "Final total percentage:",
+      allocation.reduce((sum, item) => sum + item.percentage, 0)
+    );
   }
 
   // Calculate risk score and level from parsed investment profile
@@ -1035,13 +1102,14 @@ function convertApiResponseToPortfolio(
     status: apiResponse.status,
     holdingsData: apiResponse.holdings,
     totalValue: apiResponse.totalValue, // Use actual totalValue from database
-    rebalanceThreshold: typeof apiResponse.rebalanceThreshold === 'string' 
-      ? parseFloat(apiResponse.rebalanceThreshold) 
-      : apiResponse.rebalanceThreshold,
-    created_at: apiResponse.created_at || apiResponse.createdAt || '',
-    updated_at: apiResponse.updated_at || apiResponse.updatedAt || '',
-    created_by: apiResponse.created_by || apiResponse.createdBy || '',
-    updated_by: apiResponse.updated_by || apiResponse.updatedBy || '',
+    rebalanceThreshold:
+      typeof apiResponse.rebalanceThreshold === "string"
+        ? parseFloat(apiResponse.rebalanceThreshold)
+        : apiResponse.rebalanceThreshold,
+    created_at: apiResponse.created_at || apiResponse.createdAt || "",
+    updated_at: apiResponse.updated_at || apiResponse.updatedAt || "",
+    created_by: apiResponse.created_by || apiResponse.createdBy || "",
+    updated_by: apiResponse.updated_by || apiResponse.updatedBy || "",
     investmentProfile: parsedProfile, // Use parsed profile object
     cashBalance: apiResponse.cashBalance, // Use actual cashBalance from database
 
@@ -1056,6 +1124,9 @@ function convertApiResponseToPortfolio(
     growth: parseFloat(growth.toFixed(1)),
     riskScore,
     monthlyFee: (apiResponse.totalValue * 0.0001) / 12,
+    transactions: apiResponse.transactions || [],
+    profitLossPercentage: apiResponse.profitLossPercentage,
+    profitLossAmount: apiResponse.profitLossAmount,
   };
 }
 
@@ -1215,8 +1286,10 @@ function getRiskLevelFromScore(riskScore: number): string {
   return "Very High";
 }
 
-
-function parseAllocationFromAnalysis(assetAllocation: string, baseAllocation?: Record<string, number>): Portfolio["allocation"] | null {
+function parseAllocationFromAnalysis(
+  assetAllocation: string,
+  baseAllocation?: Record<string, number>
+): Portfolio["allocation"] | null {
   try {
     // First try to use base_allocation if available
     if (baseAllocation && Object.keys(baseAllocation).length > 0) {
@@ -1224,11 +1297,11 @@ function parseAllocationFromAnalysis(assetAllocation: string, baseAllocation?: R
       Object.entries(baseAllocation).forEach(([symbol, percentage], index) => {
         const name = getTickerName(symbol);
         const color = getAssetColor(symbol.toLowerCase(), index);
-        
+
         allocations.push({
           name,
           percentage,
-          color
+          color,
         });
       });
       return allocations;
@@ -1236,28 +1309,28 @@ function parseAllocationFromAnalysis(assetAllocation: string, baseAllocation?: R
 
     // Fall back to parsing asset allocation string like "70% Total Market, 15% Value ETFs, 10% Momentum, 5% Cash Buffer"
     if (!assetAllocation) return null;
-    
+
     const allocations: Portfolio["allocation"] = [];
-    const parts = assetAllocation.split(',').map(part => part.trim());
-    
+    const parts = assetAllocation.split(",").map((part) => part.trim());
+
     parts.forEach((part, index) => {
       const match = part.match(/(\d+)%\s*(.+)/);
       if (match) {
         const percentage = parseInt(match[1]);
         const name = match[2].trim();
         const color = getAssetColor(name.toLowerCase(), index);
-        
+
         allocations.push({
           name,
           percentage,
-          color
+          color,
         });
       }
     });
-    
+
     return allocations.length > 0 ? allocations : null;
   } catch (error) {
-    console.error('Failed to parse allocation from analysis:', error);
+    console.error("Failed to parse allocation from analysis:", error);
     return null;
   }
 }

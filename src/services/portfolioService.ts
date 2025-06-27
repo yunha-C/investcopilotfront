@@ -144,6 +144,9 @@ export interface PortfolioResponse {
   cashBalance: number;
   questionnaireAnalysis?: any;
   hasCompletedInvestmentProfile?: boolean;
+  transactions?: any[];
+  profitLossPercentage?: number;
+  profitLossAmount?: number;
 }
 
 export interface QuestionnaireAnalysisRequest {
@@ -486,13 +489,19 @@ class PortfolioService {
     try {
       console.log("=== ANALYZE QUESTIONNAIRE API CALL ===");
       console.log("Analyzing questionnaire with data:", questionnaireData);
-      console.log("API URL:", `${API_BASE_URL}/portfolios/analyze-questionnaire`);
+      console.log(
+        "API URL:",
+        `${API_BASE_URL}/portfolios/analyze-questionnaire`
+      );
 
-      const response = await fetch(`${API_BASE_URL}/portfolios/analyze-questionnaire`, {
-        method: "POST",
-        headers: this.getAuthHeaders(),
-        body: JSON.stringify(questionnaireData),
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/portfolios/analyze-questionnaire`,
+        {
+          method: "POST",
+          headers: this.getAuthHeaders(),
+          body: JSON.stringify(questionnaireData),
+        }
+      );
 
       console.log("Analyze questionnaire response status:", response.status);
       console.log(
@@ -501,7 +510,10 @@ class PortfolioService {
       );
 
       if (!response.ok) {
-        await this.handleErrorResponse(response, "Failed to analyze questionnaire");
+        await this.handleErrorResponse(
+          response,
+          "Failed to analyze questionnaire"
+        );
       }
 
       const data = await response.json();
@@ -523,12 +535,18 @@ class PortfolioService {
     try {
       console.log("=== REBALANCE PORTFOLIO API CALL ===");
       console.log("Rebalancing portfolio:", portfolioId);
-      console.log("API URL:", `${API_BASE_URL}/portfolios/${portfolioId}/rebalance`);
+      console.log(
+        "API URL:",
+        `${API_BASE_URL}/portfolios/${portfolioId}/rebalance`
+      );
 
-      const response = await fetch(`${API_BASE_URL}/portfolios/${portfolioId}/rebalance`, {
-        method: "POST",
-        headers: this.getAuthHeaders(),
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/portfolios/${portfolioId}/rebalance`,
+        {
+          method: "POST",
+          headers: this.getAuthHeaders(),
+        }
+      );
 
       console.log("Rebalance portfolio response status:", response.status);
       console.log(
@@ -537,7 +555,10 @@ class PortfolioService {
       );
 
       if (!response.ok) {
-        await this.handleErrorResponse(response, "Failed to rebalance portfolio");
+        await this.handleErrorResponse(
+          response,
+          "Failed to rebalance portfolio"
+        );
       }
 
       const data = await response.json();

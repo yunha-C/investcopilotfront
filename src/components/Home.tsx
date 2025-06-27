@@ -1,13 +1,23 @@
-import React, { useEffect, useState } from 'react';
-import { Plus, TrendingUp, ArrowRight, AlertCircle } from 'lucide-react';
-import { useInvestmentStore } from '../store/investmentStore';
+import React, { useEffect, useState } from "react";
+import { Plus, TrendingUp, ArrowRight, AlertCircle } from "lucide-react";
+import { useInvestmentStore, Portfolio } from "../store/investmentStore";
 
 export const Home: React.FC = () => {
-  const { setCurrentStep, portfolios, isLoading, error, clearError, updatePortfolioBalance, setActivePortfolio } = useInvestmentStore();
-  const [selectedTimeframe, setSelectedTimeframe] = useState('All');
+  const {
+    setCurrentStep,
+    portfolios: portfoliosRaw,
+    isLoading,
+    error,
+    clearError,
+    updatePortfolioBalance,
+    setActivePortfolio,
+  } = useInvestmentStore();
+  const portfolios = portfoliosRaw as Portfolio[];
+  const [selectedTimeframe, setSelectedTimeframe] = useState("All");
   const [showAddValueModal, setShowAddValueModal] = useState(false);
-  const [selectedPortfolioForValue, setSelectedPortfolioForValue] = useState<any>(null);
-  const [portfolioValue, setPortfolioValue] = useState('');
+  const [selectedPortfolioForValue, setSelectedPortfolioForValue] =
+    useState<any>(null);
+  const [portfolioValue, setPortfolioValue] = useState("");
   const [isAddingValue, setIsAddingValue] = useState(false);
 
   // Clear any errors when component mounts
@@ -16,54 +26,58 @@ export const Home: React.FC = () => {
       const timer = setTimeout(() => {
         clearError();
       }, 5000);
-      
+
       return () => clearTimeout(timer);
     }
   }, [error, clearError]);
 
   const handleCreatePortfolio = () => {
-    console.log('=== PORTFOLIO CREATION DEBUG ===');
-    console.log('Button clicked - Creating portfolio');
-    
+    console.log("=== PORTFOLIO CREATION DEBUG ===");
+    console.log("Button clicked - Creating portfolio");
+
     // Check if user already has 3 portfolios
     if (portfolios.length >= 3) {
-      alert('You can only create up to 3 portfolios. Please delete an existing portfolio to create a new one.');
+      alert(
+        "You can only create up to 3 portfolios. Please delete an existing portfolio to create a new one."
+      );
       return;
     }
-    
-    setCurrentStep('questionnaire');
+
+    setCurrentStep("questionnaire");
   };
 
   const handleViewPortfolio = (portfolioToView: any) => {
-    console.log('Viewing specific portfolio:', portfolioToView.name);
+    console.log("Viewing specific portfolio:", portfolioToView.name);
     // Set the clicked portfolio as active
     setActivePortfolio(portfolioToView);
-    setCurrentStep('dashboard');
+    setCurrentStep("dashboard");
   };
 
   const handleAddValue = (portfolioItem: any, e: React.MouseEvent) => {
     e.stopPropagation();
     setSelectedPortfolioForValue(portfolioItem);
-    setPortfolioValue(''); // Clear previous value
+    setPortfolioValue(""); // Clear previous value
     setShowAddValueModal(true);
   };
 
   const handleSaveValue = async (e: React.FormEvent) => {
     e.preventDefault();
-    const value = parseFloat(portfolioValue.replace(/[,$]/g, ''));
+    const value = parseFloat(portfolioValue.replace(/[,$]/g, ""));
     if (value && value > 0 && selectedPortfolioForValue) {
       setIsAddingValue(true);
       try {
         await updatePortfolioBalance(selectedPortfolioForValue.id, value);
-        
-        console.log("Portfolio balance updated successfully from Home component");
-        
+
+        console.log(
+          "Portfolio balance updated successfully from Home component"
+        );
+
         // Close modal and reset state after successful update
-        setPortfolioValue('');
+        setPortfolioValue("");
         setShowAddValueModal(false);
         setSelectedPortfolioForValue(null);
       } catch (error) {
-        console.error('Failed to update portfolio balance:', error);
+        console.error("Failed to update portfolio balance:", error);
         // Error is handled by the store, but we can add user feedback here if needed
       } finally {
         setIsAddingValue(false);
@@ -74,24 +88,28 @@ export const Home: React.FC = () => {
   const handleCloseModal = () => {
     setShowAddValueModal(false);
     setSelectedPortfolioForValue(null);
-    setPortfolioValue('');
+    setPortfolioValue("");
     setIsAddingValue(false);
   };
 
+  // Calculate total portfolio value and average profit/loss percentage using real database data
+  const totalValue = portfolios.reduce(
+    (sum, p) => sum + (p.totalValue || 0),
+    0
+  );
+  const totalProfitLoss =
+    portfolios.length > 0
+      ? portfolios.reduce((sum, p) => sum + (p.profitLossPercentage || 0), 0) /
+        portfolios.length
+      : 0;
 
-  // Calculate total portfolio value and growth using real database data
-  const totalValue = portfolios.reduce((sum, p) => sum + (p.totalValue || 0), 0);
-  const totalGrowth = portfolios.length > 0 
-    ? portfolios.reduce((sum, p) => sum + (p.growth || 0), 0) / portfolios.length
-    : 0;
-
-  const timeframes = ['All', '1W', '1M', '6M', '1Y'];
+  const timeframes = ["All", "1W", "1M", "6M", "1Y"];
 
   // Determine growth color based on value
   const getGrowthColor = (growth: number) => {
-    if (growth > 0) return 'text-positive';
-    if (growth < 0) return 'text-negative';
-    return 'text-neutral-600'; // Neutral color for 0 growth
+    if (growth > 0) return "text-positive";
+    if (growth < 0) return "text-negative";
+    return "text-neutral-600"; // Neutral color for 0 growth
   };
 
   return (
@@ -105,33 +123,54 @@ export const Home: React.FC = () => {
               ${totalValue.toLocaleString()}
             </p>
             <div className="flex items-center justify-center gap-2 mb-6">
-              <TrendingUp className={`w-6 h-6 ${getGrowthColor(totalGrowth)}`} />
-              <span className={`${getGrowthColor(totalGrowth)} text-title-large font-medium`}>
-                {totalGrowth >= 0 ? '+' : ''}{totalGrowth.toFixed(1)}%
+              <TrendingUp
+                className={`w-6 h-6 ${getGrowthColor(totalProfitLoss)}`}
+              />
+              <span
+                className={`${getGrowthColor(
+                  totalProfitLoss
+                )} text-title-large font-medium`}
+              >
+                {totalProfitLoss >= 0 ? "+" : ""}
+                {totalProfitLoss.toFixed(2)}%
               </span>
             </div>
-            
+
             {/* Subtle Wave Chart */}
             <div className="max-w-lg mx-auto mb-4">
               <div className="h-32 bg-gradient-to-b from-neutral-50/20 to-neutral-100/20 rounded-lg p-4 relative overflow-hidden">
-                <svg 
-                  className="absolute inset-0 w-full h-full" 
-                  viewBox="0 0 400 128" 
+                <svg
+                  className="absolute inset-0 w-full h-full"
+                  viewBox="0 0 400 128"
                   preserveAspectRatio="none"
                 >
                   <defs>
-                    <linearGradient id="waveGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" stopColor="#044AA7" stopOpacity="0.15" />
-                      <stop offset="100%" stopColor="#044AA7" stopOpacity="0.02" />
+                    <linearGradient
+                      id="waveGradient"
+                      x1="0%"
+                      y1="0%"
+                      x2="0%"
+                      y2="100%"
+                    >
+                      <stop
+                        offset="0%"
+                        stopColor="#044AA7"
+                        stopOpacity="0.15"
+                      />
+                      <stop
+                        offset="100%"
+                        stopColor="#044AA7"
+                        stopOpacity="0.02"
+                      />
                     </linearGradient>
                   </defs>
-                  
+
                   <path
                     d="M0,90 C50,85 100,75 150,70 C200,65 250,60 300,55 C350,50 380,45 400,40 L400,128 L0,128 Z"
                     fill="url(#waveGradient)"
                     className="transition-all duration-1000 ease-out"
                   />
-                  
+
                   <path
                     d="M0,90 C50,85 100,75 150,70 C200,65 250,60 300,55 C350,50 380,45 400,40"
                     fill="none"
@@ -142,7 +181,7 @@ export const Home: React.FC = () => {
                   />
                 </svg>
               </div>
-              
+
               {/* Timeline Buttons */}
               <div className="flex justify-center mt-4">
                 <div className="bg-neutral-100/50 rounded-full p-1 flex gap-1">
@@ -152,8 +191,8 @@ export const Home: React.FC = () => {
                       onClick={() => setSelectedTimeframe(timeframe)}
                       className={`px-4 py-2 rounded-full text-body-small font-medium transition-all ${
                         selectedTimeframe === timeframe
-                          ? 'bg-neutral-900 text-white shadow-sm'
-                          : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-200/50'
+                          ? "bg-neutral-900 text-white shadow-sm"
+                          : "text-neutral-600 hover:text-neutral-900 hover:bg-neutral-200/50"
                       }`}
                     >
                       {timeframe}
@@ -189,7 +228,9 @@ export const Home: React.FC = () => {
             <div className="bg-white border border-neutral-200 rounded-lg p-6 text-center">
               <div className="flex items-center justify-center gap-3">
                 <div className="w-5 h-5 border-2 border-neutral-300 border-t-neutral-900 rounded-full animate-spin" />
-                <span className="text-body-medium text-neutral-600">Loading your portfolios...</span>
+                <span className="text-body-medium text-neutral-600">
+                  Loading your portfolios...
+                </span>
               </div>
             </div>
           </div>
@@ -200,8 +241,8 @@ export const Home: React.FC = () => {
           {portfolios.length > 0 ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {/* Portfolio Cards */}
-              {portfolios.map((portfolioItem) => (
-                <div 
+              {portfolios.map((portfolioItem: Portfolio) => (
+                <div
                   key={portfolioItem.id}
                   className="bg-white border border-neutral-200 rounded-xl shadow-elevation-1 overflow-hidden group hover:shadow-elevation-2 transition-all duration-200 flex flex-col"
                 >
@@ -213,7 +254,9 @@ export const Home: React.FC = () => {
                           {portfolioItem.name}
                         </h3>
                         <div className="flex items-center gap-2 text-body-small text-neutral-600">
-                          <span>Risk: {portfolioItem.riskLevel || 'Moderate'}</span>
+                          <span>
+                            Risk: {portfolioItem.riskLevel || "Moderate"}
+                          </span>
                           <span>•</span>
                           <span>{portfolioItem.riskScore || 3}/5</span>
                         </div>
@@ -228,16 +271,28 @@ export const Home: React.FC = () => {
                         </button>
                       </div>
                     </div>
-                    
+
                     {/* Portfolio Value */}
                     <div className="mb-3 min-h-[60px] flex flex-col justify-center">
                       <p className="text-headline-small font-headline font-semi-bold text-neutral-900 mb-1">
                         ${portfolioItem.totalValue.toLocaleString()}
                       </p>
                       <div className="flex items-center gap-2">
-                        <TrendingUp className={`w-4 h-4 ${getGrowthColor(portfolioItem.growth || 0)}`} />
-                        <span className={`${getGrowthColor(portfolioItem.growth || 0)} text-label-large font-medium`}>
-                          {(portfolioItem.growth || 0) >= 0 ? '+' : ''}{(portfolioItem.growth || 0).toFixed(1)}%
+                        <TrendingUp
+                          className={`w-4 h-4 ${getGrowthColor(
+                            portfolioItem.profitLossPercentage || 0
+                          )}`}
+                        />
+                        <span
+                          className={`${getGrowthColor(
+                            portfolioItem.profitLossPercentage || 0
+                          )} text-label-large font-medium`}
+                        >
+                          {(portfolioItem.profitLossPercentage || 0) >= 0
+                            ? "+"
+                            : ""}
+                          {(portfolioItem.profitLossPercentage || 0).toFixed(2)}
+                          %
                         </span>
                       </div>
                     </div>
@@ -245,7 +300,9 @@ export const Home: React.FC = () => {
                     {/* Expected Return */}
                     <div className="flex justify-between items-center text-body-small text-neutral-600 min-h-[20px]">
                       <span>Expected Return</span>
-                      <span className="font-medium text-neutral-900">{portfolioItem.expectedReturn?.toFixed(1) || '6.5'}%</span>
+                      <span className="font-medium text-neutral-900">
+                        {portfolioItem.expectedReturn?.toFixed(1) || "6.5"}%
+                      </span>
                     </div>
                   </div>
 
@@ -264,14 +321,16 @@ export const Home: React.FC = () => {
               {/* Add Portfolio Card */}
               {portfolios.length < 3 && (
                 <div className="bg-white border-2 border-dashed border-neutral-300 rounded-xl shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-200 flex flex-col">
-                  <button 
+                  <button
                     onClick={handleCreatePortfolio}
                     className="w-full h-full p-8 flex flex-col items-center justify-center text-center group flex-1"
                   >
                     <div className="w-16 h-16 rounded-full bg-neutral-100 group-hover:bg-neutral-200 flex items-center justify-center mx-auto mb-4 transition-colors">
                       <Plus className="w-8 h-8 text-neutral-600 group-hover:text-neutral-700 transition-colors" />
                     </div>
-                    <h3 className="text-title-large font-headline font-semi-bold text-neutral-900 mb-2">Add Portfolio</h3>
+                    <h3 className="text-title-large font-headline font-semi-bold text-neutral-900 mb-2">
+                      Add Portfolio
+                    </h3>
                     <p className="text-body-medium text-neutral-600 mb-2">
                       Create a new investment strategy
                     </p>
@@ -286,14 +345,16 @@ export const Home: React.FC = () => {
             /* First Portfolio Card */
             <div className="max-w-md mx-auto">
               <div className="bg-white border border-neutral-200 rounded-xl shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-200">
-                <button 
+                <button
                   onClick={handleCreatePortfolio}
                   className="w-full p-8 text-center group"
                 >
                   <div className="w-20 h-20 rounded-full bg-neutral-100 group-hover:bg-neutral-200 flex items-center justify-center mx-auto mb-4 transition-colors">
                     <Plus className="w-10 h-10 text-neutral-600 group-hover:text-neutral-700 transition-colors" />
                   </div>
-                  <h3 className="text-headline-medium font-headline font-semi-bold mb-3 text-neutral-900">Add a Portfolio</h3>
+                  <h3 className="text-headline-medium font-headline font-semi-bold mb-3 text-neutral-900">
+                    Add a Portfolio
+                  </h3>
                   <p className="text-body-medium text-neutral-600">
                     Start building your personalized investment strategy
                   </p>
@@ -312,7 +373,10 @@ export const Home: React.FC = () => {
               Add Portfolio Value
             </h3>
             <p className="text-body-medium text-neutral-600 mb-4">
-              Adding value to: <span className="font-medium text-neutral-900">{selectedPortfolioForValue?.name}</span>
+              Adding value to:{" "}
+              <span className="font-medium text-neutral-900">
+                {selectedPortfolioForValue?.name}
+              </span>
             </p>
             <form onSubmit={handleSaveValue}>
               <div className="mb-4">
@@ -320,12 +384,14 @@ export const Home: React.FC = () => {
                   Investment Amount
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-500">$</span>
+                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-500">
+                    $
+                  </span>
                   <input
                     type="text"
                     value={portfolioValue}
                     onChange={(e) => {
-                      const value = e.target.value.replace(/[^0-9.]/g, '');
+                      const value = e.target.value.replace(/[^0-9.]/g, "");
                       setPortfolioValue(value);
                     }}
                     placeholder="10,000"
@@ -347,7 +413,7 @@ export const Home: React.FC = () => {
                   {isAddingValue && (
                     <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   )}
-                  {isAddingValue ? 'Adding...' : 'Add Value'}
+                  {isAddingValue ? "Adding..." : "Add Value"}
                 </button>
                 <button
                   type="button"
@@ -386,7 +452,7 @@ export const Home: React.FC = () => {
                   </div>
                 </div>
               </div>
-              
+
               {/* Floating Elements */}
               <div className="absolute -top-2 -left-4 w-8 h-8 bg-white rounded-full shadow-elevation-1 flex items-center justify-center opacity-80">
                 <div className="w-3 h-3 bg-neutral-200 rounded-full"></div>
@@ -399,12 +465,13 @@ export const Home: React.FC = () => {
               </div>
               <div className="absolute bottom-0 -left-6 w-4 h-4 bg-white rounded-full shadow-elevation-1 opacity-50"></div>
             </div>
-            
+
             <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-3">
               Portfolio Management
             </h3>
             <p className="text-body-medium text-neutral-600 font-light">
-              Create and manage diversified investment portfolios based on your preferences.
+              Create and manage diversified investment portfolios based on your
+              preferences.
             </p>
           </div>
 
@@ -416,13 +483,17 @@ export const Home: React.FC = () => {
               <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-white rounded-full shadow-elevation-2 flex items-center justify-center z-10">
                 <div className="w-8 h-8 bg-neutral-900 rounded-sm flex items-center justify-center">
                   <div className="w-5 h-5 text-white flex items-center justify-center">
-                    <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      className="w-4 h-4"
+                    >
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                     </svg>
                   </div>
                 </div>
               </div>
-              
+
               {/* Floating Elements - Brain/AI themed */}
               <div className="absolute -top-3 -left-2 w-6 h-6 bg-white rounded-full shadow-elevation-1 flex items-center justify-center opacity-80">
                 <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
@@ -437,12 +508,13 @@ export const Home: React.FC = () => {
                 <div className="w-3 h-3 bg-orange-400 rounded-full"></div>
               </div>
             </div>
-            
+
             <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-3">
               Influence with Your Own Insight
             </h3>
             <p className="text-body-medium text-neutral-600 font-light">
-              Share market insights and research to influence your AI-powered portfolio decisions.
+              Share market insights and research to influence your AI-powered
+              portfolio decisions.
             </p>
           </div>
 
@@ -454,17 +526,21 @@ export const Home: React.FC = () => {
               <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-white rounded-full shadow-elevation-2 flex items-center justify-center z-10">
                 <div className="w-8 h-8 bg-neutral-900 rounded-sm flex items-center justify-center">
                   <div className="w-5 h-5 text-white flex items-center justify-center">
-                    <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-                      <circle cx="6" cy="12" r="2"/>
-                      <circle cx="12" cy="6" r="2"/>
-                      <circle cx="12" cy="18" r="2"/>
-                      <circle cx="18" cy="12" r="2"/>
-                      <path d="M8 12h2m2-4h2m-2 8h2"/>
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      className="w-4 h-4"
+                    >
+                      <circle cx="6" cy="12" r="2" />
+                      <circle cx="12" cy="6" r="2" />
+                      <circle cx="12" cy="18" r="2" />
+                      <circle cx="18" cy="12" r="2" />
+                      <path d="M8 12h2m2-4h2m-2 8h2" />
                     </svg>
                   </div>
                 </div>
               </div>
-              
+
               {/* Floating Elements - Network/Connection themed */}
               <div className="absolute -top-2 left-0 w-7 h-7 bg-white rounded-full shadow-elevation-1 flex items-center justify-center opacity-70">
                 <div className="w-3 h-3 bg-neutral-200 rounded-full"></div>
@@ -478,17 +554,18 @@ export const Home: React.FC = () => {
               <div className="absolute bottom-1 -left-4 w-6 h-6 bg-white rounded-full shadow-elevation-1 flex items-center justify-center opacity-50">
                 <div className="w-2 h-2 bg-neutral-400 rounded-full"></div>
               </div>
-              
+
               {/* Connection Lines */}
               <div className="absolute top-4 left-4 w-8 h-0.5 bg-neutral-200 opacity-30 transform rotate-45"></div>
               <div className="absolute top-6 right-6 w-6 h-0.5 bg-neutral-200 opacity-30 transform -rotate-45"></div>
             </div>
-            
+
             <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-3">
               AI Simulation
             </h3>
             <p className="text-body-medium text-neutral-600 font-light">
-              Advanced AI algorithms simulate market conditions and optimize your investment strategy.
+              Advanced AI algorithms simulate market conditions and optimize
+              your investment strategy.
             </p>
           </div>
         </div>
