@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TrendingUp, Plus, ExternalLink, ArrowLeft, Info, Shield, Calculator, Trash2, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { TrendingUp, Plus, ExternalLink, ArrowLeft, Info, Shield, Calculator, Trash2, ArrowUpRight, ArrowDownRight, X } from 'lucide-react';
 import { useInvestmentStore } from '../store/investmentStore';
 import { PortfolioChart } from './PortfolioChart';
 
@@ -9,6 +9,7 @@ export const Dashboard: React.FC = () => {
   const [insightUrl, setInsightUrl] = useState('');
   const [portfolioValue, setPortfolioValue] = useState('');
   const [showAddValueForm, setShowAddValueForm] = useState(false);
+  const [selectedKeyword, setSelectedKeyword] = useState<{ term: string; context: string; details: string } | null>(null);
 
   // Use activePortfolio instead of portfolio
   const portfolio = activePortfolio;
@@ -142,8 +143,9 @@ export const Dashboard: React.FC = () => {
     );
   };
 
-  // Generate mock trade simulation history
+  // Generate mock trade simulation history with specific times
   const generateTradeHistory = () => {
+    const now = new Date();
     const trades = [
       {
         id: 1,
@@ -152,7 +154,11 @@ export const Dashboard: React.FC = () => {
         shares: 25,
         price: 242.15,
         reason: 'Market dip opportunity',
-        time: '2 hours ago',
+        time: new Date(now.getTime() - 2 * 60 * 60 * 1000).toLocaleTimeString('en-US', { 
+          hour: '2-digit', 
+          minute: '2-digit',
+          hour12: true 
+        }),
         impact: '+0.3%'
       },
       {
@@ -162,7 +168,11 @@ export const Dashboard: React.FC = () => {
         shares: 15,
         price: 78.92,
         reason: 'Rising interest rates',
-        time: '1 day ago',
+        time: new Date(now.getTime() - 24 * 60 * 60 * 1000).toLocaleTimeString('en-US', { 
+          hour: '2-digit', 
+          minute: '2-digit',
+          hour12: true 
+        }),
         impact: '-0.1%'
       },
       {
@@ -172,7 +182,11 @@ export const Dashboard: React.FC = () => {
         shares: 18,
         price: 58.34,
         reason: 'International diversification',
-        time: '3 days ago',
+        time: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000).toLocaleTimeString('en-US', { 
+          hour: '2-digit', 
+          minute: '2-digit',
+          hour12: true 
+        }),
         impact: '+0.2%'
       }
     ];
@@ -183,15 +197,49 @@ export const Dashboard: React.FC = () => {
   // Generate AI reasoning keywords based on economic context
   const generateAIReasoningKeywords = () => {
     const keywords = [
-      { term: 'Fed Rate Pause', context: 'Central bank maintaining current rates supports bond stability' },
-      { term: 'Tech Earnings Beat', context: 'Q4 technology sector outperformance driving growth allocation' },
-      { term: 'Inflation Cooling', context: 'Declining CPI supports risk-on positioning' },
-      { term: 'Dollar Weakness', context: 'Weakening USD benefits international equity exposure' },
-      { term: 'Energy Transition', context: 'Clean energy momentum driving ESG allocation adjustments' },
-      { term: 'Supply Chain Recovery', context: 'Improving logistics supporting manufacturing stocks' }
+      { 
+        term: 'Fed Rate Pause', 
+        context: 'Central bank maintaining current rates supports bond stability',
+        details: 'The Federal Reserve\'s decision to pause rate hikes signals confidence in current monetary policy effectiveness. This creates a favorable environment for fixed-income securities as yield uncertainty decreases, while also supporting equity valuations by reducing discount rate pressures. The AI agent interprets this as an opportunity to maintain or slightly increase bond allocations while monitoring for any dovish signals that might indicate future rate cuts.'
+      },
+      { 
+        term: 'Tech Earnings Beat', 
+        context: 'Q4 technology sector outperformance driving growth allocation',
+        details: 'Major technology companies reporting earnings above analyst expectations, particularly in cloud computing, AI infrastructure, and software-as-a-service segments. The AI agent recognizes this as validation of the digital transformation thesis and adjusts portfolio weights toward technology-heavy ETFs. Strong revenue growth and margin expansion in the sector suggest continued outperformance potential, warranting increased allocation despite higher valuations.'
+      },
+      { 
+        term: 'Inflation Cooling', 
+        context: 'Declining CPI supports risk-on positioning',
+        details: 'Consumer Price Index showing consistent month-over-month declines, with core inflation approaching the Fed\'s 2% target. This disinflationary trend reduces the likelihood of aggressive monetary tightening and supports asset valuations across risk categories. The AI agent interprets this as a green light for increased equity exposure, particularly in growth-sensitive sectors that benefit from lower real interest rates and improved earnings multiples.'
+      },
+      { 
+        term: 'Dollar Weakness', 
+        context: 'Weakening USD benefits international equity exposure',
+        details: 'The US Dollar Index declining against major trading partners\' currencies, improving the competitiveness of international investments when converted back to USD. This currency tailwind makes foreign equities more attractive on a relative basis, prompting the AI agent to increase allocations to international developed and emerging market ETFs. Weaker dollar also benefits US multinational corporations with significant overseas revenue exposure.'
+      },
+      { 
+        term: 'Energy Transition', 
+        context: 'Clean energy momentum driving ESG allocation adjustments',
+        details: 'Accelerating adoption of renewable energy technologies, supported by government incentives and declining costs of solar and wind power. The AI agent identifies this secular trend as a long-term investment opportunity, increasing allocations to clean energy ETFs and ESG-focused funds. The transition represents both a growth opportunity and a risk management strategy as traditional energy faces structural headwinds.'
+      },
+      { 
+        term: 'Supply Chain Recovery', 
+        context: 'Improving logistics supporting manufacturing stocks',
+        details: 'Global supply chain bottlenecks showing significant improvement, with shipping costs normalizing and inventory levels stabilizing across key industries. This operational efficiency recovery benefits manufacturing and industrial companies, prompting the AI agent to increase exposure to industrial sector ETFs. Improved supply chains also reduce input cost pressures, supporting margin expansion for goods-producing companies.'
+      },
+      { 
+        term: 'Credit Spreads Tightening', 
+        context: 'Corporate bond risk premiums compressing',
+        details: 'Investment-grade and high-yield credit spreads narrowing relative to Treasury yields, indicating improved market confidence in corporate creditworthiness. The AI agent interprets this as a signal to increase corporate bond allocations while reducing Treasury exposure. Tighter spreads suggest reduced default risk and potential for capital appreciation in credit-sensitive fixed income securities.'
+      },
+      { 
+        term: 'Volatility Compression', 
+        context: 'Low VIX supporting risk asset allocation',
+        details: 'The CBOE Volatility Index trading below historical averages, indicating reduced market fear and uncertainty. This low-volatility environment typically supports higher valuations for risk assets and encourages the AI agent to increase equity allocations. However, the agent also monitors for potential volatility spikes that could signal regime changes requiring rapid portfolio adjustments.'
+      }
     ];
 
-    return keywords.slice(0, 4); // Show 4 keywords
+    return keywords.slice(0, 6); // Show 6 keywords
   };
 
   const tradeHistory = generateTradeHistory();
@@ -329,7 +377,7 @@ export const Dashboard: React.FC = () => {
                         <span className="text-label-large font-medium text-neutral-900">
                           {trade.type.toUpperCase()} {trade.shares} {trade.asset}
                         </span>
-                        <span className="text-body-small text-neutral-500">@ ${trade.price}</span>
+                        <span className="text-body-small text-neutral-500">${trade.price}</span>
                       </div>
                       <p className="text-body-small text-neutral-600">{trade.reason}</p>
                     </div>
@@ -357,17 +405,16 @@ export const Dashboard: React.FC = () => {
               </p>
               {/* AI Economic Context Keywords */}
               <div className="bg-neutral-100 rounded-lg p-4">
-                <h4 className="text-label-large font-medium text-neutral-900 mb-2">Economic Context Driving AI Decisions</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <h4 className="text-label-large font-medium text-neutral-900 mb-3">Economic Context Driving AI Decisions</h4>
+                <div className="flex flex-wrap gap-2">
                   {aiKeywords.map((keyword, index) => (
-                    <div key={index} className="flex flex-col gap-1">
-                      <span className="px-3 py-1 rounded-full text-body-small font-medium bg-neutral-900 text-white w-fit">
-                        {keyword.term}
-                      </span>
-                      <p className="text-body-small text-neutral-600 ml-3">
-                        {keyword.context}
-                      </p>
-                    </div>
+                    <button
+                      key={index}
+                      onClick={() => setSelectedKeyword(keyword)}
+                      className="px-3 py-1 rounded-full text-body-small font-medium bg-blue-600 hover:bg-blue-700 text-white transition-colors cursor-pointer"
+                    >
+                      {keyword.term}
+                    </button>
                   ))}
                 </div>
               </div>
@@ -557,6 +604,50 @@ export const Dashboard: React.FC = () => {
                     </button>
                   </div>
                 </form>
+              </div>
+            </div>
+          )}
+
+          {/* Keyword Detail Modal */}
+          {selectedKeyword && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+              <div className="bg-white rounded-lg p-6 w-full max-w-2xl shadow-elevation-3 max-h-[80vh] overflow-y-auto">
+                <div className="flex items-start justify-between mb-4">
+                  <div>
+                    <h3 className="text-title-large font-headline font-semi-bold text-neutral-900 mb-2">
+                      {selectedKeyword.term}
+                    </h3>
+                    <p className="text-body-medium text-neutral-600 font-medium">
+                      {selectedKeyword.context}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setSelectedKeyword(null)}
+                    className="p-2 hover:bg-neutral-100 rounded-lg transition-colors"
+                  >
+                    <X className="w-5 h-5 text-neutral-600" />
+                  </button>
+                </div>
+                
+                <div className="space-y-4">
+                  <div>
+                    <h4 className="text-label-large font-medium text-neutral-900 mb-2">
+                      Detailed Analysis
+                    </h4>
+                    <p className="text-body-medium text-neutral-700 leading-relaxed">
+                      {selectedKeyword.details}
+                    </p>
+                  </div>
+                  
+                  <div className="pt-4 border-t border-neutral-200">
+                    <button
+                      onClick={() => setSelectedKeyword(null)}
+                      className="w-full bg-neutral-900 text-white py-3 px-4 rounded-lg text-label-large font-medium hover:bg-neutral-800 transition-colors"
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           )}
