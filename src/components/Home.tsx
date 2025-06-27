@@ -119,7 +119,7 @@ export const Home: React.FC = () => {
         {/* Portfolio Value Display - Always show */}
         <div className="text-center mb-12">
           <div className="mb-6">
-            <p className="text-display-medium font-headline font-medium text-neutral-900 mb-1">
+            <p className="text-display-medium font-headline font-bold text-neutral-900 mb-1">
               ${totalValue.toLocaleString()}
             </p>
             <div className="flex items-center justify-center gap-2 mb-6">
@@ -274,7 +274,7 @@ export const Home: React.FC = () => {
 
                     {/* Portfolio Value */}
                     <div className="mb-3 min-h-[60px] flex flex-col justify-center">
-                      <p className="text-headline-small font-headline font-medium text-neutral-900 mb-1">
+                      <p className="text-headline-small font-headline font-bold text-neutral-900 mb-1">
                         ${portfolioItem.totalValue.toLocaleString()}
                       </p>
                       <div className="flex items-center gap-2">

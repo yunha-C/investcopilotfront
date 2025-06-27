@@ -362,7 +362,7 @@ export const Dashboard: React.FC = () => {
                 <div className="mb-6">
                   {hasValue ? (
                     <>
-                      <p className="text-headline-small font-headline font-medium text-neutral-900">
+                      <p className="text-headline-small font-headline font-bold text-neutral-900">
                         ${portfolio.balance.toLocaleString()}
                       </p>
                       <div className="flex items-center gap-2 mt-1 mb-4">
