@@ -4,7 +4,7 @@ import { useInvestmentStore } from '../store/investmentStore';
 import { PortfolioChart } from './PortfolioChart';
 
 export const PortfolioResults: React.FC = () => {
-  const { portfolio, questionnaireAnalysis, setCurrentStep, updatePortfolioBalance, savePortfolioToDatabase } = useInvestmentStore();
+  const { portfolio, questionnaireAnalysis, setCurrentStep, updatePortfolioBalance, savePortfolioToDatabase, setActivePortfolio } = useInvestmentStore();
   const [isSaving, setIsSaving] = useState(false);
 
   if (!portfolio) return null;
@@ -15,6 +15,9 @@ export const PortfolioResults: React.FC = () => {
       // Save portfolio to database
       await savePortfolioToDatabase(portfolio);
       
+      // Set the newly created portfolio as the active portfolio
+      setActivePortfolio(portfolio);
+      
       // Set initial investment
       if (portfolio.id) {
         await updatePortfolioBalance(portfolio.id, portfolio.cashBalance || 10000);
@@ -22,7 +25,8 @@ export const PortfolioResults: React.FC = () => {
       setCurrentStep('dashboard');
     } catch (error) {
       console.error('Failed to save portfolio:', error);
-      // Still proceed to dashboard even if save fails
+      // Still proceed to dashboard even if save fails, but set as active portfolio
+      setActivePortfolio(portfolio);
       if (portfolio.id) {
         try {
           await updatePortfolioBalance(portfolio.id, portfolio.cashBalance || 10000);
