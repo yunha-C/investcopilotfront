@@ -48,20 +48,23 @@ export const GrowthGraphTest: React.FC = () => {
     let data: DataPoint[] = [];
     let startDate: Date;
     let endDate = new Date(today);
+    let numDays: number;
     
     switch (timeframe) {
       case '1W': {
-        // 7 days ago to today
+        // 7 days (1 week)
+        numDays = 7;
         startDate = new Date(today);
-        startDate.setDate(today.getDate() - 6); // 6 days ago + today = 7 days
+        startDate.setDate(today.getDate() - (numDays - 1));
         
-        for (let i = 0; i < 7; i++) {
+        for (let i = 0; i < numDays; i++) {
           const currentDate = new Date(startDate);
           currentDate.setDate(startDate.getDate() + i);
           
-          // Simulate daily fluctuations
-          const dailyGrowth = Math.random() * 0.8 - 0.2; // -0.2% to +0.6% daily
-          const cumulativeGrowth = i * 0.3 + dailyGrowth; // Overall upward trend
+          // Simulate daily fluctuations with overall upward trend
+          const dailyGrowth = (Math.random() - 0.4) * 1.5; // -0.6% to +0.9% daily variation
+          const trendGrowth = (i / (numDays - 1)) * 2.1; // Overall 2.1% growth over the week
+          const cumulativeGrowth = trendGrowth + (Math.random() - 0.5) * 0.8;
           const value = baseValue * (1 + cumulativeGrowth / 100);
           
           data.push({
@@ -76,21 +79,27 @@ export const GrowthGraphTest: React.FC = () => {
       }
       
       case '1M': {
-        // 1 month ago to today (4 weeks)
+        // 30 days (1 month)
+        numDays = 30;
         startDate = new Date(today);
-        startDate.setDate(today.getDate() - 27); // ~4 weeks ago
+        startDate.setDate(today.getDate() - (numDays - 1));
         
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < numDays; i++) {
           const currentDate = new Date(startDate);
-          currentDate.setDate(startDate.getDate() + (i * 7)); // Weekly intervals
+          currentDate.setDate(startDate.getDate() + i);
           
-          const weeklyGrowth = 1.2 + (Math.random() * 0.8 - 0.4); // 0.8% to 1.6% weekly
-          const cumulativeGrowth = i * weeklyGrowth;
+          // Simulate daily fluctuations with monthly trend
+          const dailyGrowth = (Math.random() - 0.45) * 2.0; // More volatility over longer period
+          const trendGrowth = (i / (numDays - 1)) * 4.8; // Overall 4.8% growth over the month
+          const cumulativeGrowth = trendGrowth + (Math.random() - 0.5) * 1.2;
           const value = baseValue * (1 + cumulativeGrowth / 100);
+          
+          // Show every 5th day as display label to avoid crowding
+          const displayDate = i % 5 === 0 ? formatDate(currentDate, 'short') : '';
           
           data.push({
             date: formatDate(currentDate, 'short'),
-            displayDate: `Week ${i + 1}`,
+            displayDate: displayDate,
             value: Math.round(value),
             percentage: Number(cumulativeGrowth.toFixed(2)),
             actualDate: new Date(currentDate)
@@ -100,21 +109,27 @@ export const GrowthGraphTest: React.FC = () => {
       }
       
       case '6M': {
-        // 6 months ago to today
+        // 180 days (6 months)
+        numDays = 180;
         startDate = new Date(today);
-        startDate.setMonth(today.getMonth() - 5); // 5 months ago + current month = 6 months
+        startDate.setDate(today.getDate() - (numDays - 1));
         
-        for (let i = 0; i < 6; i++) {
+        for (let i = 0; i < numDays; i++) {
           const currentDate = new Date(startDate);
-          currentDate.setMonth(startDate.getMonth() + i);
+          currentDate.setDate(startDate.getDate() + i);
           
-          const monthlyGrowth = 1.8 + (Math.random() * 1.0 - 0.5); // 1.3% to 2.3% monthly
-          const cumulativeGrowth = i * monthlyGrowth;
+          // Simulate daily fluctuations with 6-month trend
+          const dailyGrowth = (Math.random() - 0.48) * 2.5;
+          const trendGrowth = (i / (numDays - 1)) * 12.5; // Overall 12.5% growth over 6 months
+          const cumulativeGrowth = trendGrowth + (Math.random() - 0.5) * 2.0;
           const value = baseValue * (1 + cumulativeGrowth / 100);
+          
+          // Show every 15th day as display label
+          const displayDate = i % 15 === 0 ? formatDate(currentDate, 'month') : '';
           
           data.push({
             date: formatDate(currentDate, 'short'),
-            displayDate: formatDate(currentDate, 'month'),
+            displayDate: displayDate,
             value: Math.round(value),
             percentage: Number(cumulativeGrowth.toFixed(2)),
             actualDate: new Date(currentDate)
@@ -124,21 +139,27 @@ export const GrowthGraphTest: React.FC = () => {
       }
       
       case '1Y': {
-        // 1 year ago to today (4 quarters)
+        // 365 days (1 year)
+        numDays = 365;
         startDate = new Date(today);
-        startDate.setMonth(today.getMonth() - 9); // 3 quarters ago
+        startDate.setDate(today.getDate() - (numDays - 1));
         
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < numDays; i++) {
           const currentDate = new Date(startDate);
-          currentDate.setMonth(startDate.getMonth() + (i * 3)); // Quarterly intervals
+          currentDate.setDate(startDate.getDate() + i);
           
-          const quarterlyGrowth = 4.2 + (Math.random() * 2.0 - 1.0); // 3.2% to 5.2% quarterly
-          const cumulativeGrowth = i * quarterlyGrowth;
+          // Simulate daily fluctuations with yearly trend
+          const dailyGrowth = (Math.random() - 0.5) * 3.0;
+          const trendGrowth = (i / (numDays - 1)) * 18.2; // Overall 18.2% growth over the year
+          const cumulativeGrowth = trendGrowth + (Math.random() - 0.5) * 3.5;
           const value = baseValue * (1 + cumulativeGrowth / 100);
+          
+          // Show every 30th day as display label (roughly monthly)
+          const displayDate = i % 30 === 0 ? formatDate(currentDate, 'month') : '';
           
           data.push({
             date: formatDate(currentDate, 'short'),
-            displayDate: formatDate(currentDate, 'quarter'),
+            displayDate: displayDate,
             value: Math.round(value),
             percentage: Number(cumulativeGrowth.toFixed(2)),
             actualDate: new Date(currentDate)
@@ -148,21 +169,27 @@ export const GrowthGraphTest: React.FC = () => {
       }
       
       case 'All': {
-        // 5 years ago to today
+        // 1825 days (5 years)
+        numDays = 1825;
         startDate = new Date(today);
-        startDate.setFullYear(today.getFullYear() - 4); // 4 years ago + current year = 5 years
+        startDate.setDate(today.getDate() - (numDays - 1));
         
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < numDays; i++) {
           const currentDate = new Date(startDate);
-          currentDate.setFullYear(startDate.getFullYear() + i);
+          currentDate.setDate(startDate.getDate() + i);
           
-          const yearlyGrowth = 4.8 + (Math.random() * 3.0 - 1.5); // 3.3% to 6.3% yearly
-          const cumulativeGrowth = i * yearlyGrowth;
+          // Simulate daily fluctuations with 5-year trend
+          const dailyGrowth = (Math.random() - 0.5) * 4.0;
+          const trendGrowth = (i / (numDays - 1)) * 45.8; // Overall 45.8% growth over 5 years
+          const cumulativeGrowth = trendGrowth + (Math.random() - 0.5) * 8.0;
           const value = baseValue * (1 + cumulativeGrowth / 100);
+          
+          // Show every 90th day as display label (roughly quarterly)
+          const displayDate = i % 90 === 0 ? formatDate(currentDate, 'year') : '';
           
           data.push({
             date: formatDate(currentDate, 'short'),
-            displayDate: formatDate(currentDate, 'year'),
+            displayDate: displayDate,
             value: Math.round(value),
             percentage: Number(cumulativeGrowth.toFixed(2)),
             actualDate: new Date(currentDate)
@@ -172,6 +199,7 @@ export const GrowthGraphTest: React.FC = () => {
       }
       
       default:
+        numDays = 7;
         startDate = new Date(today);
         data = [];
     }
@@ -250,7 +278,7 @@ export const GrowthGraphTest: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-white/50 via-white/30 to-white/20 p-8">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-headline-large font-headline font-semi-bold text-neutral-900 mb-8">
-          Date-Based Growth Graph Test
+          Daily Indicators Growth Graph Test
         </h1>
         
         {/* Current Date Display */}
@@ -265,6 +293,9 @@ export const GrowthGraphTest: React.FC = () => {
           </p>
           <p className="text-body-small text-neutral-500">
             Period: {currentData.startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {currentData.endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+          </p>
+          <p className="text-body-small text-neutral-400">
+            Data Points: {currentData.data.length} days
           </p>
         </div>
         
@@ -284,7 +315,7 @@ export const GrowthGraphTest: React.FC = () => {
         {/* Growth Chart */}
         <div className="bg-white rounded-lg shadow-elevation-1 border border-neutral-200 p-6 mb-8">
           <h2 className="text-title-large font-headline font-semi-bold text-neutral-900 mb-4">
-            Growth Chart - {currentData.timeframe}
+            Growth Chart - {currentData.timeframe} ({currentData.data.length} daily data points)
           </h2>
           
           {/* Chart Container */}
@@ -354,25 +385,58 @@ export const GrowthGraphTest: React.FC = () => {
           </div>
         </div>
 
-        {/* Data Display */}
-        <div className="bg-white rounded-lg shadow-elevation-1 border border-neutral-200 p-6">
+        {/* Data Summary */}
+        <div className="bg-white rounded-lg shadow-elevation-1 border border-neutral-200 p-6 mb-8">
           <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-4">
-            Data Points for {currentData.timeframe}
+            Data Summary for {currentData.timeframe}
           </h3>
           
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {currentData.data.map((point, index) => (
-              <div key={index} className="text-center p-3 bg-neutral-50 rounded-lg">
-                <div className="text-body-small text-neutral-600 mb-1">{point.displayDate}</div>
-                <div className="text-body-small text-neutral-500 mb-1">{point.date}</div>
-                <div className="text-label-large font-medium text-neutral-900">
-                  ${point.value.toLocaleString()}
-                </div>
-                <div className={`text-body-small ${point.percentage >= 0 ? 'text-positive' : 'text-negative'}`}>
-                  {point.percentage >= 0 ? '+' : ''}{point.percentage.toFixed(1)}%
-                </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div className="text-center p-3 bg-neutral-50 rounded-lg">
+              <div className="text-body-small text-neutral-600 mb-1">Total Days</div>
+              <div className="text-label-large font-medium text-neutral-900">
+                {currentData.data.length}
               </div>
-            ))}
+            </div>
+            <div className="text-center p-3 bg-neutral-50 rounded-lg">
+              <div className="text-body-small text-neutral-600 mb-1">Start Value</div>
+              <div className="text-label-large font-medium text-neutral-900">
+                ${currentData.data[0]?.value.toLocaleString()}
+              </div>
+            </div>
+            <div className="text-center p-3 bg-neutral-50 rounded-lg">
+              <div className="text-body-small text-neutral-600 mb-1">End Value</div>
+              <div className="text-label-large font-medium text-neutral-900">
+                ${currentData.data[currentData.data.length - 1]?.value.toLocaleString()}
+              </div>
+            </div>
+            <div className="text-center p-3 bg-neutral-50 rounded-lg">
+              <div className="text-body-small text-neutral-600 mb-1">Total Growth</div>
+              <div className={`text-label-large font-medium ${currentData.totalGrowth >= 0 ? 'text-positive' : 'text-negative'}`}>
+                {currentData.totalGrowth >= 0 ? '+' : ''}{currentData.totalGrowth.toFixed(1)}%
+              </div>
+            </div>
+          </div>
+
+          {/* Sample Data Points */}
+          <div>
+            <h4 className="text-label-large font-medium text-neutral-900 mb-3">
+              Sample Data Points (First 10 days)
+            </h4>
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+              {currentData.data.slice(0, 10).map((point, index) => (
+                <div key={index} className="text-center p-2 bg-neutral-100 rounded">
+                  <div className="text-body-small text-neutral-600 mb-1">Day {index + 1}</div>
+                  <div className="text-body-small text-neutral-500 mb-1">{point.date}</div>
+                  <div className="text-body-small font-medium text-neutral-900">
+                    ${point.value.toLocaleString()}
+                  </div>
+                  <div className={`text-body-small ${point.percentage >= 0 ? 'text-positive' : 'text-negative'}`}>
+                    {point.percentage >= 0 ? '+' : ''}{point.percentage.toFixed(1)}%
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -385,10 +449,11 @@ export const GrowthGraphTest: React.FC = () => {
             <pre className="text-body-small whitespace-pre-wrap">
 {JSON.stringify({
   timeframe: currentData.timeframe,
+  totalDataPoints: currentData.data.length,
   startDate: currentData.startDate.toISOString(),
   endDate: currentData.endDate.toISOString(),
   totalGrowth: currentData.totalGrowth,
-  dataPoints: currentData.data.map(point => ({
+  sampleDataPoints: currentData.data.slice(0, 5).map(point => ({
     date: point.date,
     displayDate: point.displayDate,
     actualDate: point.actualDate.toISOString(),
@@ -403,16 +468,17 @@ export const GrowthGraphTest: React.FC = () => {
         {/* Explanation */}
         <div className="bg-white rounded-lg shadow-elevation-1 border border-neutral-200 p-6 mt-8">
           <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-4">
-            How Date Calculation Works
+            Daily Indicators Explanation
           </h3>
           <div className="space-y-3 text-body-medium text-neutral-700">
-            <p><strong>1W:</strong> Shows last 7 days ending today. If today is Friday, shows Saturday to Friday.</p>
-            <p><strong>1M:</strong> Shows last ~4 weeks ending today. If today is June 27th, shows from ~May 30th to June 27th.</p>
-            <p><strong>6M:</strong> Shows last 6 months ending today. If today is June 27th, shows from January 27th to June 27th.</p>
-            <p><strong>1Y:</strong> Shows last 4 quarters ending today.</p>
-            <p><strong>All:</strong> Shows last 5 years ending today.</p>
+            <p><strong>1W:</strong> Shows exactly 7 daily data points (1 week) ending today.</p>
+            <p><strong>1M:</strong> Shows exactly 30 daily data points (1 month) ending today.</p>
+            <p><strong>6M:</strong> Shows exactly 180 daily data points (6 months) ending today.</p>
+            <p><strong>1Y:</strong> Shows exactly 365 daily data points (1 year) ending today.</p>
+            <p><strong>All:</strong> Shows exactly 1,825 daily data points (5 years) ending today.</p>
             <p className="text-body-small text-neutral-600 mt-4">
-              Each timeframe calculates backwards from today's date to ensure the most recent data point is always "today".
+              Each timeframe now has daily granularity with the exact number of data points you requested. 
+              The graph smoothly interpolates between all daily values while showing selective labels for readability.
             </p>
           </div>
         </div>
