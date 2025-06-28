@@ -9,6 +9,7 @@ import { Dashboard } from './components/Dashboard';
 import { PortfolioDetails } from './components/PortfolioDetails';
 import { InsightAnalysis } from './components/InsightAnalysis';
 import { Home } from './components/Home';
+import { GrowthGraphTest } from './components/GrowthGraphTest';
 
 function App() {
   const { currentStep, setCurrentStep, portfolio, loadUserPortfolios } = useInvestmentStore();
@@ -56,6 +57,22 @@ function App() {
     // Set to home page after successful authentication
     setCurrentStep('home');
   };
+
+  // Test mode - show growth graph test
+  if (window.location.search.includes('test=graph')) {
+    return (
+      <>
+        <div className="background-container">
+          <div className="circle-1"></div>
+          <div className="circle-2"></div>
+          <div className="blur-overlay"></div>
+        </div>
+        <div className="relative z-10">
+          <GrowthGraphTest />
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
