@@ -19,6 +19,9 @@ export const Header: React.FC = () => {
             src="/vestie logo v1.png" 
             alt="Vestie" 
             className="h-4 w-auto"
+            style={{
+              filter: 'brightness(0) saturate(100%) invert(4%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(96%) contrast(100%)'
+            }}
           />
         </div>
         
