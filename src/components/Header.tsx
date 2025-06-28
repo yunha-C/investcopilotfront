@@ -18,7 +18,7 @@ export const Header: React.FC = () => {
           <img 
             src="/vestie logo v1.png" 
             alt="Vestie" 
-            className="h-8 w-auto"
+            className="h-4 w-auto"
           />
         </div>
         

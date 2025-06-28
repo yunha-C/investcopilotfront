@@ -187,7 +187,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
             <img 
               src="/vestie logo v1.png" 
               alt="Vestie" 
-              className="h-12 w-auto"
+              className="h-6 w-auto"
             />
           </div>
           <p className="text-body-large text-neutral-600">
