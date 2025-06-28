@@ -17,7 +17,6 @@ import {
   Transaction,
   Portfolio,
 } from "../store/investmentStore";
-import { useThemeStore } from "../store/themeStore";
 
 export const Dashboard: React.FC = () => {
   const {
@@ -28,7 +27,6 @@ export const Dashboard: React.FC = () => {
     updatePortfolioBalance,
     portfolios,
   } = useInvestmentStore();
-  const { isDarkMode } = useThemeStore();
   const [showInsightForm, setShowInsightForm] = useState(false);
   const [insightUrl, setInsightUrl] = useState("");
   const [portfolioValue, setPortfolioValue] = useState("");
@@ -69,37 +67,37 @@ export const Dashboard: React.FC = () => {
       portfolios.length
     );
     return (
-      <div className="min-h-screen bg-gradient-to-br from-white/50 via-white/30 to-white/20 dark:from-gray-900/50 dark:via-gray-800/30 dark:to-gray-900/20">
+      <div className="min-h-screen bg-gradient-to-br from-white/50 via-white/30 to-white/20">
         <div className="px-4 py-8">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-8">
-              <h1 className="text-display-medium font-headline font-bold text-neutral-900 dark:text-dark-text-primary mb-4">
+              <h1 className="text-display-medium font-headline font-bold text-neutral-900 mb-4">
                 Portfolio Not Found
               </h1>
-              <p className="text-body-large text-neutral-600 dark:text-dark-text-secondary mb-6">
+              <p className="text-body-large text-neutral-600 mb-6">
                 We couldn't find your portfolio. Please go back to home and try
                 again.
               </p>
             </div>
             <button
               onClick={() => setCurrentStep("home")}
-              className="flex items-center gap-2 text-neutral-900 dark:text-dark-text-primary hover:text-neutral-700 dark:hover:text-emerald-400 mb-4 transition-colors"
+              className="flex items-center gap-2 text-neutral-900 hover:text-neutral-700 mb-4 transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
               <span className="text-body-medium">Back to Home</span>
             </button>
 
             <div className="text-center py-16">
-              <h1 className="text-headline-large font-headline font-semi-bold text-neutral-900 dark:text-dark-text-primary mb-4">
+              <h1 className="text-headline-large font-headline font-semi-bold text-neutral-900 mb-4">
                 No Portfolio Selected
               </h1>
-              <p className="text-body-large text-neutral-600 dark:text-dark-text-secondary mb-8">
+              <p className="text-body-large text-neutral-600 mb-8">
                 Please select a portfolio from the home page to view its
                 dashboard.
               </p>
               <button
                 onClick={() => setCurrentStep("home")}
-                className="bg-neutral-900 dark:bg-emerald-500 text-white py-3 px-6 rounded-lg text-label-large font-medium hover:bg-neutral-800 dark:hover:bg-emerald-400 transition-colors"
+                className="bg-neutral-900 text-white py-3 px-6 rounded-lg text-label-large font-medium hover:bg-neutral-800 transition-colors"
               >
                 Go to Home
               </button>
@@ -163,7 +161,7 @@ export const Dashboard: React.FC = () => {
   const getGrowthColor = (growth: number) => {
     if (growth > 0) return "text-positive";
     if (growth < 0) return "text-negative";
-    return "text-neutral-600 dark:text-gray-400"; // Neutral color for 0 growth
+    return "text-neutral-600"; // Neutral color for 0 growth
   };
 
   // Generate growth chart for dashboard
@@ -171,17 +169,8 @@ export const Dashboard: React.FC = () => {
     const growth = portfolio.growth || 0;
     const isPositive = growth >= 0;
 
-    // Use brighter colors for dark mode
-    const strokeColor = isDarkMode 
-      ? (isPositive ? "#60A5FA" : "#F87171") // Bright blue/red for dark mode
-      : (isPositive ? "#044AA7" : "#f44336"); // Original colors for light mode
-    
-    const fillColor = isDarkMode 
-      ? (isPositive ? "#60A5FA" : "#F87171") // Bright blue/red for dark mode
-      : (isPositive ? "#044AA7" : "#f44336"); // Original colors for light mode
-
     return (
-      <div className="h-20 bg-gradient-to-b from-neutral-50/20 to-neutral-100/20 dark:from-gray-800/20 dark:to-gray-900/20 rounded-sm p-3 relative overflow-hidden mb-4">
+      <div className="h-20 bg-gradient-to-b from-neutral-50/20 to-neutral-100/20 rounded-sm p-3 relative overflow-hidden mb-4">
         <svg
           className="absolute inset-0 w-full h-full"
           viewBox="0 0 300 80"
@@ -197,12 +186,12 @@ export const Dashboard: React.FC = () => {
             >
               <stop
                 offset="0%"
-                stopColor={fillColor}
-                stopOpacity={isDarkMode ? "0.25" : "0.08"}
+                stopColor={isPositive ? "#044AA7" : "#f44336"}
+                stopOpacity="0.08"
               />
               <stop
                 offset="100%"
-                stopColor={fillColor}
+                stopColor={isPositive ? "#044AA7" : "#f44336"}
                 stopOpacity="0.01"
               />
             </linearGradient>
@@ -225,9 +214,9 @@ export const Dashboard: React.FC = () => {
                 : "M0,39 C40,41 80,44 120,47 C160,50 200,53 240,56 C270,58 285,59 300,60"
             }
             fill="none"
-            stroke={strokeColor}
-            strokeWidth="2"
-            strokeOpacity={isDarkMode ? "0.8" : "0.2"}
+            stroke={isPositive ? "#044AA7" : "#f44336"}
+            strokeWidth="1.5"
+            strokeOpacity="0.2"
             className="transition-all duration-1000 ease-out"
           />
         </svg>
@@ -341,13 +330,13 @@ export const Dashboard: React.FC = () => {
   const aiKeywords = generateAIReasoningKeywords();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white/50 via-white/30 to-white/20 dark:from-gray-900/50 dark:via-gray-800/30 dark:to-gray-900/20">
+    <div className="min-h-screen bg-gradient-to-br from-white/50 via-white/30 to-white/20">
       <div className="px-4 py-8">
         <div className="max-w-6xl mx-auto">
           <div className="mb-8">
             <button
               onClick={handleBackToHome}
-              className="flex items-center gap-2 text-neutral-900 dark:text-dark-text-primary hover:text-neutral-700 dark:hover:text-emerald-400 mb-4 transition-colors"
+              className="flex items-center gap-2 text-neutral-900 hover:text-neutral-700 mb-4 transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
               <span className="text-body-medium">Back to Home</span>
@@ -355,10 +344,10 @@ export const Dashboard: React.FC = () => {
 
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-headline-large font-headline font-semi-bold text-neutral-900 dark:text-dark-text-primary mb-2">
+                <h1 className="text-headline-large font-headline font-semi-bold text-neutral-900 mb-2">
                   {portfolio.name}
                 </h1>
-                <p className="text-body-large text-neutral-600 dark:text-dark-text-secondary">
+                <p className="text-body-large text-neutral-600">
                   Portfolio Dashboard & Analytics
                 </p>
               </div>
@@ -366,14 +355,14 @@ export const Dashboard: React.FC = () => {
           </div>
 
           {/* Main Portfolio Overview */}
-          <div className="bg-white dark:bg-dark-surface-primary rounded-lg shadow-elevation-1 dark:shadow-dark-elevation-1 border border-neutral-200 dark:border-dark-border-primary p-8 mb-8">
+          <div className="bg-white rounded-lg shadow-elevation-1 border border-neutral-200 p-8 mb-8">
             <div className="grid lg:grid-cols-2 gap-8">
               {/* Portfolio Value and Performance */}
               <div>
                 <div className="mb-6">
                   {hasValue ? (
                     <>
-                      <p className="text-headline-small font-headline font-bold text-neutral-900 dark:text-dark-text-primary">
+                      <p className="text-headline-small font-headline font-bold text-neutral-900">
                         ${portfolio.balance.toLocaleString()}
                       </p>
                       <div className="flex items-center gap-2 mt-1 mb-4">
@@ -399,7 +388,7 @@ export const Dashboard: React.FC = () => {
                                 ? "text-green-600"
                                 : portfolio.profitLossAmount < 0
                                 ? "text-red-600"
-                                : "text-neutral-600 dark:text-gray-400"
+                                : "text-neutral-600"
                             }`}
                           >
                             {portfolio.profitLossAmount > 0 ? "+" : ""}
@@ -418,12 +407,12 @@ export const Dashboard: React.FC = () => {
                     </>
                   ) : (
                     <div className="text-center py-6">
-                      <p className="text-body-medium text-neutral-600 dark:text-dark-text-secondary mb-4">
+                      <p className="text-body-medium text-neutral-600 mb-4">
                         No portfolio value set
                       </p>
                       <button
                         onClick={() => setShowAddValueForm(true)}
-                        className="bg-neutral-900 dark:bg-emerald-500 text-white px-6 py-3 rounded-lg text-label-large font-medium hover:bg-neutral-800 dark:hover:bg-emerald-400 transition-colors"
+                        className="bg-neutral-900 text-white px-6 py-3 rounded-lg text-label-large font-medium hover:bg-neutral-800 transition-colors"
                       >
                         Add Virtual Portfolio Value
                       </button>
@@ -434,34 +423,34 @@ export const Dashboard: React.FC = () => {
                 {/* Key Metrics */}
                 <div className="space-y-3">
                   <div className="flex justify-between">
-                    <span className="text-body-medium text-neutral-600 dark:text-dark-text-secondary">
+                    <span className="text-body-medium text-neutral-600">
                       Expected Return
                     </span>
-                    <span className="text-body-medium font-medium text-neutral-900 dark:text-dark-text-primary">
+                    <span className="text-body-medium font-medium">
                       {portfolio.expectedReturn}%
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-body-medium text-neutral-600 dark:text-dark-text-secondary">
+                    <span className="text-body-medium text-neutral-600">
                       Risk Level
                     </span>
-                    <span className="text-body-medium font-medium text-neutral-900 dark:text-dark-text-primary">
+                    <span className="text-body-medium font-medium">
                       {portfolio.riskLevel}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-body-medium text-neutral-600 dark:text-dark-text-secondary">
+                    <span className="text-body-medium text-neutral-600">
                       Risk Score
                     </span>
-                    <span className="text-body-medium font-medium text-neutral-900 dark:text-dark-text-primary">
+                    <span className="text-body-medium font-medium">
                       {portfolio.riskScore}/5
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-body-medium text-neutral-600 dark:text-dark-text-secondary">
+                    <span className="text-body-medium text-neutral-600">
                       Monthly Fee
                     </span>
-                    <span className="text-body-medium font-medium text-neutral-900 dark:text-dark-text-primary">
+                    <span className="text-body-medium font-medium">
                       ${(portfolio.monthlyFee || 0).toFixed(2)}
                     </span>
                   </div>
@@ -470,7 +459,7 @@ export const Dashboard: React.FC = () => {
 
               {/* Asset Breakdown - No Chart */}
               <div>
-                <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 dark:text-dark-text-primary mb-4">
+                <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-4">
                   Asset Breakdown
                 </h3>
                 <div className="space-y-1">
@@ -484,16 +473,16 @@ export const Dashboard: React.FC = () => {
                           className="w-4 h-4 rounded-full"
                           style={{ backgroundColor: asset.color }}
                         />
-                        <span className="text-label-large font-medium text-neutral-800 dark:text-dark-text-primary">
+                        <span className="text-label-large font-medium text-neutral-800">
                           {asset.name}
                         </span>
                       </div>
                       <div className="text-right">
-                        <p className="text-label-large font-medium text-neutral-900 dark:text-dark-text-primary">
+                        <p className="text-label-large font-medium text-neutral-900">
                           {asset.percentage}%
                         </p>
                         {hasValue && (
-                          <p className="text-body-small text-neutral-500 dark:text-dark-text-muted">
+                          <p className="text-body-small text-neutral-500">
                             $
                             {(
                               (portfolio.balance * asset.percentage) /
@@ -510,17 +499,17 @@ export const Dashboard: React.FC = () => {
           </div>
 
           {/* Trade Simulation History */}
-          <div className="bg-white dark:bg-dark-surface-primary rounded-lg shadow-elevation-1 dark:shadow-dark-elevation-1 border border-neutral-200 dark:border-dark-border-primary p-8 mb-8">
+          <div className="bg-white rounded-lg shadow-elevation-1 border border-neutral-200 p-8 mb-8">
             <div className="flex items-center gap-3 mb-4">
-              <TrendingUp className="w-5 h-5 text-neutral-700 dark:text-gray-300" />
-              <h3 className="text-title-large font-headline font-semi-bold text-neutral-900 dark:text-dark-text-primary">
+              <TrendingUp className="w-5 h-5 text-neutral-700" />
+              <h3 className="text-title-large font-headline font-semi-bold text-neutral-900">
                 Trade Simulation History
               </h3>
             </div>
             <div className="space-y-3">
               {tradeHistory.length === 0 ? (
                 <div className="text-center py-8">
-                  <p className="text-body-medium text-neutral-500 dark:text-dark-text-muted mb-4">
+                  <p className="text-body-medium text-neutral-500 mb-4">
                     No trade history yet
                   </p>
                 </div>
@@ -528,16 +517,16 @@ export const Dashboard: React.FC = () => {
                 tradeHistory.map((trade: any) => (
                   <div
                     key={trade.id}
-                    className="flex items-center justify-between p-4 bg-neutral-50 dark:bg-gray-800 rounded-lg"
+                    className="flex items-center justify-between p-4 bg-neutral-50 rounded-lg"
                   >
                     <div className="flex items-center gap-4">
                       <div
                         className={`p-2 rounded-full ${
                           trade.type === "buy"
-                            ? "bg-positive/10 dark:bg-green-500/20"
+                            ? "bg-positive/10"
                             : trade.type === "sell"
-                            ? "bg-negative/10 dark:bg-red-500/20"
-                            : "bg-blue-100 dark:bg-emerald-500/20"
+                            ? "bg-negative/10"
+                            : "bg-blue-100"
                         }`}
                       >
                         {trade.type === "buy" ? (
@@ -545,41 +534,41 @@ export const Dashboard: React.FC = () => {
                         ) : trade.type === "sell" ? (
                           <ArrowDownRight className="w-4 h-4 text-negative" />
                         ) : (
-                          <Plus className="w-4 h-4 text-blue-600 dark:text-emerald-400" />
+                          <Plus className="w-4 h-4 text-blue-600" />
                         )}
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
                           {trade.type === "deposit" ? (
-                            <span className="text-label-large font-medium text-blue-700 dark:text-emerald-400">
+                            <span className="text-label-large font-medium text-blue-700">
                               Deposit
                             </span>
                           ) : (
-                            <span className="text-label-large font-medium text-neutral-900 dark:text-dark-text-primary">
+                            <span className="text-label-large font-medium text-neutral-900">
                               {trade.type.toUpperCase()} {trade.shares}{" "}
                               {trade.asset}
                             </span>
                           )}
                           {(trade.type === "buy" || trade.type === "sell") &&
                             trade.price !== null && (
-                              <span className="text-body-small text-neutral-500 dark:text-dark-text-muted">
+                              <span className="text-body-small text-neutral-500">
                                 ${trade.price}
                               </span>
                             )}
                           {trade.type === "deposit" &&
                             trade.amount !== null && (
-                              <span className="text-body-small text-blue-700 dark:text-emerald-400 font-medium">
+                              <span className="text-body-small text-blue-700 font-medium">
                                 +${trade.amount}
                               </span>
                             )}
                         </div>
-                        <p className="text-body-small text-neutral-600 dark:text-dark-text-secondary">
+                        <p className="text-body-small text-neutral-600">
                           {trade.reason}
                         </p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-body-small text-neutral-500 dark:text-dark-text-muted">
+                      <p className="text-body-small text-neutral-500">
                         {trade.time}
                       </p>
                     </div>
@@ -590,20 +579,20 @@ export const Dashboard: React.FC = () => {
           </div>
 
           {/* AI Simulation Reasoning */}
-          <div className="bg-white dark:bg-dark-surface-primary rounded-lg shadow-elevation-1 dark:shadow-dark-elevation-1 border border-neutral-200 dark:border-dark-border-primary p-8 mb-8">
+          <div className="bg-white rounded-lg shadow-elevation-1 border border-neutral-200 p-8 mb-8">
             <div className="flex items-center gap-3 mb-4">
-              <Shield className="w-5 h-5 text-neutral-700 dark:text-gray-300" />
-              <h3 className="text-title-large font-headline font-semi-bold text-neutral-900 dark:text-dark-text-primary">
+              <Shield className="w-5 h-5 text-neutral-700" />
+              <h3 className="text-title-large font-headline font-semi-bold text-neutral-900">
                 AI Simulation Reasoning
               </h3>
             </div>
             <div className="space-y-3">
-              <p className="text-body-medium text-neutral-700 dark:text-dark-text-secondary leading-relaxed">
+              <p className="text-body-medium text-neutral-700 leading-relaxed">
                 {portfolio.reasoning}
               </p>
               {/* AI Economic Context Keywords */}
-              <div className="bg-neutral-100 dark:bg-gray-800 rounded-lg p-4">
-                <h4 className="text-label-large font-medium text-neutral-900 dark:text-dark-text-primary mb-3">
+              <div className="bg-neutral-100 rounded-lg p-4">
+                <h4 className="text-label-large font-medium text-neutral-900 mb-3">
                   Economic Context Driving AI Decisions
                 </h4>
                 <div className="flex flex-wrap gap-2">
@@ -611,7 +600,7 @@ export const Dashboard: React.FC = () => {
                     <button
                       key={index}
                       onClick={() => setSelectedKeyword(keyword)}
-                      className="px-3 py-1 rounded-full text-body-small font-medium bg-neutral-200 dark:bg-gray-700 hover:bg-neutral-900 dark:hover:bg-emerald-500 hover:text-white dark:hover:text-white text-neutral-700 dark:text-gray-300 transition-all duration-200 cursor-pointer border border-neutral-300 dark:border-gray-600"
+                      className="px-3 py-1 rounded-full text-body-small font-medium bg-neutral-200 hover:bg-neutral-300 text-neutral-700 hover:text-neutral-800 transition-colors cursor-pointer border border-neutral-300"
                     >
                       {keyword.term}
                     </button>
@@ -623,42 +612,42 @@ export const Dashboard: React.FC = () => {
 
           <div className="grid lg:grid-cols-2 gap-6 mb-8">
             {/* Fee Breakdown */}
-            <div className="bg-white dark:bg-dark-surface-primary rounded-lg shadow-elevation-1 dark:shadow-dark-elevation-1 border border-neutral-200 dark:border-dark-border-primary p-6">
+            <div className="bg-white rounded-lg shadow-elevation-1 border border-neutral-200 p-6">
               <div className="flex items-center gap-3 mb-4">
-                <Calculator className="w-5 h-5 text-neutral-700 dark:text-gray-300" />
-                <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 dark:text-dark-text-primary">
+                <Calculator className="w-5 h-5 text-neutral-700" />
+                <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900">
                   Fee Breakdown
                 </h3>
               </div>
               <div className="space-y-3">
                 <div className="flex justify-between">
-                  <span className="text-body-small text-neutral-600 dark:text-dark-text-secondary">
+                  <span className="text-body-small text-neutral-600">
                     Annual Rate
                   </span>
-                  <span className="text-body-small font-medium text-neutral-800 dark:text-dark-text-primary">
+                  <span className="text-body-small font-medium">
                     {portfolio.managementFee}%
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-body-small text-neutral-600 dark:text-dark-text-secondary">
+                  <span className="text-body-small text-neutral-600">
                     Monthly Fee
                   </span>
-                  <span className="text-body-small font-medium text-neutral-800 dark:text-dark-text-primary">
+                  <span className="text-body-small font-medium">
                     ${(portfolio.monthlyFee || 0).toFixed(2)}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-body-small text-neutral-600 dark:text-dark-text-secondary">
+                  <span className="text-body-small text-neutral-600">
                     Annual Fee
                   </span>
-                  <span className="text-body-small font-medium text-neutral-800 dark:text-dark-text-primary">
+                  <span className="text-body-small font-medium">
                     ${((portfolio.monthlyFee || 0) * 12).toFixed(2)}
                   </span>
                 </div>
-                <div className="pt-2 border-t border-neutral-200 dark:border-gray-600">
+                <div className="pt-2 border-t border-neutral-200">
                   <div className="flex items-start gap-2">
-                    <Info className="w-4 h-4 text-neutral-600 dark:text-gray-400 mt-0.5 flex-shrink-0" />
-                    <p className="text-body-small text-neutral-500 dark:text-dark-text-muted">
+                    <Info className="w-4 h-4 text-neutral-600 mt-0.5 flex-shrink-0" />
+                    <p className="text-body-small text-neutral-500">
                       Fees are calculated monthly based on your current
                       portfolio value and automatically deducted from your
                       account.
@@ -669,14 +658,14 @@ export const Dashboard: React.FC = () => {
             </div>
 
             {/* Your Market Insight */}
-            <div className="bg-white dark:bg-dark-surface-primary rounded-lg shadow-elevation-1 dark:shadow-dark-elevation-1 border border-neutral-200 dark:border-dark-border-primary p-6">
+            <div className="bg-white rounded-lg shadow-elevation-1 border border-neutral-200 p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 dark:text-dark-text-primary">
+                <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900">
                   Your Market Insight
                 </h3>
                 <button
                   onClick={() => setShowInsightForm(true)}
-                  className="p-2 bg-neutral-900 dark:bg-emerald-500 text-white rounded-lg hover:bg-neutral-800 dark:hover:bg-emerald-400 transition-colors"
+                  className="p-2 bg-neutral-900 text-white rounded-lg hover:bg-neutral-800 transition-colors"
                 >
                   <Plus className="w-4 h-4" />
                 </button>
@@ -684,12 +673,12 @@ export const Dashboard: React.FC = () => {
 
               {insights.length === 0 ? (
                 <div className="text-center py-8">
-                  <p className="text-body-medium text-neutral-500 dark:text-dark-text-muted mb-4">
+                  <p className="text-body-medium text-neutral-500 mb-4">
                     No insights added yet
                   </p>
                   <button
                     onClick={() => setShowInsightForm(true)}
-                    className="text-neutral-900 dark:text-emerald-400 hover:text-neutral-700 dark:hover:text-emerald-300 text-label-large font-medium"
+                    className="text-neutral-900 hover:text-neutral-700 text-label-large font-medium"
                   >
                     Add your first insight
                   </button>
@@ -699,29 +688,29 @@ export const Dashboard: React.FC = () => {
                   {insights.map((insight) => (
                     <div
                       key={insight.id}
-                      className="border border-neutral-200 dark:border-gray-600 rounded-lg p-4"
+                      className="border border-neutral-200 rounded-lg p-4"
                     >
                       <div className="flex items-start justify-between mb-2">
-                        <h4 className="text-label-large font-medium text-neutral-900 dark:text-dark-text-primary">
+                        <h4 className="text-label-large font-medium text-neutral-900">
                           {insight.title}
                         </h4>
-                        <span className="text-body-small text-neutral-500 dark:text-dark-text-muted">
+                        <span className="text-body-small text-neutral-500">
                           {insight.date}
                         </span>
                       </div>
-                      <p className="text-body-small text-neutral-600 dark:text-dark-text-secondary mb-2">
+                      <p className="text-body-small text-neutral-600 mb-2">
                         {insight.impact}
                       </p>
                       <a
                         href={insight.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-1 text-body-small text-neutral-900 dark:text-emerald-400 hover:text-neutral-700 dark:hover:text-emerald-300"
+                        className="flex items-center gap-1 text-body-small text-neutral-900 hover:text-neutral-700"
                       >
                         View Source <ExternalLink className="w-3 h-3" />
                       </a>
                       {insight.portfolioChange && (
-                        <div className="mt-2 p-2 bg-neutral-100 dark:bg-gray-700 rounded text-body-small text-neutral-700 dark:text-gray-300">
+                        <div className="mt-2 p-2 bg-neutral-100 rounded text-body-small text-neutral-700">
                           Portfolio rebalanced based on this insight
                         </div>
                       )}
@@ -736,7 +725,7 @@ export const Dashboard: React.FC = () => {
           <div className="flex justify-center">
             <button
               onClick={handleDeletePortfolio}
-              className="flex items-center gap-2 px-6 py-3 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 border border-red-300 dark:border-red-600 rounded-lg transition-colors"
+              className="flex items-center gap-2 px-6 py-3 text-red-600 hover:text-red-700 hover:bg-red-50 border border-red-300 rounded-lg transition-colors"
             >
               <Trash2 className="w-4 h-4" />
               <span className="text-body-medium">Delete Portfolio</span>
@@ -745,18 +734,18 @@ export const Dashboard: React.FC = () => {
 
           {/* Add Value Modal */}
           {showAddValueForm && (
-            <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center p-4 z-50">
-              <div className="bg-white dark:bg-dark-surface-primary rounded-lg p-6 w-full max-w-md shadow-elevation-3 dark:shadow-dark-elevation-3">
-                <h3 className="text-title-large font-headline font-semi-bold text-neutral-900 dark:text-dark-text-primary mb-4">
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+              <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-elevation-3">
+                <h3 className="text-title-large font-headline font-semi-bold text-neutral-900 mb-4">
                   Add Virtual Portfolio Value
                 </h3>
                 <form onSubmit={handleAddValue}>
                   <div className="mb-4">
-                    <label className="block text-label-large font-medium text-neutral-700 dark:text-dark-text-secondary mb-2">
+                    <label className="block text-label-large font-medium text-neutral-700 mb-2">
                       Virtual Investment Amount
                     </label>
                     <div className="relative">
-                      <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-500 dark:text-gray-400">
+                      <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-500">
                         $
                       </span>
                       <input
@@ -767,11 +756,11 @@ export const Dashboard: React.FC = () => {
                           setPortfolioValue(value);
                         }}
                         placeholder="10,000"
-                        className="w-full pl-8 pr-4 p-3 border border-neutral-300 dark:border-dark-border-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-neutral-500 dark:focus:ring-emerald-400 focus:border-transparent text-body-medium bg-white dark:bg-dark-surface-secondary text-neutral-900 dark:text-dark-text-primary"
+                        className="w-full pl-8 pr-4 p-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-transparent text-body-medium"
                         required
                       />
                     </div>
-                    <p className="text-body-small text-neutral-500 dark:text-dark-text-muted mt-1">
+                    <p className="text-body-small text-neutral-500 mt-1">
                       Enter the virtual amount you want to simulate investing in this portfolio
                     </p>
                   </div>
@@ -779,7 +768,7 @@ export const Dashboard: React.FC = () => {
                     <button
                       type="submit"
                       disabled={isAddingValue}
-                      className="flex-1 bg-neutral-900 dark:bg-emerald-500 text-white py-3 px-4 rounded-lg text-label-large font-medium hover:bg-neutral-800 dark:hover:bg-emerald-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                      className="flex-1 bg-neutral-900 text-white py-3 px-4 rounded-lg text-label-large font-medium hover:bg-neutral-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                     >
                       {isAddingValue && (
                         <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -790,7 +779,7 @@ export const Dashboard: React.FC = () => {
                       type="button"
                       onClick={() => setShowAddValueForm(false)}
                       disabled={isAddingValue}
-                      className="px-4 py-3 border border-neutral-300 dark:border-dark-border-primary rounded-lg hover:bg-neutral-100 dark:hover:bg-gray-700 transition-colors text-label-large disabled:opacity-50 disabled:cursor-not-allowed text-neutral-900 dark:text-dark-text-primary"
+                      className="px-4 py-3 border border-neutral-300 rounded-lg hover:bg-neutral-100 transition-colors text-label-large disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       Cancel
                     </button>
@@ -802,14 +791,14 @@ export const Dashboard: React.FC = () => {
 
           {/* Add Insight Modal */}
           {showInsightForm && (
-            <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center p-4 z-50">
-              <div className="bg-white dark:bg-dark-surface-primary rounded-lg p-6 w-full max-w-md shadow-elevation-3 dark:shadow-dark-elevation-3">
-                <h3 className="text-title-large font-headline font-semi-bold text-neutral-900 dark:text-dark-text-primary mb-4">
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+              <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-elevation-3">
+                <h3 className="text-title-large font-headline font-semi-bold text-neutral-900 mb-4">
                   Add Market Insight
                 </h3>
                 <form onSubmit={handleAddInsight}>
                   <div className="mb-4">
-                    <label className="block text-label-large font-medium text-neutral-700 dark:text-dark-text-secondary mb-2">
+                    <label className="block text-label-large font-medium text-neutral-700 mb-2">
                       Article or Report URL
                     </label>
                     <input
@@ -817,10 +806,10 @@ export const Dashboard: React.FC = () => {
                       value={insightUrl}
                       onChange={(e) => setInsightUrl(e.target.value)}
                       placeholder="https://example.com/market-analysis"
-                      className="w-full p-3 border border-neutral-300 dark:border-dark-border-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-neutral-500 dark:focus:ring-emerald-400 focus:border-transparent text-body-medium bg-white dark:bg-dark-surface-secondary text-neutral-900 dark:text-dark-text-primary"
+                      className="w-full p-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-transparent text-body-medium"
                       required
                     />
-                    <p className="text-body-small text-neutral-500 dark:text-dark-text-muted mt-1">
+                    <p className="text-body-small text-neutral-500 mt-1">
                       AI will analyze this content and suggest portfolio
                       adjustments
                     </p>
@@ -828,14 +817,14 @@ export const Dashboard: React.FC = () => {
                   <div className="flex gap-3">
                     <button
                       type="submit"
-                      className="flex-1 bg-neutral-900 dark:bg-emerald-500 text-white py-3 px-4 rounded-lg text-label-large font-medium hover:bg-neutral-800 dark:hover:bg-emerald-400 transition-colors"
+                      className="flex-1 bg-neutral-900 text-white py-3 px-4 rounded-lg text-label-large font-medium hover:bg-neutral-800 transition-colors"
                     >
                       Analyze Insight
                     </button>
                     <button
                       type="button"
                       onClick={() => setShowInsightForm(false)}
-                      className="px-4 py-3 border border-neutral-300 dark:border-dark-border-primary rounded-lg hover:bg-neutral-100 dark:hover:bg-gray-700 transition-colors text-label-large text-neutral-900 dark:text-dark-text-primary"
+                      className="px-4 py-3 border border-neutral-300 rounded-lg hover:bg-neutral-100 transition-colors text-label-large"
                     >
                       Cancel
                     </button>
@@ -847,39 +836,39 @@ export const Dashboard: React.FC = () => {
 
           {/* Keyword Detail Modal */}
           {selectedKeyword && (
-            <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center p-4 z-50">
-              <div className="bg-white dark:bg-dark-surface-primary rounded-lg p-6 w-full max-w-2xl shadow-elevation-3 dark:shadow-dark-elevation-3 max-h-[80vh] overflow-y-auto">
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+              <div className="bg-white rounded-lg p-6 w-full max-w-2xl shadow-elevation-3 max-h-[80vh] overflow-y-auto">
                 <div className="flex items-start justify-between mb-4">
                   <div>
-                    <h3 className="text-title-large font-headline font-semi-bold text-neutral-900 dark:text-dark-text-primary mb-2">
+                    <h3 className="text-title-large font-headline font-semi-bold text-neutral-900 mb-2">
                       {selectedKeyword.term}
                     </h3>
-                    <p className="text-body-medium text-neutral-600 dark:text-dark-text-secondary font-medium">
+                    <p className="text-body-medium text-neutral-600 font-medium">
                       {selectedKeyword.context}
                     </p>
                   </div>
                   <button
                     onClick={() => setSelectedKeyword(null)}
-                    className="p-2 hover:bg-neutral-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                    className="p-2 hover:bg-neutral-100 rounded-lg transition-colors"
                   >
-                    <X className="w-5 h-5 text-neutral-600 dark:text-gray-400" />
+                    <X className="w-5 h-5 text-neutral-600" />
                   </button>
                 </div>
 
                 <div className="space-y-4">
                   <div>
-                    <h4 className="text-label-large font-medium text-neutral-900 dark:text-dark-text-primary mb-2">
+                    <h4 className="text-label-large font-medium text-neutral-900 mb-2">
                       Detailed Analysis
                     </h4>
-                    <p className="text-body-medium text-neutral-700 dark:text-dark-text-secondary leading-relaxed">
+                    <p className="text-body-medium text-neutral-700 leading-relaxed">
                       {selectedKeyword.details}
                     </p>
                   </div>
 
-                  <div className="pt-4 border-t border-neutral-200 dark:border-gray-600">
+                  <div className="pt-4 border-t border-neutral-200">
                     <button
                       onClick={() => setSelectedKeyword(null)}
-                      className="w-full bg-neutral-900 dark:bg-emerald-500 text-white py-3 px-4 rounded-lg text-label-large font-medium hover:bg-neutral-800 dark:hover:bg-emerald-400 transition-colors"
+                      className="w-full bg-neutral-900 text-white py-3 px-4 rounded-lg text-label-large font-medium hover:bg-neutral-800 transition-colors"
                     >
                       Close
                     </button>

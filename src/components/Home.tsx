@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Plus, TrendingUp, AlertCircle } from "lucide-react";
 import { useInvestmentStore, Portfolio } from "../store/investmentStore";
-import { useThemeStore } from "../store/themeStore";
 
 export const Home: React.FC = () => {
   const {
@@ -13,7 +12,6 @@ export const Home: React.FC = () => {
     updatePortfolioBalance,
     setActivePortfolio,
   } = useInvestmentStore();
-  const { isDarkMode } = useThemeStore();
   const portfolios = portfoliosRaw as Portfolio[];
   const [selectedTimeframe, setSelectedTimeframe] = useState("All");
   const [showAddValueModal, setShowAddValueModal] = useState(false);
@@ -92,6 +90,26 @@ export const Home: React.FC = () => {
     setSelectedPortfolioForValue(null);
     setPortfolioValue("");
     setIsAddingValue(false);
+  };
+
+  const handleCardHover = (e: React.MouseEvent<HTMLDivElement>, isEntering: boolean) => {
+    const target = e.currentTarget;
+    if (isEntering) {
+      target.style.boxShadow = '0px 8px 24px 0px rgba(0, 0, 0, 0.15)';
+    } else {
+      target.style.boxShadow = '0px 1px 3px 0px rgba(0, 0, 0, 0.12)';
+    }
+  };
+
+  const handleAddCardHover = (e: React.MouseEvent<HTMLDivElement>, isEntering: boolean) => {
+    const target = e.currentTarget;
+    if (isEntering) {
+      target.style.boxShadow = '0px 8px 24px 0px rgba(0, 0, 0, 0.15)';
+      target.style.borderColor = '#9e9e9e';
+    } else {
+      target.style.boxShadow = '0px 1px 3px 0px rgba(0, 0, 0, 0.12)';
+      target.style.borderColor = '#e0e0e0';
+    }
   };
 
   // Calculate total portfolio value and average profit/loss percentage using real database data
@@ -205,14 +223,8 @@ export const Home: React.FC = () => {
       fillData = pathData + ` L400,128 L0,128 Z`;
     }
 
-    // Use brighter colors for dark mode
-    const strokeColor = isDarkMode 
-      ? (isPositive ? "#60A5FA" : "#F87171") // Bright blue/red for dark mode
-      : (isPositive ? "#044AA7" : "#f44336"); // Original colors for light mode
-    
-    const fillColor = isDarkMode 
-      ? (isPositive ? "#60A5FA" : "#F87171") // Bright blue/red for dark mode
-      : (isPositive ? "#044AA7" : "#f44336"); // Original colors for light mode
+    const strokeColor = isPositive ? "#044AA7" : "#f44336";
+    const fillColor = isPositive ? "#044AA7" : "#f44336";
 
     return (
       <div className="h-32 bg-gradient-to-b from-neutral-50/20 to-neutral-100/20 dark:from-gray-800/20 dark:to-gray-900/20 rounded-lg p-4 relative overflow-hidden">
@@ -232,7 +244,7 @@ export const Home: React.FC = () => {
               <stop
                 offset="0%"
                 stopColor={fillColor}
-                stopOpacity={isDarkMode ? "0.25" : "0.15"}
+                stopOpacity="0.15"
               />
               <stop
                 offset="100%"
@@ -255,8 +267,8 @@ export const Home: React.FC = () => {
               d={pathData}
               fill="none"
               stroke={strokeColor}
-              strokeWidth="2"
-              strokeOpacity={isDarkMode ? "0.8" : "0.3"}
+              strokeWidth="1.5"
+              strokeOpacity="0.3"
               className="transition-all duration-1000 ease-out"
             />
           )}
@@ -302,8 +314,8 @@ export const Home: React.FC = () => {
                       onClick={() => setSelectedTimeframe(timeframe)}
                       className={`px-4 py-2 rounded-full text-body-small font-medium transition-all ${
                         selectedTimeframe === timeframe
-                          ? "bg-neutral-900 dark:bg-emerald-500 text-white shadow-sm"
-                          : "text-neutral-600 dark:text-gray-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-200/50 dark:hover:bg-emerald-400/20"
+                          ? "bg-neutral-900 dark:bg-dark-text-accent text-white shadow-sm"
+                          : "text-neutral-600 dark:text-gray-400 hover:text-neutral-900 dark:hover:text-gray-200 hover:bg-neutral-200/50 dark:hover:bg-gray-700/50"
                       }`}
                     >
                       {timeframe}
@@ -338,7 +350,7 @@ export const Home: React.FC = () => {
           <div className="max-w-4xl mx-auto mb-8">
             <div className="bg-white dark:bg-dark-surface-primary border border-neutral-200 dark:border-dark-border-primary rounded-lg p-6 text-center">
               <div className="flex items-center justify-center gap-3">
-                <div className="w-5 h-5 border-2 border-neutral-300 dark:border-gray-600 border-t-neutral-900 dark:border-t-emerald-400 rounded-full animate-spin" />
+                <div className="w-5 h-5 border-2 border-neutral-300 dark:border-gray-600 border-t-neutral-900 dark:border-t-dark-text-accent rounded-full animate-spin" />
                 <span className="text-body-medium text-neutral-600 dark:text-dark-text-secondary">
                   Loading your portfolios...
                 </span>
@@ -355,7 +367,12 @@ export const Home: React.FC = () => {
               {portfolios.map((portfolioItem: Portfolio) => (
                 <div
                   key={portfolioItem.id}
-                  className="bg-white dark:bg-dark-surface-primary border border-neutral-200 dark:border-dark-border-primary rounded-xl shadow-elevation-1 dark:shadow-dark-elevation-1 overflow-hidden group flex flex-col transition-all duration-300 hover:transform hover:-translate-y-2 hover:shadow-elevation-4 dark:hover:shadow-dark-elevation-4 hover:border-neutral-300 dark:hover:border-emerald-400/50 cursor-pointer"
+                  className="bg-white dark:bg-dark-surface-primary border border-neutral-200 dark:border-dark-border-primary rounded-xl shadow-elevation-1 dark:shadow-dark-elevation-1 overflow-hidden group flex flex-col transition-all duration-300 hover:transform hover:-translate-y-2 cursor-pointer"
+                  style={{
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+                  }}
+                  onMouseEnter={(e) => handleCardHover(e, true)}
+                  onMouseLeave={(e) => handleCardHover(e, false)}
                   onClick={() => handleViewPortfolio(portfolioItem)}
                 >
                   {/* Card Header */}
@@ -413,7 +430,7 @@ export const Home: React.FC = () => {
                   <div className="px-6 pb-6">
                     <button
                       onClick={(e) => handleAddValue(portfolioItem, e)}
-                      className="w-full bg-neutral-100 dark:bg-gray-700 hover:bg-neutral-900 dark:hover:bg-emerald-500 hover:text-white dark:hover:text-white text-neutral-900 dark:text-dark-text-primary py-3 px-4 rounded-lg text-label-large font-medium transition-all duration-200"
+                      className="w-full bg-neutral-100 dark:bg-gray-700 hover:bg-neutral-200 dark:hover:bg-gray-600 text-neutral-900 dark:text-dark-text-primary py-3 px-4 rounded-lg text-label-large font-medium transition-colors"
                     >
                       Add Virtual Value
                     </button>
@@ -423,13 +440,20 @@ export const Home: React.FC = () => {
 
               {/* Add Portfolio Card */}
               {portfolios.length < 3 && (
-                <div className="bg-white dark:bg-dark-surface-primary border-2 border-dashed border-neutral-300 dark:border-dark-border-primary rounded-xl shadow-elevation-1 dark:shadow-dark-elevation-1 flex flex-col transition-all duration-300 hover:transform hover:-translate-y-2 hover:shadow-elevation-4 dark:hover:shadow-dark-elevation-4 hover:border-neutral-400 dark:hover:border-emerald-400 cursor-pointer">
+                <div 
+                  className="bg-white dark:bg-dark-surface-primary border-2 border-dashed border-neutral-300 dark:border-dark-border-primary rounded-xl shadow-elevation-1 dark:shadow-dark-elevation-1 flex flex-col transition-all duration-300 hover:transform hover:-translate-y-2 cursor-pointer"
+                  style={{
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+                  }}
+                  onMouseEnter={(e) => handleAddCardHover(e, true)}
+                  onMouseLeave={(e) => handleAddCardHover(e, false)}
+                >
                   <button
                     onClick={handleCreatePortfolio}
                     className="w-full h-full p-8 flex flex-col items-center justify-center text-center group flex-1"
                   >
-                    <div className="w-16 h-16 rounded-full bg-neutral-100 dark:bg-gray-700 group-hover:bg-neutral-900 dark:group-hover:bg-emerald-500 flex items-center justify-center mx-auto mb-4 transition-all duration-200">
-                      <Plus className="w-8 h-8 text-neutral-600 dark:text-gray-400 group-hover:text-white dark:group-hover:text-white transition-colors" />
+                    <div className="w-16 h-16 rounded-full bg-neutral-100 dark:bg-gray-700 group-hover:bg-neutral-200 dark:group-hover:bg-gray-600 flex items-center justify-center mx-auto mb-4 transition-colors">
+                      <Plus className="w-8 h-8 text-neutral-600 dark:text-gray-400 group-hover:text-neutral-700 dark:group-hover:text-gray-300 transition-colors" />
                     </div>
                     <h3 className="text-title-large font-headline font-medium text-neutral-900 dark:text-dark-text-primary mb-2">
                       Add Portfolio
@@ -447,13 +471,20 @@ export const Home: React.FC = () => {
           ) : (
             /* First Portfolio Card */
             <div className="max-w-md mx-auto">
-              <div className="bg-white dark:bg-dark-surface-primary border border-neutral-200 dark:border-dark-border-primary rounded-xl shadow-elevation-1 dark:shadow-dark-elevation-1 transition-all duration-300 hover:transform hover:-translate-y-2 hover:shadow-elevation-4 dark:hover:shadow-dark-elevation-4 hover:border-neutral-300 dark:hover:border-emerald-400/50 cursor-pointer">
+              <div 
+                className="bg-white dark:bg-dark-surface-primary border border-neutral-200 dark:border-dark-border-primary rounded-xl shadow-elevation-1 dark:shadow-dark-elevation-1 transition-all duration-300 hover:transform hover:-translate-y-2 cursor-pointer"
+                style={{
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+                }}
+                onMouseEnter={(e) => handleCardHover(e, true)}
+                onMouseLeave={(e) => handleCardHover(e, false)}
+              >
                 <button
                   onClick={handleCreatePortfolio}
                   className="w-full p-8 text-center group"
                 >
-                  <div className="w-20 h-20 rounded-full bg-neutral-100 dark:bg-gray-700 group-hover:bg-neutral-900 dark:group-hover:bg-emerald-500 flex items-center justify-center mx-auto mb-4 transition-all duration-200">
-                    <Plus className="w-10 h-10 text-neutral-600 dark:text-gray-400 group-hover:text-white dark:group-hover:text-white transition-colors" />
+                  <div className="w-20 h-20 rounded-full bg-neutral-100 dark:bg-gray-700 group-hover:bg-neutral-200 dark:group-hover:bg-gray-600 flex items-center justify-center mx-auto mb-4 transition-colors">
+                    <Plus className="w-10 h-10 text-neutral-600 dark:text-gray-400 group-hover:text-neutral-700 dark:group-hover:text-gray-300 transition-colors" />
                   </div>
                   <h3 className="text-headline-medium font-headline font-medium mb-3 text-neutral-900 dark:text-dark-text-primary">
                     Add a Portfolio
@@ -498,7 +529,7 @@ export const Home: React.FC = () => {
                       setPortfolioValue(value);
                     }}
                     placeholder="10,000"
-                    className="w-full pl-8 pr-4 p-3 border border-neutral-300 dark:border-dark-border-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-neutral-500 dark:focus:ring-emerald-400 focus:border-transparent text-body-medium bg-white dark:bg-dark-surface-secondary text-neutral-900 dark:text-dark-text-primary"
+                    className="w-full pl-8 pr-4 p-3 border border-neutral-300 dark:border-dark-border-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-neutral-500 dark:focus:ring-dark-text-accent focus:border-transparent text-body-medium bg-white dark:bg-dark-surface-secondary text-neutral-900 dark:text-dark-text-primary"
                     required
                     disabled={isAddingValue}
                   />
@@ -511,7 +542,7 @@ export const Home: React.FC = () => {
                 <button
                   type="submit"
                   disabled={isAddingValue}
-                  className="flex-1 bg-neutral-900 dark:bg-emerald-500 text-white py-3 px-4 rounded-lg text-label-large font-medium hover:bg-neutral-800 dark:hover:bg-emerald-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="flex-1 bg-neutral-900 dark:bg-dark-text-accent text-white py-3 px-4 rounded-lg text-label-large font-medium hover:bg-neutral-800 dark:hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {isAddingValue && (
                     <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -522,7 +553,7 @@ export const Home: React.FC = () => {
                   type="button"
                   disabled={isAddingValue}
                   onClick={handleCloseModal}
-                  className="px-4 py-3 border border-neutral-300 dark:border-dark-border-primary rounded-lg hover:bg-neutral-100 dark:hover:bg-gray-600 transition-colors text-label-large disabled:opacity-50 disabled:cursor-not-allowed text-neutral-900 dark:text-dark-text-primary"
+                  className="px-4 py-3 border border-neutral-300 dark:border-dark-border-primary rounded-lg hover:bg-neutral-100 dark:hover:bg-gray-700 transition-colors text-label-large disabled:opacity-50 disabled:cursor-not-allowed text-neutral-900 dark:text-dark-text-primary"
                 >
                   Cancel
                 </button>
@@ -541,7 +572,7 @@ export const Home: React.FC = () => {
             <div className="relative w-fit mx-auto mb-6 h-24">
               {/* Main Icon Circle - Monochrome Glass Style */}
               <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md border border-neutral-200/50 dark:border-gray-600/50 rounded-full shadow-lg flex items-center justify-center z-10">
-                <div className="w-8 h-8 bg-neutral-900 dark:bg-emerald-500 rounded-sm flex items-center justify-center">
+                <div className="w-8 h-8 bg-neutral-900 dark:bg-dark-text-accent rounded-sm flex items-center justify-center">
                   <div className="w-5 h-5 text-white flex items-center justify-center">
                     <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
                       <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
@@ -572,7 +603,7 @@ export const Home: React.FC = () => {
             <div className="relative w-fit mx-auto mb-6 h-24">
               {/* Main Icon Circle - Monochrome Glass Style */}
               <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md border border-neutral-200/50 dark:border-gray-600/50 rounded-full shadow-lg flex items-center justify-center z-10">
-                <div className="w-8 h-8 bg-neutral-900 dark:bg-emerald-500 rounded-sm flex items-center justify-center">
+                <div className="w-8 h-8 bg-neutral-900 dark:bg-dark-text-accent rounded-sm flex items-center justify-center">
                   <div className="w-5 h-5 text-white flex items-center justify-center">
                     <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
                       <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
@@ -603,7 +634,7 @@ export const Home: React.FC = () => {
             <div className="relative w-fit mx-auto mb-6 h-24">
               {/* Main Icon Circle - Simple CPU/Processor Icon */}
               <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md border border-neutral-200/50 dark:border-gray-600/50 rounded-full shadow-lg flex items-center justify-center z-10">
-                <div className="w-8 h-8 bg-neutral-900 dark:bg-emerald-500 rounded-sm flex items-center justify-center">
+                <div className="w-8 h-8 bg-neutral-900 dark:bg-dark-text-accent rounded-sm flex items-center justify-center">
                   <div className="w-5 h-5 text-white flex items-center justify-center">
                     {/* Simple CPU/Processor Icon */}
                     <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
