@@ -15,7 +15,7 @@ import { GrowthGraphTest } from './components/GrowthGraphTest';
 function App() {
   const { currentStep, setCurrentStep, portfolio, loadUserPortfolios } = useInvestmentStore();
   const { isAuthenticated, checkAuthStatus, user, isLoading } = useAuthStore();
-  const { isDarkMode, setDarkMode } = useThemeStore();
+  const { setDarkMode } = useThemeStore();
 
   // Initialize theme on app load
   useEffect(() => {
