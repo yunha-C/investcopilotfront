@@ -183,9 +183,13 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
     <div className="min-h-screen flex items-center justify-center px-4 py-8 relative z-10">
       <div className="w-full max-w-md">
         <div className="text-center mb-6">
-          <h1 className="text-headline-large font-headline font-semi-bold text-neutral-900 mb-2">
-            aivestie
-          </h1>
+          <div className="flex justify-center mb-4">
+            <img 
+              src="/vestie logo v1.png" 
+              alt="Vestie" 
+              className="h-12 w-auto"
+            />
+          </div>
           <p className="text-body-large text-neutral-600">
             Investment agent powered by AI
           </p>
