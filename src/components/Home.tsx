@@ -1,5 +1,4 @@
-<parameter name="filePath">src/components/Home.tsx</parameter>
-<parameter name="content">import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Plus, TrendingUp, ArrowRight, AlertCircle } from "lucide-react";
 import { useInvestmentStore, Portfolio } from "../store/investmentStore";
 
@@ -636,5 +635,4 @@ export const Home: React.FC = () => {
       </div>
     </div>
   );
-};</parameter>
-</invoke>
+};

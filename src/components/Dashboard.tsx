@@ -1,5 +1,4 @@
-<parameter name="filePath">src/components/Dashboard.tsx</parameter>
-<parameter name="content">import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   TrendingUp,
   Plus,
@@ -882,5 +881,4 @@ export const Dashboard: React.FC = () => {
       </div>
     </div>
   );
-};</parameter>
-</invoke>
+};
