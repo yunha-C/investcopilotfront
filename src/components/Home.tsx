@@ -347,7 +347,17 @@ export const Home: React.FC = () => {
               {portfolios.map((portfolioItem: Portfolio) => (
                 <div
                   key={portfolioItem.id}
-                  className="bg-white border border-neutral-200 rounded-xl shadow-elevation-1 overflow-hidden group hover:shadow-elevation-2 transition-all duration-200 flex flex-col"
+                  className="bg-white border border-neutral-200 rounded-xl shadow-elevation-1 overflow-hidden group flex flex-col transition-all duration-300 hover:transform hover:-translate-y-2 cursor-pointer"
+                  style={{
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.boxShadow = '0px 8px 24px 0px rgba(0, 0, 0, 0.15)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.boxShadow = '0px 1px 3px 0px rgba(0, 0, 0, 0.12)';
+                  }}
+                  onClick={() => handleViewPortfolio(portfolioItem)}
                 >
                   {/* Card Header */}
                   <div className="p-6 pb-4 flex-1">
@@ -366,7 +376,10 @@ export const Home: React.FC = () => {
                       </div>
                       <div className="flex items-center gap-1">
                         <button
-                          onClick={() => handleViewPortfolio(portfolioItem)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleViewPortfolio(portfolioItem);
+                          }}
                           className="p-2 text-neutral-400 hover:text-neutral-600 hover:bg-neutral-50 rounded-lg transition-colors"
                           title="View portfolio"
                         >
@@ -423,7 +436,20 @@ export const Home: React.FC = () => {
 
               {/* Add Portfolio Card */}
               {portfolios.length < 3 && (
-                <div className="bg-white border-2 border-dashed border-neutral-300 rounded-xl shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-200 flex flex-col">
+                <div 
+                  className="bg-white border-2 border-dashed border-neutral-300 rounded-xl shadow-elevation-1 flex flex-col transition-all duration-300 hover:transform hover:-translate-y-2 cursor-pointer"
+                  style={{
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.boxShadow = '0px 8px 24px 0px rgba(0, 0, 0, 0.15)';
+                    e.currentTarget.style.borderColor = '#9e9e9e';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.boxShadow = '0px 1px 3px 0px rgba(0, 0, 0, 0.12)';
+                    e.currentTarget.style.borderColor = '#e0e0e0';
+                  }}
+                >
                   <button
                     onClick={handleCreatePortfolio}
                     className="w-full h-full p-8 flex flex-col items-center justify-center text-center group flex-1"
@@ -447,7 +473,18 @@ export const Home: React.FC = () => {
           ) : (
             /* First Portfolio Card */
             <div className="max-w-md mx-auto">
-              <div className="bg-white border border-neutral-200 rounded-xl shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-200">
+              <div 
+                className="bg-white border border-neutral-200 rounded-xl shadow-elevation-1 transition-all duration-300 hover:transform hover:-translate-y-2 cursor-pointer"
+                style={{
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.boxShadow = '0px 8px 24px 0px rgba(0, 0, 0, 0.15)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow = '0px 1px 3px 0px rgba(0, 0, 0, 0.12)';
+                }}
+              >
                 <button
                   onClick={handleCreatePortfolio}
                   className="w-full p-8 text-center group"
