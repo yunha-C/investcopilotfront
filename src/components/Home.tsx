@@ -436,8 +436,8 @@ export const Home: React.FC = () => {
           <div className="text-center relative">
             {/* Floating Elements Container */}
             <div className="relative w-fit mx-auto mb-6 h-24">
-              {/* Main Icon Circle */}
-              <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-white rounded-full shadow-elevation-2 flex items-center justify-center z-10">
+              {/* Main Icon Circle - iOS Liquid Glass Style */}
+              <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-white/80 backdrop-blur-sm border border-neutral-200 rounded-full shadow-elevation-2 flex items-center justify-center z-10">
                 <div className="w-8 h-8 bg-neutral-900 rounded-sm flex items-center justify-center">
                   <div className="grid grid-cols-3 gap-0.5">
                     <div className="w-1 h-1 bg-white rounded-full"></div>
@@ -453,17 +453,17 @@ export const Home: React.FC = () => {
                 </div>
               </div>
 
-              {/* Floating Elements */}
-              <div className="absolute -top-2 -left-4 w-8 h-8 bg-white rounded-full shadow-elevation-1 flex items-center justify-center opacity-80">
+              {/* Floating Elements - iOS Liquid Glass Style */}
+              <div className="absolute -top-2 -left-4 w-8 h-8 bg-white/80 backdrop-blur-sm border border-neutral-200 rounded-full shadow-elevation-1 flex items-center justify-center opacity-80">
                 <div className="w-3 h-3 bg-neutral-200 rounded-full"></div>
               </div>
-              <div className="absolute -top-1 right-2 w-6 h-6 bg-white rounded-full shadow-elevation-1 flex items-center justify-center opacity-60">
+              <div className="absolute -top-1 right-2 w-6 h-6 bg-white/80 backdrop-blur-sm border border-neutral-200 rounded-full shadow-elevation-1 flex items-center justify-center opacity-60">
                 <div className="w-2 h-2 bg-neutral-300 rounded-full"></div>
               </div>
-              <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-white rounded-full shadow-elevation-1 flex items-center justify-center opacity-70">
+              <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-white/80 backdrop-blur-sm border border-neutral-200 rounded-full shadow-elevation-1 flex items-center justify-center opacity-70">
                 <div className="w-4 h-4 bg-neutral-100 rounded-full"></div>
               </div>
-              <div className="absolute bottom-0 -left-6 w-4 h-4 bg-white rounded-full shadow-elevation-1 opacity-50"></div>
+              <div className="absolute bottom-0 -left-6 w-4 h-4 bg-white/80 backdrop-blur-sm border border-neutral-200 rounded-full shadow-elevation-1 opacity-50"></div>
             </div>
 
             <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-3">
@@ -479,8 +479,8 @@ export const Home: React.FC = () => {
           <div className="text-center relative">
             {/* Floating Elements Container */}
             <div className="relative w-fit mx-auto mb-6 h-24">
-              {/* Main Icon Circle */}
-              <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-white rounded-full shadow-elevation-2 flex items-center justify-center z-10">
+              {/* Main Icon Circle - iOS Liquid Glass Style */}
+              <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-white/80 backdrop-blur-sm border border-neutral-200 rounded-full shadow-elevation-2 flex items-center justify-center z-10">
                 <div className="w-8 h-8 bg-neutral-900 rounded-sm flex items-center justify-center">
                   <div className="w-5 h-5 text-white flex items-center justify-center">
                     <svg
@@ -494,17 +494,17 @@ export const Home: React.FC = () => {
                 </div>
               </div>
 
-              {/* Floating Elements - Brain/AI themed */}
-              <div className="absolute -top-3 -left-2 w-6 h-6 bg-white rounded-full shadow-elevation-1 flex items-center justify-center opacity-80">
+              {/* Floating Elements - Brain/AI themed - iOS Liquid Glass Style */}
+              <div className="absolute -top-3 -left-2 w-6 h-6 bg-white/80 backdrop-blur-sm border border-neutral-200 rounded-full shadow-elevation-1 flex items-center justify-center opacity-80">
                 <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
               </div>
-              <div className="absolute top-1 right-0 w-8 h-8 bg-white rounded-full shadow-elevation-1 flex items-center justify-center opacity-70">
+              <div className="absolute top-1 right-0 w-8 h-8 bg-white/80 backdrop-blur-sm border border-neutral-200 rounded-full shadow-elevation-1 flex items-center justify-center opacity-70">
                 <div className="w-3 h-3 bg-green-400 rounded-full"></div>
               </div>
-              <div className="absolute -bottom-1 -right-4 w-5 h-5 bg-white rounded-full shadow-elevation-1 flex items-center justify-center opacity-60">
+              <div className="absolute -bottom-1 -right-4 w-5 h-5 bg-white/80 backdrop-blur-sm border border-neutral-200 rounded-full shadow-elevation-1 flex items-center justify-center opacity-60">
                 <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
               </div>
-              <div className="absolute bottom-2 -left-5 w-7 h-7 bg-white rounded-full shadow-elevation-1 flex items-center justify-center opacity-50">
+              <div className="absolute bottom-2 -left-5 w-7 h-7 bg-white/80 backdrop-blur-sm border border-neutral-200 rounded-full shadow-elevation-1 flex items-center justify-center opacity-50">
                 <div className="w-3 h-3 bg-orange-400 rounded-full"></div>
               </div>
             </div>
@@ -522,8 +522,8 @@ export const Home: React.FC = () => {
           <div className="text-center relative">
             {/* Floating Elements Container */}
             <div className="relative w-fit mx-auto mb-6 h-24">
-              {/* Main Icon Circle */}
-              <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-white rounded-full shadow-elevation-2 flex items-center justify-center z-10">
+              {/* Main Icon Circle - iOS Liquid Glass Style */}
+              <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-white/80 backdrop-blur-sm border border-neutral-200 rounded-full shadow-elevation-2 flex items-center justify-center z-10">
                 <div className="w-8 h-8 bg-neutral-900 rounded-sm flex items-center justify-center">
                   <div className="w-5 h-5 text-white flex items-center justify-center">
                     <svg
@@ -541,17 +541,17 @@ export const Home: React.FC = () => {
                 </div>
               </div>
 
-              {/* Floating Elements - Network/Connection themed */}
-              <div className="absolute -top-2 left-0 w-7 h-7 bg-white rounded-full shadow-elevation-1 flex items-center justify-center opacity-70">
+              {/* Floating Elements - Network/Connection themed - iOS Liquid Glass Style */}
+              <div className="absolute -top-2 left-0 w-7 h-7 bg-white/80 backdrop-blur-sm border border-neutral-200 rounded-full shadow-elevation-1 flex items-center justify-center opacity-70">
                 <div className="w-3 h-3 bg-neutral-200 rounded-full"></div>
               </div>
-              <div className="absolute top-0 -right-3 w-5 h-5 bg-white rounded-full shadow-elevation-1 flex items-center justify-center opacity-80">
+              <div className="absolute top-0 -right-3 w-5 h-5 bg-white/80 backdrop-blur-sm border border-neutral-200 rounded-full shadow-elevation-1 flex items-center justify-center opacity-80">
                 <div className="w-2 h-2 bg-neutral-300 rounded-full"></div>
               </div>
-              <div className="absolute -bottom-3 right-1 w-9 h-9 bg-white rounded-full shadow-elevation-1 flex items-center justify-center opacity-60">
+              <div className="absolute -bottom-3 right-1 w-9 h-9 bg-white/80 backdrop-blur-sm border border-neutral-200 rounded-full shadow-elevation-1 flex items-center justify-center opacity-60">
                 <div className="w-4 h-4 bg-neutral-100 rounded-full"></div>
               </div>
-              <div className="absolute bottom-1 -left-4 w-6 h-6 bg-white rounded-full shadow-elevation-1 flex items-center justify-center opacity-50">
+              <div className="absolute bottom-1 -left-4 w-6 h-6 bg-white/80 backdrop-blur-sm border border-neutral-200 rounded-full shadow-elevation-1 flex items-center justify-center opacity-50">
                 <div className="w-2 h-2 bg-neutral-400 rounded-full"></div>
               </div>
 
