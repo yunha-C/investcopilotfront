@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useInvestmentStore } from './store/investmentStore';
 import { useAuthStore } from './store/authStore';
+import { useThemeStore } from './store/themeStore';
 import { Header } from './components/Header';
 import { AuthPage } from './components/AuthPage';
 import { Questionnaire } from './components/Questionnaire';
@@ -14,6 +15,13 @@ import { GrowthGraphTest } from './components/GrowthGraphTest';
 function App() {
   const { currentStep, setCurrentStep, portfolio, loadUserPortfolios } = useInvestmentStore();
   const { isAuthenticated, checkAuthStatus, user, isLoading } = useAuthStore();
+  const { isDarkMode, setDarkMode } = useThemeStore();
+
+  // Initialize theme on app load
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('vestie_dark_mode') === 'true';
+    setDarkMode(savedTheme);
+  }, [setDarkMode]);
 
   // Check authentication status on app load
   useEffect(() => {
@@ -88,8 +96,8 @@ function App() {
         {isLoading ? (
           <div className="min-h-screen flex items-center justify-center">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-              <p className="text-gray-600">Loading...</p>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-blue-400 mx-auto mb-4"></div>
+              <p className="text-gray-600 dark:text-gray-400">Loading...</p>
             </div>
           </div>
         ) : !isAuthenticated ? (

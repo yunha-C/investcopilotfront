@@ -1,6 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
@@ -36,6 +37,34 @@ export default {
           300: '#eeeeee',
           400: '#e0e0e0',
           500: '#bdbdbd',
+        },
+        // Dark mode colors based on the provided image
+        dark: {
+          // Background colors (darkest to lighter)
+          bg: {
+            primary: '#0a0a0a',    // Main background
+            secondary: '#1a1a1a',  // Card backgrounds
+            tertiary: '#2a2a2a',   // Elevated surfaces
+          },
+          // Text colors
+          text: {
+            primary: '#ffffff',    // Main text
+            secondary: '#b3b3b3',  // Secondary text
+            muted: '#808080',      // Muted text
+            accent: '#4d9eff',     // Accent text (blue)
+          },
+          // Border colors
+          border: {
+            primary: '#333333',    // Main borders
+            secondary: '#404040',  // Secondary borders
+            accent: '#4d9eff',     // Accent borders
+          },
+          // Surface colors for cards, modals, etc.
+          surface: {
+            primary: '#1a1a1a',   // Card surfaces
+            secondary: '#2a2a2a',  // Elevated surfaces
+            tertiary: '#333333',   // Higher elevation
+          }
         },
         // Semantic colors
         positive: '#4caf50', // Green
@@ -109,6 +138,12 @@ export default {
         'elevation-3': '0px 4px 8px 0px rgba(0, 0, 0, 0.12)',
         'elevation-4': '0px 6px 12px 0px rgba(0, 0, 0, 0.15)',
         'elevation-5': '0px 8px 16px 0px rgba(0, 0, 0, 0.15)',
+        // Dark mode shadows
+        'dark-elevation-1': '0px 1px 3px 0px rgba(0, 0, 0, 0.3)',
+        'dark-elevation-2': '0px 2px 6px 0px rgba(0, 0, 0, 0.3)',
+        'dark-elevation-3': '0px 4px 8px 0px rgba(0, 0, 0, 0.3)',
+        'dark-elevation-4': '0px 6px 12px 0px rgba(0, 0, 0, 0.4)',
+        'dark-elevation-5': '0px 8px 16px 0px rgba(0, 0, 0, 0.4)',
       }
     },
   },
