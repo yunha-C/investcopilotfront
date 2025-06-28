@@ -62,7 +62,6 @@ export const GrowthGraphTest: React.FC = () => {
           currentDate.setDate(startDate.getDate() + i);
           
           // Simulate daily fluctuations with overall upward trend
-          const dailyGrowth = (Math.random() - 0.4) * 1.5; // -0.6% to +0.9% daily variation
           const trendGrowth = (i / (numDays - 1)) * 2.1; // Overall 2.1% growth over the week
           const cumulativeGrowth = trendGrowth + (Math.random() - 0.5) * 0.8;
           const value = baseValue * (1 + cumulativeGrowth / 100);
@@ -89,7 +88,6 @@ export const GrowthGraphTest: React.FC = () => {
           currentDate.setDate(startDate.getDate() + i);
           
           // Simulate daily fluctuations with monthly trend
-          const dailyGrowth = (Math.random() - 0.45) * 2.0; // More volatility over longer period
           const trendGrowth = (i / (numDays - 1)) * 4.8; // Overall 4.8% growth over the month
           const cumulativeGrowth = trendGrowth + (Math.random() - 0.5) * 1.2;
           const value = baseValue * (1 + cumulativeGrowth / 100);
@@ -119,7 +117,6 @@ export const GrowthGraphTest: React.FC = () => {
           currentDate.setDate(startDate.getDate() + i);
           
           // Simulate daily fluctuations with 6-month trend
-          const dailyGrowth = (Math.random() - 0.48) * 2.5;
           const trendGrowth = (i / (numDays - 1)) * 12.5; // Overall 12.5% growth over 6 months
           const cumulativeGrowth = trendGrowth + (Math.random() - 0.5) * 2.0;
           const value = baseValue * (1 + cumulativeGrowth / 100);
@@ -149,7 +146,6 @@ export const GrowthGraphTest: React.FC = () => {
           currentDate.setDate(startDate.getDate() + i);
           
           // Simulate daily fluctuations with yearly trend
-          const dailyGrowth = (Math.random() - 0.5) * 3.0;
           const trendGrowth = (i / (numDays - 1)) * 18.2; // Overall 18.2% growth over the year
           const cumulativeGrowth = trendGrowth + (Math.random() - 0.5) * 3.5;
           const value = baseValue * (1 + cumulativeGrowth / 100);
@@ -179,7 +175,6 @@ export const GrowthGraphTest: React.FC = () => {
           currentDate.setDate(startDate.getDate() + i);
           
           // Simulate daily fluctuations with 5-year trend
-          const dailyGrowth = (Math.random() - 0.5) * 4.0;
           const trendGrowth = (i / (numDays - 1)) * 45.8; // Overall 45.8% growth over 5 years
           const cumulativeGrowth = trendGrowth + (Math.random() - 0.5) * 8.0;
           const value = baseValue * (1 + cumulativeGrowth / 100);
