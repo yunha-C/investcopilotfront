@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+<parameter name="filePath">src/components/Home.tsx</parameter>
+<parameter name="content">import React, { useEffect, useState } from "react";
 import { Plus, TrendingUp, ArrowRight, AlertCircle } from "lucide-react";
 import { useInvestmentStore, Portfolio } from "../store/investmentStore";
 
@@ -601,17 +602,16 @@ export const Home: React.FC = () => {
           <div className="text-center relative">
             {/* Floating Elements Container */}
             <div className="relative w-fit mx-auto mb-6 h-24">
-              {/* Main Icon Circle - Custom AI Brain Icon */}
+              {/* Main Icon Circle - Simple CPU/Processor Icon */}
               <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-white/90 backdrop-blur-md border border-neutral-200/50 rounded-full shadow-lg flex items-center justify-center z-10">
                 <div className="w-8 h-8 bg-neutral-900 rounded-sm flex items-center justify-center">
                   <div className="w-5 h-5 text-white flex items-center justify-center">
-                    {/* Custom AI Brain Icon */}
+                    {/* Simple CPU/Processor Icon */}
                     <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-                      <path d="M12 2C8.5 2 5.7 4.6 5.2 8c-.3.2-.5.5-.7.8C3.8 9.1 3 10 3 11.1c0 .8.4 1.5 1 1.9-.1.3-.1.7-.1 1 0 2.8 2.2 5 5 5h2c2.8 0 5-2.2 5-5 0-.3 0-.7-.1-1 .6-.4 1-1.1 1-1.9 0-1.1-.8-2-1.5-2.3-.2-.3-.4-.6-.7-.8C18.3 4.6 15.5 2 12 2zm0 2c2.8 0 5 2.2 5 5 0 .3 0 .7-.1 1-.6-.4-1.3-.6-2-.6-.8 0-1.5.3-2 .8-.5-.5-1.2-.8-2-.8s-1.5.3-2 .8c-.5-.5-1.2-.8-2-.8-.7 0-1.4.2-2 .6C4.9 9.7 4.9 9.3 4.9 9c0-2.8 2.2-5 5-5z"/>
-                      <circle cx="8" cy="12" r="1"/>
-                      <circle cx="12" cy="12" r="1"/>
-                      <circle cx="16" cy="12" r="1"/>
-                      <path d="M7 15c.5.8 1.2 1.5 2 2h6c.8-.5 1.5-1.2 2-2"/>
+                      <path d="M5 7h14v10H5V7zm2 2v6h10V9H7z"/>
+                      <path d="M9 11h6v2H9v-2z"/>
+                      <path d="M10 2v3h4V2h-4zm0 17v3h4v-3h-4z"/>
+                      <path d="M2 10v4h3v-4H2zm17 0v4h3v-4h-3z"/>
                     </svg>
                   </div>
                 </div>
@@ -636,4 +636,5 @@ export const Home: React.FC = () => {
       </div>
     </div>
   );
-};
+};</parameter>
+</invoke>

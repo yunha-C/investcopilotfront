@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+<parameter name="filePath">src/components/Dashboard.tsx</parameter>
+<parameter name="content">import React, { useState, useEffect } from "react";
 import {
   TrendingUp,
   Plus,
@@ -657,11 +658,11 @@ export const Dashboard: React.FC = () => {
               </div>
             </div>
 
-            {/* Market Insights */}
+            {/* Your Market Insight */}
             <div className="bg-white rounded-lg shadow-elevation-1 border border-neutral-200 p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900">
-                  Market Insights
+                  Your Market Insight
                 </h3>
                 <button
                   onClick={() => setShowInsightForm(true)}
@@ -881,4 +882,5 @@ export const Dashboard: React.FC = () => {
       </div>
     </div>
   );
-};
+};</parameter>
+</invoke>
