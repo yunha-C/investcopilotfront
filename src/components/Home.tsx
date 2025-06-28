@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Plus, TrendingUp, ArrowRight, AlertCircle } from "lucide-react";
+import { Plus, TrendingUp, AlertCircle } from "lucide-react";
 import { useInvestmentStore, Portfolio } from "../store/investmentStore";
 
 export const Home: React.FC = () => {
@@ -373,18 +373,6 @@ export const Home: React.FC = () => {
                           <span>•</span>
                           <span>{portfolioItem.riskScore || 3}/5</span>
                         </div>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleViewPortfolio(portfolioItem);
-                          }}
-                          className="p-2 text-neutral-400 hover:text-neutral-600 hover:bg-neutral-50 rounded-lg transition-colors"
-                          title="View portfolio"
-                        >
-                          <ArrowRight className="w-4 h-4" />
-                        </button>
                       </div>
                     </div>
 
