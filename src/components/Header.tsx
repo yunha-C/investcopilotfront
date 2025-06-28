@@ -20,7 +20,7 @@ export const Header: React.FC = () => {
             alt="Vestie" 
             className="h-4 w-auto"
             style={{
-              filter: 'brightness(0) saturate(100%) invert(4%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(96%) contrast(100%)'
+              filter: 'brightness(0) saturate(100%) invert(4%) sepia(6%) saturate(1%) hue-rotate(314deg) brightness(96%) contrast(96%)'
             }}
           />
         </div>
