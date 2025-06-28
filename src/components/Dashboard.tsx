@@ -600,7 +600,7 @@ export const Dashboard: React.FC = () => {
                     <button
                       key={index}
                       onClick={() => setSelectedKeyword(keyword)}
-                      className="px-3 py-1 rounded-full text-body-small font-medium bg-blue-600 hover:bg-blue-700 text-white transition-colors cursor-pointer"
+                      className="px-3 py-1 rounded-full text-body-small font-medium bg-neutral-200 hover:bg-neutral-300 text-neutral-700 hover:text-neutral-800 transition-colors cursor-pointer border border-neutral-300"
                     >
                       {keyword.term}
                     </button>
