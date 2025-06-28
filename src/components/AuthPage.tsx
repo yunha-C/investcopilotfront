@@ -183,7 +183,15 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
     <div className="min-h-screen flex items-center justify-center px-4 py-8 relative z-10">
       <div className="w-full max-w-md">
         <div className="text-center mb-6">
-          <div className="flex justify-center mb-4">
+          <div className="flex justify-center items-center gap-2 mb-4">
+            <img 
+              src="/logo 2.png" 
+              alt="Logo" 
+              className="h-6 w-auto"
+              style={{
+                filter: 'brightness(0) saturate(100%) invert(4%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(96%) contrast(100%)'
+              }}
+            />
             <img 
               src="/vestie logo v1.png" 
               alt="Vestie" 

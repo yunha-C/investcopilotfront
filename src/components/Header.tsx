@@ -14,7 +14,15 @@ export const Header: React.FC = () => {
   return (
     <header className="bg-gradient-to-br from-white/50 via-white/30 to-white/20 backdrop-blur-sm px-4 py-2">
       <div className="max-w-6xl mx-auto flex items-center justify-between">
-        <div className="flex items-center">
+        <div className="flex items-center gap-2">
+          <img 
+            src="/logo 2.png" 
+            alt="Logo" 
+            className="h-4 w-auto"
+            style={{
+              filter: 'brightness(0) saturate(100%) invert(4%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(96%) contrast(100%)'
+            }}
+          />
           <img 
             src="/vestie logo v1.png" 
             alt="Vestie" 
