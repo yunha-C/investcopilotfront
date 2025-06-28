@@ -257,6 +257,26 @@ export const Home: React.FC = () => {
     );
   };
 
+  const handleCardHover = (e: React.MouseEvent<HTMLDivElement>, isEntering: boolean) => {
+    const target = e.currentTarget;
+    if (isEntering) {
+      target.style.boxShadow = '0px 8px 24px 0px rgba(0, 0, 0, 0.15)';
+    } else {
+      target.style.boxShadow = '0px 1px 3px 0px rgba(0, 0, 0, 0.12)';
+    }
+  };
+
+  const handleAddCardHover = (e: React.MouseEvent<HTMLDivElement>, isEntering: boolean) => {
+    const target = e.currentTarget;
+    if (isEntering) {
+      target.style.boxShadow = '0px 8px 24px 0px rgba(0, 0, 0, 0.15)';
+      target.style.borderColor = '#9e9e9e';
+    } else {
+      target.style.boxShadow = '0px 1px 3px 0px rgba(0, 0, 0, 0.12)';
+      target.style.borderColor = '#e0e0e0';
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-white/50 via-white/30 to-white/20">
       {/* Hero Section */}
@@ -351,12 +371,8 @@ export const Home: React.FC = () => {
                   style={{
                     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
                   }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.boxShadow = '0px 8px 24px 0px rgba(0, 0, 0, 0.15)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.boxShadow = '0px 1px 3px 0px rgba(0, 0, 0, 0.12)';
-                  }}
+                  onMouseEnter={(e) => handleCardHover(e, true)}
+                  onMouseLeave={(e) => handleCardHover(e, false)}
                   onClick={() => handleViewPortfolio(portfolioItem)}
                 >
                   {/* Card Header */}
@@ -429,14 +445,8 @@ export const Home: React.FC = () => {
                   style={{
                     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
                   }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.boxShadow = '0px 8px 24px 0px rgba(0, 0, 0, 0.15)';
-                    e.currentTarget.style.borderColor = '#9e9e9e';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.boxShadow = '0px 1px 3px 0px rgba(0, 0, 0, 0.12)';
-                    e.currentTarget.style.borderColor = '#e0e0e0';
-                  }}
+                  onMouseEnter={(e) => handleAddCardHover(e, true)}
+                  onMouseLeave={(e) => handleAddCardHover(e, false)}
                 >
                   <button
                     onClick={handleCreatePortfolio}
@@ -466,12 +476,8 @@ export const Home: React.FC = () => {
                 style={{
                   transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
                 }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.boxShadow = '0px 8px 24px 0px rgba(0, 0, 0, 0.15)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.boxShadow = '0px 1px 3px 0px rgba(0, 0, 0, 0.12)';
-                }}
+                onMouseEnter={(e) => handleCardHover(e, true)}
+                onMouseLeave={(e) => handleCardHover(e, false)}
               >
                 <button
                   onClick={handleCreatePortfolio}
