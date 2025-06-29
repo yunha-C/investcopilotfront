@@ -189,7 +189,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
               alt="Vestie" 
               className="h-6 w-auto"
               style={{
-                filter: 'brightness(0) saturate(100%) invert(4%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(96%) contrast(100%)'
+                filter: 'brightness(0) invert(1)'
               }}
             />
           </div>
