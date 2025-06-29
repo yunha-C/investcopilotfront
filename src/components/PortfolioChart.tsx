@@ -86,21 +86,21 @@ export const PortfolioChart: React.FC<PortfolioChartProps> = ({
 
       if (holdings && holdings.length > 0) {
         return (
-          <div className="bg-white border border-gray-200 rounded-lg p-3 shadow-lg">
-            <p className="font-semibold">{data.name}</p>
-            <p className="text-sm text-gray-600">Ticker: {data.ticker}</p>
-            <p className="text-sm">Allocation: {data.value.toFixed(1)}%</p>
-            <p className="text-sm">
+          <div className="bg-white dark:bg-dark-surface-primary border border-gray-200 dark:border-gray-600 rounded-lg p-3 shadow-lg">
+            <p className="font-semibold text-neutral-900 dark:text-dark-text-primary">{data.name}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">Ticker: {data.ticker}</p>
+            <p className="text-sm text-neutral-700 dark:text-dark-text-secondary">Allocation: {data.value.toFixed(1)}%</p>
+            <p className="text-sm text-neutral-700 dark:text-dark-text-secondary">
               Market Value: ${data.marketValue.toLocaleString()}
             </p>
-            <p className="text-sm">Shares: {data.shares}</p>
+            <p className="text-sm text-neutral-700 dark:text-dark-text-secondary">Shares: {data.shares}</p>
           </div>
         );
       } else {
         return (
-          <div className="bg-white border border-gray-200 rounded-lg p-3 shadow-lg">
-            <p className="font-semibold">{data.name}</p>
-            <p className="text-sm">Allocation: {data.value}%</p>
+          <div className="bg-white dark:bg-dark-surface-primary border border-gray-200 dark:border-gray-600 rounded-lg p-3 shadow-lg">
+            <p className="font-semibold text-neutral-900 dark:text-dark-text-primary">{data.name}</p>
+            <p className="text-sm text-neutral-700 dark:text-dark-text-secondary">Allocation: {data.value}%</p>
           </div>
         );
       }
@@ -117,9 +117,9 @@ export const PortfolioChart: React.FC<PortfolioChartProps> = ({
         } flex items-center justify-center`}
       >
         <div className="text-center">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
             <svg
-              className="w-8 h-8 text-gray-400"
+              className="w-8 h-8 text-gray-400 dark:text-gray-500"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -132,8 +132,8 @@ export const PortfolioChart: React.FC<PortfolioChartProps> = ({
               />
             </svg>
           </div>
-          <p className="text-gray-500 text-sm">No holdings data available</p>
-          <p className="text-gray-400 text-xs mt-1">
+          <p className="text-gray-500 dark:text-gray-400 text-sm">No holdings data available</p>
+          <p className="text-gray-400 dark:text-gray-500 text-xs mt-1">
             Holdings will appear here once investments are made
           </p>
         </div>

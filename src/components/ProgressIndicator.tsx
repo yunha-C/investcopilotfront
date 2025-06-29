@@ -21,9 +21,9 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
     <div className="w-full max-w-4xl mx-auto">
       {/* Progress Bar */}
       <div className="relative mb-3">
-        <div className="w-full h-2 bg-neutral-300 rounded-full">
+        <div className="w-full h-2 bg-neutral-300 dark:bg-gray-600 rounded-full">
           <div 
-            className="h-2 bg-neutral-900 rounded-full transition-all duration-500 ease-out"
+            className="h-2 bg-neutral-900 dark:bg-neutral-700 rounded-full transition-all duration-500 ease-out"
             style={{ width: `${Math.min(progressPercentage, 100)}%` }}
           />
         </div>
@@ -36,7 +36,7 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
             <span 
               className={`text-body-small transition-colors ${
                 index <= currentStep 
-                  ? 'text-neutral-900 font-medium' 
+                  ? 'text-neutral-900 dark:text-dark-text-primary font-medium' 
                   : 'text-transparent'
               }`}
             >

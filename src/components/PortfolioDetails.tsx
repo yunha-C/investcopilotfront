@@ -11,27 +11,27 @@ export const PortfolioDetails: React.FC = () => {
 
   if (!portfolio) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-white/50 via-white/30 to-white/20">
+      <div className="min-h-screen bg-gradient-to-br from-white/50 via-white/30 to-white/20 dark:from-gray-900/50 dark:via-gray-800/30 dark:to-gray-900/20">
         <div className="px-4 py-8">
           <div className="max-w-6xl mx-auto">
             <button
               onClick={() => setCurrentStep('dashboard')}
-              className="flex items-center gap-2 text-neutral-900 hover:text-neutral-700 mb-6 transition-colors"
+              className="flex items-center gap-2 text-neutral-900 dark:text-dark-text-primary hover:text-neutral-700 dark:hover:text-gray-300 mb-6 transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
               <span className="text-body-medium">Back to Dashboard</span>
             </button>
             
             <div className="text-center py-16">
-              <h1 className="text-headline-large font-headline font-semi-bold text-neutral-900 mb-4">
+              <h1 className="text-headline-large font-headline font-semi-bold text-neutral-900 dark:text-dark-text-primary mb-4">
                 No Portfolio Selected
               </h1>
-              <p className="text-body-large text-neutral-600 mb-8">
+              <p className="text-body-large text-neutral-600 dark:text-dark-text-secondary mb-8">
                 Please select a portfolio to view its details.
               </p>
               <button
                 onClick={() => setCurrentStep('home')}
-                className="bg-neutral-900 text-white py-3 px-6 rounded-lg text-label-large font-medium hover:bg-neutral-800 transition-colors"
+                className="bg-neutral-900 dark:bg-neutral-700 text-white py-3 px-6 rounded-lg text-label-large font-medium hover:bg-neutral-800 dark:hover:bg-neutral-600 transition-colors"
               >
                 Go to Home
               </button>
@@ -63,48 +63,47 @@ export const PortfolioDetails: React.FC = () => {
     }
   };
 
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white/50 via-white/30 to-white/20">
+    <div className="min-h-screen bg-gradient-to-br from-white/50 via-white/30 to-white/20 dark:from-gray-900/50 dark:via-gray-800/30 dark:to-gray-900/20">
       <div className="px-4 py-8">
         <div className="max-w-6xl mx-auto">
           <button
             onClick={handleBack}
-            className="flex items-center gap-2 text-neutral-900 hover:text-neutral-700 mb-6 transition-colors"
+            className="flex items-center gap-2 text-neutral-900 dark:text-dark-text-primary hover:text-neutral-700 dark:hover:text-gray-300 mb-6 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             <span className="text-body-medium">Back to Dashboard</span>
           </button>
 
-          <div className="bg-white/90 backdrop-blur-sm rounded-lg shadow-elevation-1 border border-neutral-200 overflow-hidden">
-            <div className="p-8 border-b border-neutral-200">
+          <div className="bg-white/90 dark:bg-dark-surface-primary/95 backdrop-blur-sm rounded-lg shadow-elevation-1 dark:shadow-dark-elevation-1 border border-neutral-200 dark:border-dark-border-primary overflow-hidden">
+            <div className="p-8 border-b border-neutral-200 dark:border-gray-600">
               <div className="flex items-center justify-between">
                 <div>
-                  <h1 className="text-headline-large font-headline font-semi-bold text-neutral-900 mb-2">
+                  <h1 className="text-headline-large font-headline font-semi-bold text-neutral-900 dark:text-dark-text-primary mb-2">
                     {portfolio.name}
                   </h1>
-                  <p className="text-body-large text-neutral-600">
+                  <p className="text-body-large text-neutral-600 dark:text-dark-text-secondary">
                     Detailed portfolio breakdown and performance
                   </p>
                   <div className="flex items-center gap-4 mt-2">
-                    <span className="text-body-small text-neutral-600">
-                      Risk Score: <span className="font-medium text-neutral-900">{portfolio.riskScore}/5</span>
+                    <span className="text-body-small text-neutral-600 dark:text-dark-text-secondary">
+                      Risk Score: <span className="font-medium text-neutral-900 dark:text-dark-text-primary">{portfolio.riskScore}/5</span>
                     </span>
-                    <span className="text-body-small text-neutral-600">
-                      Risk Level: <span className="font-medium text-neutral-900">{portfolio.riskLevel}</span>
+                    <span className="text-body-small text-neutral-600 dark:text-dark-text-secondary">
+                      Risk Level: <span className="font-medium text-neutral-900 dark:text-dark-text-primary">{portfolio.riskLevel}</span>
                     </span>
                   </div>
                 </div>
                 <div className="flex gap-3">
                   <button
                     onClick={handleModify}
-                    className="px-6 py-3 border-2 border-neutral-400 text-neutral-700 rounded-lg text-label-large font-medium hover:bg-neutral-100 transition-colors"
+                    className="px-6 py-3 border-2 border-neutral-400 dark:border-gray-600 text-neutral-700 dark:text-dark-text-primary rounded-lg text-label-large font-medium hover:bg-neutral-100 dark:hover:bg-gray-700 transition-colors"
                   >
                     Modify Portfolio
                   </button>
                   <button
                     onClick={handleDeletePortfolio}
-                    className="px-6 py-3 border-2 border-red-300 text-red-600 rounded-lg text-label-large font-medium hover:bg-red-50 transition-colors"
+                    className="px-6 py-3 border-2 border-red-300 dark:border-red-600 text-red-600 dark:text-red-400 rounded-lg text-label-large font-medium hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                   >
                     Delete Portfolio
                   </button>
@@ -115,11 +114,11 @@ export const PortfolioDetails: React.FC = () => {
             <div className="p-8">
               <div className="grid lg:grid-cols-3 gap-8 mb-8">
                 <div className="lg:col-span-2">
-                  <h2 className="text-title-large font-headline font-semi-bold text-neutral-900 mb-6">
+                  <h2 className="text-title-large font-headline font-semi-bold text-neutral-900 dark:text-dark-text-primary mb-6">
                     {portfolio.holdings && portfolio.holdings.length > 0 ? 'Current Holdings' : 'Current Allocation'}
                   </h2>
                   {/* Debug info */}
-                  <div className="text-xs text-gray-500 mb-2">
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">
                     Holdings: {portfolio.holdings?.length || 0} | 
                     Allocation: {portfolio.allocation?.length || 0} | 
                     Has Holdings Data: {!!portfolio.holdingsData && Object.keys(portfolio.holdingsData).length > 0 ? 'Yes' : 'No'}
@@ -131,72 +130,74 @@ export const PortfolioDetails: React.FC = () => {
                 </div>
 
                 <div className="space-y-6">
-                  <div className="bg-neutral-100/80 backdrop-blur-sm rounded-lg p-6">
-                    <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-4">Performance Metrics</h3>
+                  <div className="bg-neutral-100/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg p-6">
+                    <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 dark:text-dark-text-primary mb-4">Performance Metrics</h3>
                     <div className="space-y-4">
                       <div>
-                        <p className="text-body-small text-neutral-600">Current Value</p>
-                        <p className="text-headline-medium font-headline font-semi-bold text-neutral-900">
+                        <p className="text-body-small text-neutral-600 dark:text-dark-text-secondary">Current Value</p>
+                        <p className="text-headline-medium font-headline font-semi-bold text-neutral-900 dark:text-dark-text-primary">
                           ${portfolio.totalValue.toLocaleString()}
                         </p>
                       </div>
                       <div className="flex items-center gap-2">
                         <TrendingUp className="w-4 h-4 text-positive" />
                         <span className="text-positive text-label-large font-medium">+{portfolio.growth}%</span>
-                        <span className="text-neutral-500 text-body-small">+$320.00</span>
+                        <span className="text-neutral-500 dark:text-dark-text-muted text-body-small">+$320.00</span>
                       </div>
-                      <div className="pt-2 border-t border-neutral-300">
+                      <div className="pt-2 border-t border-neutral-300 dark:border-gray-600">
                         <div className="flex justify-between mb-2">
-                          <span className="text-body-small text-neutral-600">Expected Return</span>
-                          <span className="text-body-small font-medium">{portfolio.expectedReturn}%</span>
+                          <span className="text-body-small text-neutral-600 dark:text-dark-text-secondary">Expected Return</span>
+                          <span className="text-body-small font-medium text-neutral-900 dark:text-dark-text-primary">{portfolio.expectedReturn}%</span>
                         </div>
                         <div className="flex justify-between mb-2">
-                          <span className="text-body-small text-neutral-600">Risk Score</span>
-                          <span className="text-body-small font-medium">{portfolio.riskScore}/5</span>
+                          <span className="text-body-small text-neutral-600 dark:text-dark-text-secondary">Risk Score</span>
+                          <span className="text-body-small font-medium text-neutral-900 dark:text-dark-text-primary">{portfolio.riskScore}/5</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-body-small text-neutral-600">Monthly Fee</span>
-                          <span className="text-body-small font-medium">${portfolio.monthlyFee?.toFixed(2) || '0.00'}</span>
+                          <span className="text-body-small text-neutral-600 dark:text-dark-text-secondary">Monthly Fee</span>
+                          <span className="text-body-small font-medium text-neutral-900 dark:text-dark-text-primary">${portfolio.monthlyFee?.toFixed(2) || '0.00'}</span>
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  <div className="bg-neutral-100/80 backdrop-blur-sm rounded-lg p-6">
+                  <div className="bg-neutral-100/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg p-6">
                     <div className="flex items-center gap-2 mb-4">
-                      <Calculator className="w-5 h-5 text-neutral-600" />
-                      <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900">Fee Structure</h3>
+                      <Calculator className="w-5 h-5 text-neutral-600 dark:text-gray-400" />
+                      <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 dark:text-dark-text-primary">Fee Structure</h3>
                     </div>
                     <div className="space-y-3">
                       <div className="flex justify-between">
-                        <span className="text-body-small text-neutral-700">Annual Rate</span>
-                        <span className="text-body-small font-medium text-neutral-800">{portfolio.managementFee}%</span>
+                        <span className="text-body-small text-neutral-700 dark:text-dark-text-secondary">Annual Rate</span>
+                        <span className="text-body-small font-medium text-neutral-800 dark:text-dark-text-primary">{portfolio.managementFee}%</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-body-small text-neutral-700">Monthly Fee</span>
-                        <span className="text-body-small font-medium text-neutral-800">${portfolio.monthlyFee?.toFixed(2) || '0.00'}</span>
+                        <span className="text-body-small text-neutral-700 dark:text-dark-text-secondary">Monthly Fee</span>
+                        <span className="text-body-small font-medium text-neutral-800 dark:text-dark-text-primary">${portfolio.monthlyFee?.toFixed(2) || '0.00'}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-body-small text-neutral-700">Annual Fee</span>
-                        <span className="text-body-small font-medium text-neutral-800">${((portfolio.monthlyFee || 0) * 12).toFixed(2)}</span>
+                        <span className="text-body-small text-neutral-700 dark:text-dark-text-secondary">Annual Fee</span>
+                        <span className="text-body-small font-medium text-neutral-800 dark:text-dark-text-primary">${((portfolio.monthlyFee || 0) * 12).toFixed(2)}</span>
                       </div>
-                      <div className="pt-2 border-t border-neutral-300">
+                      <div className="pt-2 border-t border-neutral-200 dark:border-gray-600">
                         <div className="flex items-start gap-2">
-                          <Info className="w-4 h-4 text-neutral-600 mt-0.5 flex-shrink-0" />
-                          <p className="text-body-small text-neutral-600">
-                            Fees are calculated monthly based on your current portfolio value and automatically deducted from your account.
+                          <Info className="w-4 h-4 text-neutral-600 dark:text-gray-400 mt-0.5 flex-shrink-0" />
+                          <p className="text-body-small text-neutral-500 dark:text-dark-text-muted">
+                            Fees are calculated monthly based on your current
+                            portfolio value and automatically deducted from your
+                            account.
                           </p>
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  <div className="bg-neutral-100/80 backdrop-blur-sm rounded-lg p-6">
-                    <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-4">
+                  <div className="bg-neutral-100/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg p-6">
+                    <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 dark:text-dark-text-primary mb-4">
                       {portfolio.holdings && portfolio.holdings.length > 0 ? 'Holdings Breakdown' : 'Asset Breakdown'}
                     </h3>
                     {/* Debug holdings data */}
-                    <div className="text-xs text-gray-500 mb-2">
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">
                       Raw Holdings Data: {JSON.stringify(portfolio.holdingsData)}
                     </div>
                     <div className="space-y-3">
@@ -210,7 +211,7 @@ export const PortfolioDetails: React.FC = () => {
                             : 0;
                           
                           return (
-                            <div key={holding.id} className="flex items-center justify-between py-3 border-b border-neutral-200 last:border-b-0">
+                            <div key={holding.id} className="flex items-center justify-between py-3 border-b border-neutral-200 dark:border-gray-600 last:border-b-0">
                               <div className="flex items-center gap-3 flex-1">
                                 <div 
                                   className="w-4 h-4 rounded-full" 
@@ -218,23 +219,23 @@ export const PortfolioDetails: React.FC = () => {
                                 />
                                 <div className="flex-1">
                                   <div className="flex items-center gap-2">
-                                    <span className="text-label-large font-medium text-neutral-800">
+                                    <span className="text-label-large font-medium text-neutral-800 dark:text-dark-text-primary">
                                       {holding.symbol.name || holding.symbol.ticker}
                                     </span>
-                                    <span className="text-body-small text-neutral-500 bg-neutral-200 px-2 py-1 rounded">
+                                    <span className="text-body-small text-neutral-500 dark:text-dark-text-muted bg-neutral-200 dark:bg-gray-700 px-2 py-1 rounded">
                                       {holding.symbol.ticker}
                                     </span>
                                   </div>
-                                  <p className="text-body-small text-neutral-600">
+                                  <p className="text-body-small text-neutral-600 dark:text-dark-text-secondary">
                                     {holding.shares} shares @ ${holding.averageCostBasis.toFixed(2)} avg
                                   </p>
                                 </div>
                               </div>
                               <div className="text-right">
-                                <p className="text-label-large font-medium text-neutral-900">
+                                <p className="text-label-large font-medium text-neutral-900 dark:text-dark-text-primary">
                                   {holding.currentAllocation.percentage.toFixed(1)}%
                                 </p>
-                                <p className="text-body-small text-neutral-500">
+                                <p className="text-body-small text-neutral-500 dark:text-dark-text-muted">
                                   ${holding.marketValue.toLocaleString()}
                                 </p>
                                 <p className={`text-body-small ${gainLoss >= 0 ? 'text-green-600' : 'text-red-600'}`}>
@@ -252,11 +253,11 @@ export const PortfolioDetails: React.FC = () => {
                                 className="w-4 h-4 rounded-full" 
                                 style={{ backgroundColor: asset.color }}
                               />
-                              <span className="text-label-large font-medium text-neutral-800">{asset.name}</span>
+                              <span className="text-label-large font-medium text-neutral-800 dark:text-dark-text-primary">{asset.name}</span>
                             </div>
                             <div className="text-right">
-                              <p className="text-label-large font-medium text-neutral-900">{asset.percentage}%</p>
-                              <p className="text-body-small text-neutral-500">
+                              <p className="text-label-large font-medium text-neutral-900 dark:text-dark-text-primary">{asset.percentage}%</p>
+                              <p className="text-body-small text-neutral-500 dark:text-dark-text-muted">
                                 ${((portfolio.totalValue * asset.percentage) / 100).toLocaleString()}
                               </p>
                             </div>
@@ -270,41 +271,41 @@ export const PortfolioDetails: React.FC = () => {
 
               <div className="grid lg:grid-cols-2 gap-8">
                 <div>
-                  <h3 className="text-title-large font-headline font-semi-bold text-neutral-900 mb-4">AI Strategy Reasoning</h3>
-                  <div className="bg-neutral-100/80 backdrop-blur-sm rounded-lg p-6">
-                    <p className="text-body-medium text-neutral-700 leading-relaxed">
+                  <h3 className="text-title-large font-headline font-semi-bold text-neutral-900 dark:text-dark-text-primary mb-4">AI Strategy Reasoning</h3>
+                  <div className="bg-neutral-100/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg p-6">
+                    <p className="text-body-medium text-neutral-700 dark:text-dark-text-secondary leading-relaxed">
                       {portfolio.reasoning}
                     </p>
                   </div>
                 </div>
 
                 <div>
-                  <h3 className="text-title-large font-headline font-semi-bold text-neutral-900 mb-4">Recent Insights</h3>
+                  <h3 className="text-title-large font-headline font-semi-bold text-neutral-900 dark:text-dark-text-primary mb-4">Recent Insights</h3>
                   {insights.length === 0 ? (
-                    <div className="bg-neutral-100/80 backdrop-blur-sm rounded-lg p-6 text-center">
-                      <p className="text-body-medium text-neutral-500 mb-2">No insights added yet</p>
-                      <p className="text-body-small text-neutral-400">
+                    <div className="bg-neutral-100/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg p-6 text-center">
+                      <p className="text-body-medium text-neutral-500 dark:text-dark-text-muted mb-2">No insights added yet</p>
+                      <p className="text-body-small text-neutral-400 dark:text-gray-500">
                         Add market insights to help AI optimize your portfolio
                       </p>
                     </div>
                   ) : (
                     <div className="space-y-4 max-h-96 overflow-y-auto">
                       {insights.map((insight) => (
-                        <div key={insight.id} className="bg-white/80 backdrop-blur-sm border border-neutral-200 rounded-lg p-4">
+                        <div key={insight.id} className="bg-white/80 dark:bg-dark-surface-secondary/80 backdrop-blur-sm border border-neutral-200 dark:border-gray-600 rounded-lg p-4">
                           <div className="flex items-start justify-between mb-3">
-                            <h4 className="text-label-large font-medium text-neutral-900">{insight.title}</h4>
-                            <div className="flex items-center gap-1 text-body-small text-neutral-500">
+                            <h4 className="text-label-large font-medium text-neutral-900 dark:text-dark-text-primary">{insight.title}</h4>
+                            <div className="flex items-center gap-1 text-body-small text-neutral-500 dark:text-dark-text-muted">
                               <Calendar className="w-3 h-3" />
                               {insight.date}
                             </div>
                           </div>
-                          <p className="text-body-small text-neutral-600 mb-3">{insight.impact}</p>
+                          <p className="text-body-small text-neutral-600 dark:text-dark-text-secondary mb-3">{insight.impact}</p>
                           <div className="flex items-center justify-between">
                             <a 
                               href={insight.url} 
                               target="_blank" 
                               rel="noopener noreferrer"
-                              className="flex items-center gap-1 text-body-small text-neutral-900 hover:text-neutral-700 transition-colors"
+                              className="flex items-center gap-1 text-body-small text-neutral-900 dark:text-dark-text-primary hover:text-neutral-700 dark:hover:text-gray-300 transition-colors"
                             >
                               View Source <ExternalLink className="w-3 h-3" />
                             </a>
