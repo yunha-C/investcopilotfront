@@ -11,6 +11,7 @@ import { PortfolioDetails } from './components/PortfolioDetails';
 import { InsightAnalysis } from './components/InsightAnalysis';
 import { Home } from './components/Home';
 import { GrowthGraphTest } from './components/GrowthGraphTest';
+import { BoltBadge } from './components/BoltBadge';
 
 function App() {
   const { currentStep, setCurrentStep, portfolio, loadUserPortfolios } = useInvestmentStore();
@@ -78,6 +79,7 @@ function App() {
         <div className="relative z-10">
           <GrowthGraphTest />
         </div>
+        <BoltBadge />
       </>
     );
   }
@@ -116,6 +118,9 @@ function App() {
           </>
         )}
       </div>
+      
+      {/* Bolt.new Badge - Always visible */}
+      <BoltBadge />
     </>
   );
 }
