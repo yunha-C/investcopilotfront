@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Eye, EyeOff, AlertCircle } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
+import { useThemeStore } from '../store/themeStore';
 
 interface AuthPageProps {
   onAuthenticated: () => void;
@@ -21,6 +22,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
   
   const { login, register, isLoading, error, clearError, isAuthenticated } = useAuthStore();
+  const { isDarkMode } = useThemeStore();
 
   // Clear auth error when component mounts or auth mode changes
   useEffect(() => {
@@ -189,7 +191,9 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
               alt="Vestie" 
               className="h-6 w-auto"
               style={{
-                filter: 'brightness(0) invert(1)'
+                filter: isDarkMode 
+                  ? 'brightness(0) invert(1)' // White in dark mode
+                  : 'brightness(0) saturate(100%) invert(4%) sepia(6%) saturate(1%) hue-rotate(314deg) brightness(96%) contrast(96%)' // Dark in light mode
               }}
             />
           </div>

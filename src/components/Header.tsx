@@ -23,7 +23,9 @@ export const Header: React.FC = () => {
             alt="Vestie" 
             className="h-4 w-auto"
             style={{
-              filter: 'brightness(0) invert(1)'
+              filter: isDarkMode 
+                ? 'brightness(0) invert(1)' // White in dark mode
+                : 'brightness(0) saturate(100%) invert(4%) sepia(6%) saturate(1%) hue-rotate(314deg) brightness(96%) contrast(96%)' // Dark in light mode
             }}
           />
         </div>
