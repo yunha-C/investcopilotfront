@@ -305,7 +305,7 @@ export const Home: React.FC = () => {
             <div className="max-w-lg mx-auto mb-4">
               {generateGrowthChart()}
 
-              {/* Timeline Buttons - Important buttons with toned down blue */}
+              {/* Timeline Buttons - Important buttons with grey */}
               <div className="flex justify-center mt-4">
                 <div className="bg-neutral-100/50 dark:bg-gray-800/50 rounded-full p-1 flex gap-1">
                   {timeframes.map((timeframe) => (
@@ -314,7 +314,7 @@ export const Home: React.FC = () => {
                       onClick={() => setSelectedTimeframe(timeframe)}
                       className={`px-4 py-2 rounded-full text-body-small font-medium transition-all ${
                         selectedTimeframe === timeframe
-                          ? "bg-blue-600 dark:bg-blue-700 text-white shadow-sm"
+                          ? "bg-neutral-900 dark:bg-neutral-700 text-white shadow-sm"
                           : "text-neutral-600 dark:text-gray-400 hover:text-neutral-900 dark:hover:text-gray-200 hover:bg-neutral-200/50 dark:hover:bg-gray-700/50"
                       }`}
                     >
@@ -350,7 +350,7 @@ export const Home: React.FC = () => {
           <div className="max-w-4xl mx-auto mb-8">
             <div className="bg-white dark:bg-dark-surface-primary border border-neutral-200 dark:border-dark-border-primary rounded-lg p-6 text-center">
               <div className="flex items-center justify-center gap-3">
-                <div className="w-5 h-5 border-2 border-neutral-300 dark:border-gray-600 border-t-blue-600 dark:border-t-blue-500 rounded-full animate-spin" />
+                <div className="w-5 h-5 border-2 border-neutral-300 dark:border-gray-600 border-t-neutral-900 dark:border-t-neutral-700 rounded-full animate-spin" />
                 <span className="text-body-medium text-neutral-600 dark:text-dark-text-secondary">
                   Loading your portfolios...
                 </span>
@@ -426,11 +426,11 @@ export const Home: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Card Actions - Fixed at bottom - Important button with toned down blue */}
+                  {/* Card Actions - Fixed at bottom - Important button with grey */}
                   <div className="px-6 pb-6">
                     <button
                       onClick={(e) => handleAddValue(portfolioItem, e)}
-                      className="w-full bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-600 text-white py-3 px-4 rounded-lg text-label-large font-medium transition-colors"
+                      className="w-full bg-neutral-900 dark:bg-neutral-700 hover:bg-neutral-800 dark:hover:bg-neutral-600 text-white py-3 px-4 rounded-lg text-label-large font-medium transition-colors"
                     >
                       Add Virtual Value
                     </button>
@@ -529,7 +529,7 @@ export const Home: React.FC = () => {
                       setPortfolioValue(value);
                     }}
                     placeholder="10,000"
-                    className="w-full pl-8 pr-4 p-3 border border-neutral-300 dark:border-dark-border-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 dark:focus:ring-blue-500 focus:border-transparent text-body-medium bg-white dark:bg-dark-surface-secondary text-neutral-900 dark:text-dark-text-primary"
+                    className="w-full pl-8 pr-4 p-3 border border-neutral-300 dark:border-dark-border-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-neutral-600 dark:focus:ring-neutral-500 focus:border-transparent text-body-medium bg-white dark:bg-dark-surface-secondary text-neutral-900 dark:text-dark-text-primary"
                     required
                     disabled={isAddingValue}
                   />
@@ -542,7 +542,7 @@ export const Home: React.FC = () => {
                 <button
                   type="submit"
                   disabled={isAddingValue}
-                  className="flex-1 bg-blue-600 dark:bg-blue-700 text-white py-3 px-4 rounded-lg text-label-large font-medium hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="flex-1 bg-neutral-900 dark:bg-neutral-700 text-white py-3 px-4 rounded-lg text-label-large font-medium hover:bg-neutral-800 dark:hover:bg-neutral-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {isAddingValue && (
                     <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />

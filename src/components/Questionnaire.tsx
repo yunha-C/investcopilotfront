@@ -394,7 +394,7 @@ export const Questionnaire: React.FC = () => {
                 <button
                   onClick={handleSubmit}
                   disabled={isAnalyzing || isLoading}
-                  className="bg-blue-600 dark:bg-blue-700 text-white py-3 px-6 rounded-lg text-label-large font-medium hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="bg-neutral-900 dark:bg-neutral-700 text-white py-3 px-6 rounded-lg text-label-large font-medium hover:bg-neutral-800 dark:hover:bg-neutral-600 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isAnalyzing || isLoading ? (
                     <>
@@ -526,7 +526,7 @@ export const Questionnaire: React.FC = () => {
                 
                 <button
                   onClick={handleSectorsContinue}
-                  className="bg-blue-600 dark:bg-blue-700 text-white py-3 px-6 rounded-lg text-label-large font-medium hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors"
+                  className="bg-neutral-900 dark:bg-neutral-700 text-white py-3 px-6 rounded-lg text-label-large font-medium hover:bg-neutral-800 dark:hover:bg-neutral-600 transition-colors"
                 >
                   Continue
                 </button>
@@ -626,7 +626,7 @@ export const Questionnaire: React.FC = () => {
               {currentQuestion < questions.length - 1 && (
                 <button
                   onClick={handleNextQuestion}
-                  className="ml-auto bg-blue-600 dark:bg-blue-700 text-white py-3 px-6 rounded-lg text-label-large font-medium hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors"
+                  className="ml-auto bg-neutral-900 dark:bg-neutral-700 text-white py-3 px-6 rounded-lg text-label-large font-medium hover:bg-neutral-800 dark:hover:bg-neutral-600 transition-colors"
                 >
                   Continue
                 </button>
