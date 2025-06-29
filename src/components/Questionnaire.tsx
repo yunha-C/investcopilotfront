@@ -279,12 +279,12 @@ export const Questionnaire: React.FC = () => {
 
   if (showRestrictions) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-white/50 via-white/30 to-white/20">
+      <div className="min-h-screen bg-gradient-to-br from-white/50 via-white/30 to-white/20 dark:from-gray-900/50 dark:via-gray-800/30 dark:to-gray-900/20">
         <div className="px-4 pt-4 pb-3">
           <div className="max-w-3xl mx-auto">
             <button
               onClick={handleExitQuestionnaire}
-              className="flex items-center gap-2 text-neutral-900 hover:text-neutral-700 mb-4 transition-colors"
+              className="flex items-center gap-2 text-neutral-900 dark:text-dark-text-primary hover:text-neutral-700 dark:hover:text-gray-300 mb-4 transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
               <span className="text-body-medium">Back to Home</span>
@@ -299,15 +299,15 @@ export const Questionnaire: React.FC = () => {
         
         <div className="px-4 pb-8">
           <div className="max-w-3xl mx-auto">
-            <div className="bg-white rounded-lg shadow-elevation-1 border border-neutral-300 p-6">
+            <div className="bg-white dark:bg-dark-surface-primary rounded-lg shadow-elevation-1 dark:shadow-dark-elevation-1 border border-neutral-300 dark:border-dark-border-primary p-6">
               <div className="mb-4">
-                <h2 className="text-headline-medium font-headline font-semi-bold text-neutral-900">
+                <h2 className="text-headline-medium font-headline font-semi-bold text-neutral-900 dark:text-dark-text-primary">
                   Investment Restrictions
                 </h2>
-                <p className="text-body-medium text-neutral-600 mt-1">
-                  <span className="text-red-600">*Required:</span> Select up to 3 investment restrictions you prefer
+                <p className="text-body-medium text-neutral-600 dark:text-dark-text-secondary mt-1">
+                  <span className="text-red-600 dark:text-red-400">*Required:</span> Select up to 3 investment restrictions you prefer
                   {restrictions.filter(r => r !== 'none').length > 0 && (
-                    <span className="ml-2 text-neutral-500">
+                    <span className="ml-2 text-neutral-500 dark:text-dark-text-muted">
                       ({restrictions.filter(r => r !== 'none').length}/3 selected)
                     </span>
                   )}
@@ -315,8 +315,8 @@ export const Questionnaire: React.FC = () => {
               </div>
 
               {validationError && (
-                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-                  <p className="text-red-800 text-body-small">{validationError}</p>
+                <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                  <p className="text-red-800 dark:text-red-200 text-body-small">{validationError}</p>
                 </div>
               )}
 
@@ -332,10 +332,10 @@ export const Questionnaire: React.FC = () => {
                       disabled={isDisabled}
                       className={`w-full p-4 text-left transition-all hover:scale-[1.02] group ${
                         isSelected
-                          ? 'bg-neutral-100'
+                          ? 'bg-neutral-100 dark:bg-gray-700'
                           : isDisabled
-                          ? 'bg-neutral-50 opacity-50 cursor-not-allowed'
-                          : 'bg-white hover:bg-neutral-100'
+                          ? 'bg-neutral-50 dark:bg-gray-800 opacity-50 cursor-not-allowed'
+                          : 'bg-white dark:bg-dark-surface-secondary hover:bg-neutral-100 dark:hover:bg-gray-700'
                       }`}
                     >
                       <div className="flex items-center gap-4">
@@ -343,10 +343,10 @@ export const Questionnaire: React.FC = () => {
                           <div 
                             className={`w-6 h-6 rounded border-2 flex items-center justify-center transition-colors ${
                               isSelected
-                                ? 'border-neutral-900 bg-neutral-900'
+                                ? 'border-neutral-900 dark:border-neutral-700 bg-neutral-900 dark:bg-neutral-700'
                                 : isDisabled
-                                ? 'border-neutral-300 bg-neutral-100'
-                                : 'border-neutral-400 bg-white group-hover:border-neutral-600'
+                                ? 'border-neutral-300 dark:border-gray-600 bg-neutral-100 dark:bg-gray-700'
+                                : 'border-neutral-400 dark:border-gray-500 bg-white dark:bg-dark-surface-secondary group-hover:border-neutral-600 dark:group-hover:border-gray-400'
                             }`}
                           >
                             {isSelected && (
@@ -357,10 +357,10 @@ export const Questionnaire: React.FC = () => {
                         <div className="flex-1">
                           <div className={`text-label-large ${
                             isDisabled 
-                              ? 'text-neutral-500' 
+                              ? 'text-neutral-500 dark:text-gray-500' 
                               : isSelected
-                              ? 'text-neutral-900 font-medium'
-                              : 'text-neutral-800 group-hover:text-neutral-900'
+                              ? 'text-neutral-900 dark:text-dark-text-primary font-medium'
+                              : 'text-neutral-800 dark:text-dark-text-primary group-hover:text-neutral-900 dark:group-hover:text-white'
                           }`}>
                             {option.label}
                           </div>
@@ -371,13 +371,13 @@ export const Questionnaire: React.FC = () => {
                 })}
               </div>
 
-              <div className="bg-neutral-100 rounded-lg p-4 mb-4">
-                <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 mb-2">Management Fee Structure</h3>
-                <div className="text-body-medium text-neutral-700 space-y-1">
+              <div className="bg-neutral-100 dark:bg-gray-800 rounded-lg p-4 mb-4">
+                <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 dark:text-dark-text-primary mb-2">Management Fee Structure</h3>
+                <div className="text-body-medium text-neutral-700 dark:text-dark-text-secondary space-y-1">
                   <p><strong>Annual Fee:</strong> 0.01% of assets under management</p>
                   <p><strong>Billing:</strong> Calculated and charged monthly</p>
                   <p><strong>Example:</strong> $100,000 portfolio = $10/year ($0.83/month)</p>
-                  <p className="text-body-small text-neutral-600 mt-2">
+                  <p className="text-body-small text-neutral-600 dark:text-dark-text-muted mt-2">
                     Fees are automatically deducted from your account monthly. No hidden charges or transaction fees.
                   </p>
                 </div>
@@ -386,7 +386,7 @@ export const Questionnaire: React.FC = () => {
               <div className="flex justify-between">
                 <button
                   onClick={() => { setShowRestrictions(false); setShowSectors(true); }}
-                  className="px-6 py-3 bg-neutral-100 text-neutral-900 rounded-lg text-label-large font-medium hover:bg-neutral-200 transition-colors border border-neutral-300"
+                  className="px-6 py-3 bg-neutral-100 dark:bg-gray-700 text-neutral-900 dark:text-dark-text-primary rounded-lg text-label-large font-medium hover:bg-neutral-200 dark:hover:bg-gray-600 transition-colors border border-neutral-300 dark:border-gray-600"
                 >
                   Previous Question
                 </button>
@@ -394,7 +394,7 @@ export const Questionnaire: React.FC = () => {
                 <button
                   onClick={handleSubmit}
                   disabled={isAnalyzing || isLoading}
-                  className="bg-neutral-900 text-white py-3 px-6 rounded-lg text-label-large font-medium hover:bg-neutral-800 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="bg-blue-600 dark:bg-blue-700 text-white py-3 px-6 rounded-lg text-label-large font-medium hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isAnalyzing || isLoading ? (
                     <>
@@ -415,12 +415,12 @@ export const Questionnaire: React.FC = () => {
 
   if (showSectors) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-white/50 via-white/30 to-white/20">
+      <div className="min-h-screen bg-gradient-to-br from-white/50 via-white/30 to-white/20 dark:from-gray-900/50 dark:via-gray-800/30 dark:to-gray-900/20">
         <div className="px-4 pt-4 pb-3">
           <div className="max-w-3xl mx-auto">
             <button
               onClick={handleExitQuestionnaire}
-              className="flex items-center gap-2 text-neutral-900 hover:text-neutral-700 mb-4 transition-colors"
+              className="flex items-center gap-2 text-neutral-900 dark:text-dark-text-primary hover:text-neutral-700 dark:hover:text-gray-300 mb-4 transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
               <span className="text-body-medium">Back to Home</span>
@@ -435,15 +435,15 @@ export const Questionnaire: React.FC = () => {
         
         <div className="px-4 pb-8">
           <div className="max-w-3xl mx-auto">
-            <div className="bg-white rounded-lg shadow-elevation-1 border border-neutral-300 p-6">
+            <div className="bg-white dark:bg-dark-surface-primary rounded-lg shadow-elevation-1 dark:shadow-dark-elevation-1 border border-neutral-300 dark:border-dark-border-primary p-6">
               <div className="mb-4">
-                <h2 className="text-headline-medium font-headline font-semi-bold text-neutral-900">
+                <h2 className="text-headline-medium font-headline font-semi-bold text-neutral-900 dark:text-dark-text-primary">
                   Sector Preferences
                 </h2>
-                <p className="text-body-medium text-neutral-600 mt-1">
-                  <span className="text-red-600">*Required:</span> Select up to 2 sectors you'd like to focus on
+                <p className="text-body-medium text-neutral-600 dark:text-dark-text-secondary mt-1">
+                  <span className="text-red-600 dark:text-red-400">*Required:</span> Select up to 2 sectors you'd like to focus on
                   {sectors.filter(s => s !== 'none').length > 0 && (
-                    <span className="ml-2 text-neutral-500">
+                    <span className="ml-2 text-neutral-500 dark:text-dark-text-muted">
                       ({sectors.filter(s => s !== 'none').length}/2 selected)
                     </span>
                   )}
@@ -451,8 +451,8 @@ export const Questionnaire: React.FC = () => {
               </div>
 
               {validationError && (
-                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-                  <p className="text-red-800 text-body-small">{validationError}</p>
+                <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                  <p className="text-red-800 dark:text-red-200 text-body-small">{validationError}</p>
                 </div>
               )}
 
@@ -468,10 +468,10 @@ export const Questionnaire: React.FC = () => {
                       disabled={isDisabled}
                       className={`w-full p-4 text-left transition-all hover:scale-[1.02] group ${
                         isSelected
-                          ? 'bg-neutral-100'
+                          ? 'bg-neutral-100 dark:bg-gray-700'
                           : isDisabled
-                          ? 'bg-neutral-50 opacity-50 cursor-not-allowed'
-                          : 'bg-white hover:bg-neutral-100'
+                          ? 'bg-neutral-50 dark:bg-gray-800 opacity-50 cursor-not-allowed'
+                          : 'bg-white dark:bg-dark-surface-secondary hover:bg-neutral-100 dark:hover:bg-gray-700'
                       }`}
                     >
                       <div className="flex items-start gap-4">
@@ -479,10 +479,10 @@ export const Questionnaire: React.FC = () => {
                           <div 
                             className={`w-6 h-6 rounded border-2 flex items-center justify-center transition-colors ${
                               isSelected
-                                ? 'border-neutral-900 bg-neutral-900'
+                                ? 'border-neutral-900 dark:border-neutral-700 bg-neutral-900 dark:bg-neutral-700'
                                 : isDisabled
-                                ? 'border-neutral-300 bg-neutral-100'
-                                : 'border-neutral-400 bg-white group-hover:border-neutral-600'
+                                ? 'border-neutral-300 dark:border-gray-600 bg-neutral-100 dark:bg-gray-700'
+                                : 'border-neutral-400 dark:border-gray-500 bg-white dark:bg-dark-surface-secondary group-hover:border-neutral-600 dark:group-hover:border-gray-400'
                             }`}
                           >
                             {isSelected && (
@@ -493,19 +493,19 @@ export const Questionnaire: React.FC = () => {
                         <div className="flex-1">
                           <div className={`text-label-large mb-1 ${
                             isDisabled 
-                              ? 'text-neutral-500' 
+                              ? 'text-neutral-500 dark:text-gray-500' 
                               : isSelected
-                              ? 'text-neutral-900 font-medium'
-                              : 'text-neutral-800 group-hover:text-neutral-900'
+                              ? 'text-neutral-900 dark:text-dark-text-primary font-medium'
+                              : 'text-neutral-800 dark:text-dark-text-primary group-hover:text-neutral-900 dark:group-hover:text-white'
                           }`}>
                             {option.label}
                           </div>
                           <p className={`text-body-small ${
                             isDisabled 
-                              ? 'text-neutral-400' 
+                              ? 'text-neutral-400 dark:text-gray-600' 
                               : isSelected
-                              ? 'text-neutral-700'
-                              : 'text-neutral-600 group-hover:text-neutral-700'
+                              ? 'text-neutral-700 dark:text-dark-text-secondary'
+                              : 'text-neutral-600 dark:text-dark-text-secondary group-hover:text-neutral-700 dark:group-hover:text-gray-300'
                           }`}>
                             {option.description}
                           </p>
@@ -519,14 +519,14 @@ export const Questionnaire: React.FC = () => {
               <div className="flex justify-between">
                 <button
                   onClick={() => { setShowSectors(false); setCurrentQuestion(questions.length - 1); }}
-                  className="px-6 py-3 bg-neutral-100 text-neutral-900 rounded-lg text-label-large font-medium hover:bg-neutral-200 transition-colors border border-neutral-300"
+                  className="px-6 py-3 bg-neutral-100 dark:bg-gray-700 text-neutral-900 dark:text-dark-text-primary rounded-lg text-label-large font-medium hover:bg-neutral-200 dark:hover:bg-gray-600 transition-colors border border-neutral-300 dark:border-gray-600"
                 >
                   Previous Question
                 </button>
                 
                 <button
                   onClick={handleSectorsContinue}
-                  className="bg-neutral-900 text-white py-3 px-6 rounded-lg text-label-large font-medium hover:bg-neutral-800 transition-colors"
+                  className="bg-blue-600 dark:bg-blue-700 text-white py-3 px-6 rounded-lg text-label-large font-medium hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors"
                 >
                   Continue
                 </button>
@@ -539,12 +539,12 @@ export const Questionnaire: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white/50 via-white/30 to-white/20">
+    <div className="min-h-screen bg-gradient-to-br from-white/50 via-white/30 to-white/20 dark:from-gray-900/50 dark:via-gray-800/30 dark:to-gray-900/20">
       <div className="px-4 pt-4 pb-3">
         <div className="max-w-3xl mx-auto">
           <button
             onClick={handleExitQuestionnaire}
-            className="flex items-center gap-2 text-neutral-900 hover:text-neutral-700 mb-4 transition-colors"
+            className="flex items-center gap-2 text-neutral-900 dark:text-dark-text-primary hover:text-neutral-700 dark:hover:text-gray-300 mb-4 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             <span className="text-body-medium">Back to Home</span>
@@ -559,21 +559,21 @@ export const Questionnaire: React.FC = () => {
       
       <div className="px-4 pb-8">
         <div className="max-w-3xl mx-auto">
-          <div className="bg-white rounded-lg shadow-elevation-1 border border-neutral-300 p-6">
+          <div className="bg-white dark:bg-dark-surface-primary rounded-lg shadow-elevation-1 dark:shadow-dark-elevation-1 border border-neutral-300 dark:border-dark-border-primary p-6">
             <div className="flex items-center justify-between mb-5">
               <div className="flex-1">
-                <div className="text-label-medium font-medium text-neutral-600 mb-1">
+                <div className="text-label-medium font-medium text-neutral-600 dark:text-dark-text-secondary mb-1">
                   {currentQ.category}
                 </div>
-                <h2 className="text-headline-medium font-headline font-semi-bold text-neutral-900">
+                <h2 className="text-headline-medium font-headline font-semi-bold text-neutral-900 dark:text-dark-text-primary">
                   {currentQ.title}
                 </h2>
               </div>
             </div>
 
             {validationError && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-red-800 text-body-small">{validationError}</p>
+              <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                <p className="text-red-800 dark:text-red-200 text-body-small">{validationError}</p>
               </div>
             )}
 
@@ -582,15 +582,15 @@ export const Questionnaire: React.FC = () => {
                 <button
                   key={option.value}
                   onClick={() => handleAnswer(currentQ.id, option.value)}
-                  className="w-full p-3 text-left hover:bg-neutral-100 transition-all hover:scale-[1.02] group"
+                  className="w-full p-3 text-left hover:bg-neutral-100 dark:hover:bg-gray-700 transition-all hover:scale-[1.02] group"
                 >
                   <div className="flex items-start gap-3">
                     <div className="flex-shrink-0 mt-1">
                       <div 
                         className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
                           currentAnswer === option.value
-                            ? 'border-neutral-900 bg-neutral-900'
-                            : 'border-neutral-400 bg-transparent group-hover:border-neutral-600'
+                            ? 'border-neutral-900 dark:border-neutral-700 bg-neutral-900 dark:bg-neutral-700'
+                            : 'border-neutral-400 dark:border-gray-500 bg-transparent group-hover:border-neutral-600 dark:group-hover:border-gray-400'
                         }`}
                       >
                         {currentAnswer === option.value && (
@@ -599,11 +599,11 @@ export const Questionnaire: React.FC = () => {
                       </div>
                     </div>
                     <div className="flex-1">
-                      <div className="text-label-large text-neutral-800 group-hover:text-neutral-900 mb-0.5">
+                      <div className="text-label-large text-neutral-800 dark:text-dark-text-primary group-hover:text-neutral-900 dark:group-hover:text-white mb-0.5">
                         {option.label}
                       </div>
                       {option.description && (
-                        <p className="text-body-small text-neutral-600 group-hover:text-neutral-700">
+                        <p className="text-body-small text-neutral-600 dark:text-dark-text-secondary group-hover:text-neutral-700 dark:group-hover:text-gray-300">
                           {option.description}
                         </p>
                       )}
@@ -617,7 +617,7 @@ export const Questionnaire: React.FC = () => {
               {currentQuestion > 0 && (
                 <button
                   onClick={handlePreviousQuestion}
-                  className="px-6 py-3 bg-neutral-100 text-neutral-900 rounded-lg text-label-large font-medium hover:bg-neutral-200 transition-colors border border-neutral-300"
+                  className="px-6 py-3 bg-neutral-100 dark:bg-gray-700 text-neutral-900 dark:text-dark-text-primary rounded-lg text-label-large font-medium hover:bg-neutral-200 dark:hover:bg-gray-600 transition-colors border border-neutral-300 dark:border-gray-600"
                 >
                   Previous Question
                 </button>
@@ -626,7 +626,7 @@ export const Questionnaire: React.FC = () => {
               {currentQuestion < questions.length - 1 && (
                 <button
                   onClick={handleNextQuestion}
-                  className="ml-auto bg-neutral-900 text-white py-3 px-6 rounded-lg text-label-large font-medium hover:bg-neutral-800 transition-colors"
+                  className="ml-auto bg-blue-600 dark:bg-blue-700 text-white py-3 px-6 rounded-lg text-label-large font-medium hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors"
                 >
                   Continue
                 </button>

@@ -223,8 +223,8 @@ export const Home: React.FC = () => {
       fillData = pathData + ` L400,128 L0,128 Z`;
     }
 
-    const strokeColor = isPositive ? "#044AA7" : "#f44336";
-    const fillColor = isPositive ? "#044AA7" : "#f44336";
+    const strokeColor = isPositive ? "#6B9AE0" : "#f44336"; // Toned down blue
+    const fillColor = isPositive ? "#6B9AE0" : "#f44336";
 
     return (
       <div className="h-32 bg-gradient-to-b from-neutral-50/20 to-neutral-100/20 dark:from-gray-800/20 dark:to-gray-900/20 rounded-lg p-4 relative overflow-hidden">
@@ -305,7 +305,7 @@ export const Home: React.FC = () => {
             <div className="max-w-lg mx-auto mb-4">
               {generateGrowthChart()}
 
-              {/* Timeline Buttons */}
+              {/* Timeline Buttons - Important buttons with toned down blue */}
               <div className="flex justify-center mt-4">
                 <div className="bg-neutral-100/50 dark:bg-gray-800/50 rounded-full p-1 flex gap-1">
                   {timeframes.map((timeframe) => (
@@ -314,7 +314,7 @@ export const Home: React.FC = () => {
                       onClick={() => setSelectedTimeframe(timeframe)}
                       className={`px-4 py-2 rounded-full text-body-small font-medium transition-all ${
                         selectedTimeframe === timeframe
-                          ? "bg-neutral-900 dark:bg-dark-text-accent text-white shadow-sm"
+                          ? "bg-blue-600 dark:bg-blue-700 text-white shadow-sm"
                           : "text-neutral-600 dark:text-gray-400 hover:text-neutral-900 dark:hover:text-gray-200 hover:bg-neutral-200/50 dark:hover:bg-gray-700/50"
                       }`}
                     >
@@ -350,7 +350,7 @@ export const Home: React.FC = () => {
           <div className="max-w-4xl mx-auto mb-8">
             <div className="bg-white dark:bg-dark-surface-primary border border-neutral-200 dark:border-dark-border-primary rounded-lg p-6 text-center">
               <div className="flex items-center justify-center gap-3">
-                <div className="w-5 h-5 border-2 border-neutral-300 dark:border-gray-600 border-t-neutral-900 dark:border-t-dark-text-accent rounded-full animate-spin" />
+                <div className="w-5 h-5 border-2 border-neutral-300 dark:border-gray-600 border-t-blue-600 dark:border-t-blue-500 rounded-full animate-spin" />
                 <span className="text-body-medium text-neutral-600 dark:text-dark-text-secondary">
                   Loading your portfolios...
                 </span>
@@ -426,11 +426,11 @@ export const Home: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Card Actions - Fixed at bottom */}
+                  {/* Card Actions - Fixed at bottom - Important button with toned down blue */}
                   <div className="px-6 pb-6">
                     <button
                       onClick={(e) => handleAddValue(portfolioItem, e)}
-                      className="w-full bg-neutral-100 dark:bg-gray-700 hover:bg-neutral-200 dark:hover:bg-gray-600 text-neutral-900 dark:text-dark-text-primary py-3 px-4 rounded-lg text-label-large font-medium transition-colors"
+                      className="w-full bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-600 text-white py-3 px-4 rounded-lg text-label-large font-medium transition-colors"
                     >
                       Add Virtual Value
                     </button>
@@ -529,7 +529,7 @@ export const Home: React.FC = () => {
                       setPortfolioValue(value);
                     }}
                     placeholder="10,000"
-                    className="w-full pl-8 pr-4 p-3 border border-neutral-300 dark:border-dark-border-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-neutral-500 dark:focus:ring-dark-text-accent focus:border-transparent text-body-medium bg-white dark:bg-dark-surface-secondary text-neutral-900 dark:text-dark-text-primary"
+                    className="w-full pl-8 pr-4 p-3 border border-neutral-300 dark:border-dark-border-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 dark:focus:ring-blue-500 focus:border-transparent text-body-medium bg-white dark:bg-dark-surface-secondary text-neutral-900 dark:text-dark-text-primary"
                     required
                     disabled={isAddingValue}
                   />
@@ -542,7 +542,7 @@ export const Home: React.FC = () => {
                 <button
                   type="submit"
                   disabled={isAddingValue}
-                  className="flex-1 bg-neutral-900 dark:bg-dark-text-accent text-white py-3 px-4 rounded-lg text-label-large font-medium hover:bg-neutral-800 dark:hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="flex-1 bg-blue-600 dark:bg-blue-700 text-white py-3 px-4 rounded-lg text-label-large font-medium hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {isAddingValue && (
                     <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -563,17 +563,17 @@ export const Home: React.FC = () => {
         </div>
       )}
 
-      {/* Features Section */}
+      {/* Features Section - No colors, only opacity and blue effects */}
       <div className="max-w-6xl mx-auto px-4 py-16">
         <div className="grid md:grid-cols-3 gap-8">
           {/* Portfolio Management */}
           <div className="text-center relative">
             {/* Floating Elements Container */}
             <div className="relative w-fit mx-auto mb-6 h-24">
-              {/* Main Icon Circle - Monochrome Glass Style */}
+              {/* Main Icon Circle - Monochrome with blue accent */}
               <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md border border-neutral-200/50 dark:border-gray-600/50 rounded-full shadow-lg flex items-center justify-center z-10">
-                <div className="w-8 h-8 bg-neutral-900 dark:bg-dark-text-accent rounded-sm flex items-center justify-center">
-                  <div className="w-5 h-5 text-white flex items-center justify-center">
+                <div className="w-8 h-8 bg-gradient-to-br from-blue-600/20 to-blue-700/30 dark:from-blue-500/20 dark:to-blue-600/30 rounded-sm flex items-center justify-center">
+                  <div className="w-5 h-5 text-neutral-700 dark:text-gray-300 flex items-center justify-center">
                     <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
                       <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
                     </svg>
@@ -581,9 +581,9 @@ export const Home: React.FC = () => {
                 </div>
               </div>
 
-              {/* Single Floating Element */}
-              <div className="absolute -top-2 -right-2 w-8 h-8 bg-white/80 dark:bg-gray-700/80 backdrop-blur-md border border-neutral-200/40 dark:border-gray-600/40 rounded-full shadow-md flex items-center justify-center opacity-60">
-                <div className="w-3 h-3 bg-neutral-300 dark:bg-gray-500 rounded-full"></div>
+              {/* Single Floating Element - Subtle opacity */}
+              <div className="absolute -top-2 -right-2 w-8 h-8 bg-white/60 dark:bg-gray-700/60 backdrop-blur-md border border-neutral-200/30 dark:border-gray-600/30 rounded-full shadow-md flex items-center justify-center opacity-40">
+                <div className="w-3 h-3 bg-neutral-300/60 dark:bg-gray-500/60 rounded-full"></div>
               </div>
             </div>
 
@@ -601,10 +601,10 @@ export const Home: React.FC = () => {
           <div className="text-center relative">
             {/* Floating Elements Container */}
             <div className="relative w-fit mx-auto mb-6 h-24">
-              {/* Main Icon Circle - Monochrome Glass Style */}
+              {/* Main Icon Circle - Monochrome with blue accent */}
               <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md border border-neutral-200/50 dark:border-gray-600/50 rounded-full shadow-lg flex items-center justify-center z-10">
-                <div className="w-8 h-8 bg-neutral-900 dark:bg-dark-text-accent rounded-sm flex items-center justify-center">
-                  <div className="w-5 h-5 text-white flex items-center justify-center">
+                <div className="w-8 h-8 bg-gradient-to-br from-blue-600/20 to-blue-700/30 dark:from-blue-500/20 dark:to-blue-600/30 rounded-sm flex items-center justify-center">
+                  <div className="w-5 h-5 text-neutral-700 dark:text-gray-300 flex items-center justify-center">
                     <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
                       <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                     </svg>
@@ -612,9 +612,9 @@ export const Home: React.FC = () => {
                 </div>
               </div>
 
-              {/* Single Floating Element */}
-              <div className="absolute -bottom-1 -left-3 w-6 h-6 bg-white/80 dark:bg-gray-700/80 backdrop-blur-md border border-neutral-200/40 dark:border-gray-600/40 rounded-full shadow-md flex items-center justify-center opacity-50">
-                <div className="w-2 h-2 bg-neutral-400 dark:bg-gray-500 rounded-full"></div>
+              {/* Single Floating Element - Subtle opacity */}
+              <div className="absolute -bottom-1 -left-3 w-6 h-6 bg-white/60 dark:bg-gray-700/60 backdrop-blur-md border border-neutral-200/30 dark:border-gray-600/30 rounded-full shadow-md flex items-center justify-center opacity-30">
+                <div className="w-2 h-2 bg-neutral-400/60 dark:bg-gray-500/60 rounded-full"></div>
               </div>
             </div>
 
@@ -632,10 +632,10 @@ export const Home: React.FC = () => {
           <div className="text-center relative">
             {/* Floating Elements Container */}
             <div className="relative w-fit mx-auto mb-6 h-24">
-              {/* Main Icon Circle - Simple CPU/Processor Icon */}
+              {/* Main Icon Circle - Monochrome with blue accent */}
               <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md border border-neutral-200/50 dark:border-gray-600/50 rounded-full shadow-lg flex items-center justify-center z-10">
-                <div className="w-8 h-8 bg-neutral-900 dark:bg-dark-text-accent rounded-sm flex items-center justify-center">
-                  <div className="w-5 h-5 text-white flex items-center justify-center">
+                <div className="w-8 h-8 bg-gradient-to-br from-blue-600/20 to-blue-700/30 dark:from-blue-500/20 dark:to-blue-600/30 rounded-sm flex items-center justify-center">
+                  <div className="w-5 h-5 text-neutral-700 dark:text-gray-300 flex items-center justify-center">
                     {/* Simple CPU/Processor Icon */}
                     <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
                       <path d="M5 7h14v10H5V7zm2 2v6h10V9H7z"/>
@@ -647,9 +647,9 @@ export const Home: React.FC = () => {
                 </div>
               </div>
 
-              {/* Single Floating Element */}
-              <div className="absolute -top-3 left-1 w-7 h-7 bg-white/80 dark:bg-gray-700/80 backdrop-blur-md border border-neutral-200/40 dark:border-gray-600/40 rounded-full shadow-md flex items-center justify-center opacity-50">
-                <div className="w-3 h-3 bg-neutral-200 dark:bg-gray-500 rounded-full"></div>
+              {/* Single Floating Element - Subtle opacity */}
+              <div className="absolute -top-3 left-1 w-7 h-7 bg-white/60 dark:bg-gray-700/60 backdrop-blur-md border border-neutral-200/30 dark:border-gray-600/30 rounded-full shadow-md flex items-center justify-center opacity-30">
+                <div className="w-3 h-3 bg-neutral-200/60 dark:bg-gray-500/60 rounded-full"></div>
               </div>
             </div>
 

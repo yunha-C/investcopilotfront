@@ -187,20 +187,20 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
             <img 
               src="/vestie logo v1.png" 
               alt="Vestie" 
-              className="h-6 w-auto"
+              className="h-6 w-auto dark:brightness-0 dark:invert"
               style={{
                 filter: 'brightness(0) saturate(100%) invert(4%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(96%) contrast(100%)'
               }}
             />
           </div>
-          <p className="text-body-large text-neutral-600">
+          <p className="text-body-large text-neutral-600 dark:text-dark-text-secondary">
             Investment agent powered by AI
           </p>
         </div>
 
-        <div className="bg-white/90 backdrop-blur-sm rounded-lg shadow-elevation-2 p-6">
+        <div className="bg-white/90 dark:bg-dark-surface-primary/90 backdrop-blur-sm rounded-lg shadow-elevation-2 dark:shadow-dark-elevation-2 p-6">
           <div className="mb-4">
-            <h2 className="text-headline-medium font-headline font-semi-bold text-neutral-900 mb-1">
+            <h2 className="text-headline-medium font-headline font-semi-bold text-neutral-900 dark:text-dark-text-primary mb-1">
               {isLogin ? 'Log In' : 'Create Account'}
             </h2>
           </div>
@@ -212,7 +212,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
               </div>
               <div className="flex-1">
                 <p className="text-body-small text-positive font-medium">Account created successfully!</p>
-                <p className="text-body-small text-neutral-600 mt-1">
+                <p className="text-body-small text-neutral-600 dark:text-dark-text-secondary mt-1">
                   Please log in with your email and password.
                 </p>
               </div>
@@ -225,7 +225,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
               <div className="flex-1">
                 <p className="text-body-small text-negative">{error}</p>
                 {isLogin && formData.email && (
-                  <p className="text-body-small text-neutral-500 mt-1">
+                  <p className="text-body-small text-neutral-500 dark:text-dark-text-muted mt-1">
                     Attempted login with: {formData.email}
                   </p>
                 )}
@@ -237,7 +237,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
             {!isLogin && (
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label htmlFor="firstName" className="block text-label-large font-medium text-neutral-700 mb-1">
+                  <label htmlFor="firstName" className="block text-label-large font-medium text-neutral-700 dark:text-dark-text-secondary mb-1">
                     First Name
                   </label>
                   <input
@@ -245,10 +245,10 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
                     id="firstName"
                     value={formData.firstName}
                     onChange={(e) => handleInputChange('firstName', e.target.value)}
-                    className={`w-full px-4 py-3 border rounded-sm text-body-medium focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-transparent transition-colors bg-white/80 ${
+                    className={`w-full px-4 py-3 border rounded-sm text-body-medium focus:outline-none focus:ring-2 focus:ring-blue-600 dark:focus:ring-blue-500 focus:border-transparent transition-colors bg-white/80 dark:bg-dark-surface-secondary text-neutral-900 dark:text-dark-text-primary ${
                       errors.firstName 
                         ? 'border-negative bg-negative/5' 
-                        : 'border-neutral-300 hover:border-neutral-400'
+                        : 'border-neutral-300 dark:border-gray-600 hover:border-neutral-400 dark:hover:border-gray-500'
                     }`}
                     placeholder="John"
                     aria-describedby={errors.firstName ? 'firstName-error' : undefined}
@@ -263,7 +263,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
                 </div>
 
                 <div>
-                  <label htmlFor="lastName" className="block text-label-large font-medium text-neutral-700 mb-1">
+                  <label htmlFor="lastName" className="block text-label-large font-medium text-neutral-700 dark:text-dark-text-secondary mb-1">
                     Last Name
                   </label>
                   <input
@@ -271,10 +271,10 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
                     id="lastName"
                     value={formData.lastName}
                     onChange={(e) => handleInputChange('lastName', e.target.value)}
-                    className={`w-full px-4 py-3 border rounded-sm text-body-medium focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-transparent transition-colors bg-white/80 ${
+                    className={`w-full px-4 py-3 border rounded-sm text-body-medium focus:outline-none focus:ring-2 focus:ring-blue-600 dark:focus:ring-blue-500 focus:border-transparent transition-colors bg-white/80 dark:bg-dark-surface-secondary text-neutral-900 dark:text-dark-text-primary ${
                       errors.lastName 
                         ? 'border-negative bg-negative/5' 
-                        : 'border-neutral-300 hover:border-neutral-400'
+                        : 'border-neutral-300 dark:border-gray-600 hover:border-neutral-400 dark:hover:border-gray-500'
                     }`}
                     placeholder="Doe"
                     aria-describedby={errors.lastName ? 'lastName-error' : undefined}
@@ -291,7 +291,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
             )}
 
             <div>
-              <label htmlFor="email" className="block text-label-large font-medium text-neutral-700 mb-1">
+              <label htmlFor="email" className="block text-label-large font-medium text-neutral-700 dark:text-dark-text-secondary mb-1">
                 Email Address
               </label>
               <input
@@ -299,10 +299,10 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
                 id="email"
                 value={formData.email}
                 onChange={(e) => handleInputChange('email', e.target.value)}
-                className={`w-full px-4 py-3 border rounded-sm text-body-medium focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-transparent transition-colors bg-white/80 ${
+                className={`w-full px-4 py-3 border rounded-sm text-body-medium focus:outline-none focus:ring-2 focus:ring-blue-600 dark:focus:ring-blue-500 focus:border-transparent transition-colors bg-white/80 dark:bg-dark-surface-secondary text-neutral-900 dark:text-dark-text-primary ${
                   errors.email 
                     ? 'border-negative bg-negative/5' 
-                    : 'border-neutral-300 hover:border-neutral-400'
+                    : 'border-neutral-300 dark:border-gray-600 hover:border-neutral-400 dark:hover:border-gray-500'
                 }`}
                 placeholder="john@example.com"
                 autoComplete="email"
@@ -318,7 +318,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-label-large font-medium text-neutral-700 mb-1">
+              <label htmlFor="password" className="block text-label-large font-medium text-neutral-700 dark:text-dark-text-secondary mb-1">
                 Password
               </label>
               <div className="relative">
@@ -327,10 +327,10 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
                   id="password"
                   value={formData.password}
                   onChange={(e) => handleInputChange('password', e.target.value)}
-                  className={`w-full pl-4 pr-12 py-3 border rounded-sm text-body-medium focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-transparent transition-colors bg-white/80 ${
+                  className={`w-full pl-4 pr-12 py-3 border rounded-sm text-body-medium focus:outline-none focus:ring-2 focus:ring-blue-600 dark:focus:ring-blue-500 focus:border-transparent transition-colors bg-white/80 dark:bg-dark-surface-secondary text-neutral-900 dark:text-dark-text-primary ${
                     errors.password 
                       ? 'border-negative bg-negative/5' 
-                      : 'border-neutral-300 hover:border-neutral-400'
+                      : 'border-neutral-300 dark:border-gray-600 hover:border-neutral-400 dark:hover:border-gray-500'
                   }`}
                   placeholder={isLogin ? 'Enter your password' : 'Create a strong password'}
                   autoComplete={isLogin ? 'current-password' : 'new-password'}
@@ -341,7 +341,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-neutral-500 hover:text-neutral-700 transition-colors disabled:opacity-50"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-neutral-500 dark:text-gray-400 hover:text-neutral-700 dark:hover:text-gray-300 transition-colors disabled:opacity-50"
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                   disabled={isLoading}
                 >
@@ -350,22 +350,22 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
               </div>
               {!isLogin && !errors.password && (
                 <div id="password-help" className="mt-1 space-y-1">
-                  <p className="text-body-small text-neutral-600 font-medium">Password requirements:</p>
-                  <ul className="text-body-small text-neutral-600 space-y-1">
+                  <p className="text-body-small text-neutral-600 dark:text-dark-text-secondary font-medium">Password requirements:</p>
+                  <ul className="text-body-small text-neutral-600 dark:text-dark-text-secondary space-y-1">
                     <li className="flex items-center gap-2">
-                      <span className={`w-2 h-2 rounded-full ${formData.password.length >= 8 ? 'bg-positive' : 'bg-neutral-300'}`}></span>
+                      <span className={`w-2 h-2 rounded-full ${formData.password.length >= 8 ? 'bg-positive' : 'bg-neutral-300 dark:bg-gray-600'}`}></span>
                       At least 8 characters
                     </li>
                     <li className="flex items-center gap-2">
-                      <span className={`w-2 h-2 rounded-full ${/[A-Z]/.test(formData.password) ? 'bg-positive' : 'bg-neutral-300'}`}></span>
+                      <span className={`w-2 h-2 rounded-full ${/[A-Z]/.test(formData.password) ? 'bg-positive' : 'bg-neutral-300 dark:bg-gray-600'}`}></span>
                       One uppercase letter
                     </li>
                     <li className="flex items-center gap-2">
-                      <span className={`w-2 h-2 rounded-full ${/[a-z]/.test(formData.password) ? 'bg-positive' : 'bg-neutral-300'}`}></span>
+                      <span className={`w-2 h-2 rounded-full ${/[a-z]/.test(formData.password) ? 'bg-positive' : 'bg-neutral-300 dark:bg-gray-600'}`}></span>
                       One lowercase letter
                     </li>
                     <li className="flex items-center gap-2">
-                      <span className={`w-2 h-2 rounded-full ${/\d/.test(formData.password) ? 'bg-positive' : 'bg-neutral-300'}`}></span>
+                      <span className={`w-2 h-2 rounded-full ${/\d/.test(formData.password) ? 'bg-positive' : 'bg-neutral-300 dark:bg-gray-600'}`}></span>
                       One number
                     </li>
                   </ul>
@@ -380,7 +380,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
 
             {!isLogin && (
               <div>
-                <label htmlFor="confirmPassword" className="block text-label-large font-medium text-neutral-700 mb-1">
+                <label htmlFor="confirmPassword" className="block text-label-large font-medium text-neutral-700 dark:text-dark-text-secondary mb-1">
                   Confirm Password
                 </label>
                 <div className="relative">
@@ -389,10 +389,10 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
                     id="confirmPassword"
                     value={formData.confirmPassword}
                     onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                    className={`w-full pl-4 pr-12 py-3 border rounded-sm text-body-medium focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-transparent transition-colors bg-white/80 ${
+                    className={`w-full pl-4 pr-12 py-3 border rounded-sm text-body-medium focus:outline-none focus:ring-2 focus:ring-blue-600 dark:focus:ring-blue-500 focus:border-transparent transition-colors bg-white/80 dark:bg-dark-surface-secondary text-neutral-900 dark:text-dark-text-primary ${
                       errors.confirmPassword 
                         ? 'border-negative bg-negative/5' 
-                        : 'border-neutral-300 hover:border-neutral-400'
+                        : 'border-neutral-300 dark:border-gray-600 hover:border-neutral-400 dark:hover:border-gray-500'
                     }`}
                     placeholder="Confirm your password"
                     autoComplete="new-password"
@@ -403,7 +403,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-neutral-500 hover:text-neutral-700 transition-colors disabled:opacity-50"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-neutral-500 dark:text-gray-400 hover:text-neutral-700 dark:hover:text-gray-300 transition-colors disabled:opacity-50"
                     aria-label={showConfirmPassword ? 'Hide password confirmation' : 'Show password confirmation'}
                     disabled={isLoading}
                   >
@@ -421,7 +421,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-neutral-900 text-white py-4 px-6 rounded-lg text-label-large font-medium hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full bg-blue-600 dark:bg-blue-700 text-white py-4 px-6 rounded-lg text-label-large font-medium hover:bg-blue-700 dark:hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600 dark:focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {isLoading ? (
                 <>
@@ -439,7 +439,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
           {isLogin && (
             <div className="mt-3 text-center">
               <button 
-                className="text-body-medium text-neutral-600 hover:text-neutral-800 transition-colors disabled:opacity-50 underline"
+                className="text-body-medium text-neutral-600 dark:text-dark-text-secondary hover:text-neutral-800 dark:hover:text-gray-300 transition-colors disabled:opacity-50 underline"
                 disabled={isLoading}
               >
                 Forgot password?
@@ -447,13 +447,13 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
             </div>
           )}
 
-          <div className="mt-4 pt-3 border-t border-neutral-200 text-center">
-            <p className="text-body-medium text-neutral-600 mb-2">
+          <div className="mt-4 pt-3 border-t border-neutral-200 dark:border-gray-600 text-center">
+            <p className="text-body-medium text-neutral-600 dark:text-dark-text-secondary mb-2">
               {isLogin ? "Don't have an account?" : 'Already have an account?'}
             </p>
             <button
               onClick={toggleAuthMode}
-              className="text-label-large font-medium text-neutral-900 hover:text-neutral-700 transition-colors disabled:opacity-50"
+              className="text-label-large font-medium text-neutral-900 dark:text-dark-text-primary hover:text-neutral-700 dark:hover:text-gray-300 transition-colors disabled:opacity-50"
               disabled={isLoading}
             >
               {isLogin ? 'Create Account' : 'Log In'}
@@ -463,13 +463,13 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
 
         {!isLogin && (
           <div className="mt-4 text-center">
-            <p className="text-body-small text-neutral-500">
+            <p className="text-body-small text-neutral-500 dark:text-dark-text-muted">
               By creating an account, you agree to our{' '}
-              <button className="text-neutral-700 hover:text-neutral-900 underline transition-colors">
+              <button className="text-neutral-700 dark:text-dark-text-secondary hover:text-neutral-900 dark:hover:text-gray-300 underline transition-colors">
                 Terms of Service
               </button>{' '}
               and{' '}
-              <button className="text-neutral-700 hover:text-neutral-900 underline transition-colors">
+              <button className="text-neutral-700 dark:text-dark-text-secondary hover:text-neutral-900 dark:hover:text-gray-300 underline transition-colors">
                 Privacy Policy
               </button>
             </p>
