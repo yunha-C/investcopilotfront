@@ -187,7 +187,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
             <img 
               src="/vestie logo v1.png" 
               alt="Vestie" 
-              className="h-6 w-auto dark:brightness-0 dark:invert"
+              className="h-6 w-auto"
               style={{
                 filter: 'brightness(0) saturate(100%) invert(4%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(96%) contrast(100%)'
               }}
@@ -198,7 +198,8 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
           </p>
         </div>
 
-        <div className="bg-white/90 dark:bg-dark-surface-primary/90 backdrop-blur-sm rounded-lg shadow-elevation-2 dark:shadow-dark-elevation-2 p-6">
+        {/* Enhanced login frame with better contrast in dark mode */}
+        <div className="bg-white/95 dark:bg-dark-surface-primary/95 backdrop-blur-sm rounded-lg shadow-elevation-2 dark:shadow-dark-elevation-2 border border-neutral-200/80 dark:border-dark-border-primary/80 p-6">
           <div className="mb-4">
             <h2 className="text-headline-medium font-headline font-semi-bold text-neutral-900 dark:text-dark-text-primary mb-1">
               {isLogin ? 'Log In' : 'Create Account'}
@@ -245,7 +246,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
                     id="firstName"
                     value={formData.firstName}
                     onChange={(e) => handleInputChange('firstName', e.target.value)}
-                    className={`w-full px-4 py-3 border rounded-sm text-body-medium focus:outline-none focus:ring-2 focus:ring-neutral-600 dark:focus:ring-neutral-500 focus:border-transparent transition-colors bg-white/80 dark:bg-dark-surface-secondary text-neutral-900 dark:text-dark-text-primary ${
+                    className={`w-full px-4 py-3 border rounded-sm text-body-medium focus:outline-none focus:ring-2 focus:ring-neutral-600 dark:focus:ring-neutral-500 focus:border-transparent transition-colors bg-white dark:bg-dark-surface-secondary text-neutral-900 dark:text-dark-text-primary ${
                       errors.firstName 
                         ? 'border-negative bg-negative/5' 
                         : 'border-neutral-300 dark:border-gray-600 hover:border-neutral-400 dark:hover:border-gray-500'
@@ -271,7 +272,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
                     id="lastName"
                     value={formData.lastName}
                     onChange={(e) => handleInputChange('lastName', e.target.value)}
-                    className={`w-full px-4 py-3 border rounded-sm text-body-medium focus:outline-none focus:ring-2 focus:ring-neutral-600 dark:focus:ring-neutral-500 focus:border-transparent transition-colors bg-white/80 dark:bg-dark-surface-secondary text-neutral-900 dark:text-dark-text-primary ${
+                    className={`w-full px-4 py-3 border rounded-sm text-body-medium focus:outline-none focus:ring-2 focus:ring-neutral-600 dark:focus:ring-neutral-500 focus:border-transparent transition-colors bg-white dark:bg-dark-surface-secondary text-neutral-900 dark:text-dark-text-primary ${
                       errors.lastName 
                         ? 'border-negative bg-negative/5' 
                         : 'border-neutral-300 dark:border-gray-600 hover:border-neutral-400 dark:hover:border-gray-500'
@@ -299,7 +300,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
                 id="email"
                 value={formData.email}
                 onChange={(e) => handleInputChange('email', e.target.value)}
-                className={`w-full px-4 py-3 border rounded-sm text-body-medium focus:outline-none focus:ring-2 focus:ring-neutral-600 dark:focus:ring-neutral-500 focus:border-transparent transition-colors bg-white/80 dark:bg-dark-surface-secondary text-neutral-900 dark:text-dark-text-primary ${
+                className={`w-full px-4 py-3 border rounded-sm text-body-medium focus:outline-none focus:ring-2 focus:ring-neutral-600 dark:focus:ring-neutral-500 focus:border-transparent transition-colors bg-white dark:bg-dark-surface-secondary text-neutral-900 dark:text-dark-text-primary ${
                   errors.email 
                     ? 'border-negative bg-negative/5' 
                     : 'border-neutral-300 dark:border-gray-600 hover:border-neutral-400 dark:hover:border-gray-500'
@@ -327,7 +328,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
                   id="password"
                   value={formData.password}
                   onChange={(e) => handleInputChange('password', e.target.value)}
-                  className={`w-full pl-4 pr-12 py-3 border rounded-sm text-body-medium focus:outline-none focus:ring-2 focus:ring-neutral-600 dark:focus:ring-neutral-500 focus:border-transparent transition-colors bg-white/80 dark:bg-dark-surface-secondary text-neutral-900 dark:text-dark-text-primary ${
+                  className={`w-full pl-4 pr-12 py-3 border rounded-sm text-body-medium focus:outline-none focus:ring-2 focus:ring-neutral-600 dark:focus:ring-neutral-500 focus:border-transparent transition-colors bg-white dark:bg-dark-surface-secondary text-neutral-900 dark:text-dark-text-primary ${
                     errors.password 
                       ? 'border-negative bg-negative/5' 
                       : 'border-neutral-300 dark:border-gray-600 hover:border-neutral-400 dark:hover:border-gray-500'
@@ -389,7 +390,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onAuthenticated }) => {
                     id="confirmPassword"
                     value={formData.confirmPassword}
                     onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                    className={`w-full pl-4 pr-12 py-3 border rounded-sm text-body-medium focus:outline-none focus:ring-2 focus:ring-neutral-600 dark:focus:ring-neutral-500 focus:border-transparent transition-colors bg-white/80 dark:bg-dark-surface-secondary text-neutral-900 dark:text-dark-text-primary ${
+                    className={`w-full pl-4 pr-12 py-3 border rounded-sm text-body-medium focus:outline-none focus:ring-2 focus:ring-neutral-600 dark:focus:ring-neutral-500 focus:border-transparent transition-colors bg-white dark:bg-dark-surface-secondary text-neutral-900 dark:text-dark-text-primary ${
                       errors.confirmPassword 
                         ? 'border-negative bg-negative/5' 
                         : 'border-neutral-300 dark:border-gray-600 hover:border-neutral-400 dark:hover:border-gray-500'
