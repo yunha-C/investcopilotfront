@@ -279,8 +279,8 @@ export const Home: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white/50 via-white/30 to-white/20 dark:from-gray-900/50 dark:via-gray-800/30 dark:to-gray-900/20">
-      {/* Hero Section */}
-      <div className="max-w-6xl mx-auto px-4 py-16">
+      {/* Hero Section - Add padding-top to account for fixed header */}
+      <div className="max-w-6xl mx-auto px-4 py-16 pt-24">
         {/* Portfolio Value Display - Always show */}
         <div className="text-center mb-12">
           <div className="mb-6">

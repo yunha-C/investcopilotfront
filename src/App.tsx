@@ -58,7 +58,6 @@ function App() {
     }
   }, [isAuthenticated, user, setCurrentStep]); // Removed currentStep and portfolio from deps to prevent loops
 
-
   const handleAuthenticated = () => {
     console.log('=== AUTHENTICATION SUCCESS ===');
     // Re-check auth status after successful authentication
@@ -107,7 +106,8 @@ function App() {
         ) : (
           <>
             <Header />
-            <div className="min-h-screen">
+            {/* Add padding-top to account for fixed header */}
+            <div className="min-h-screen pt-16">
               {currentStep === 'home' && <Home />}
               {currentStep === 'questionnaire' && <Questionnaire />}
               {currentStep === 'results' && <PortfolioResults />}
