@@ -17,6 +17,7 @@ import {
   Transaction,
   Portfolio,
 } from "../store/investmentStore";
+import { EasterEggPlayer } from "./EasterEggPlayer";
 
 export const Dashboard: React.FC = () => {
   const {
@@ -37,6 +38,7 @@ export const Dashboard: React.FC = () => {
     details: string;
   } | null>(null);
   const [isAddingValue, setIsAddingValue] = useState(false);
+  const [showEasterEgg, setShowEasterEgg] = useState(false);
 
   // Use activePortfolio instead of portfolio
   const portfolio = activePortfolio as Portfolio;
@@ -111,6 +113,14 @@ export const Dashboard: React.FC = () => {
   const handleAddInsight = (e: React.FormEvent) => {
     e.preventDefault();
     if (insightUrl.trim()) {
+      // Check for easter egg
+      if (insightUrl.toLowerCase().includes('aivestie.com')) {
+        setShowEasterEgg(true);
+        setInsightUrl("");
+        setShowInsightForm(false);
+        return;
+      }
+      
       setCurrentStep("insight-analysis");
       setInsightUrl("");
       setShowInsightForm(false);
@@ -879,6 +889,12 @@ export const Dashboard: React.FC = () => {
           )}
         </div>
       </div>
+      
+      {/* Easter Egg Player */}
+      <EasterEggPlayer 
+        isVisible={showEasterEgg} 
+        onClose={() => setShowEasterEgg(false)} 
+      />
     </div>
   );
 };
