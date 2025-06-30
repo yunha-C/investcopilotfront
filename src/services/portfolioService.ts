@@ -192,6 +192,7 @@ export interface PortfolioResponse {
       transaction_id: string;
       execution_price: number;
       shares_executed: number;
+      ai_reasoning?: string;
     }>;
     trading_actions: Array<{
       action: "BUY" | "SELL";
@@ -221,6 +222,7 @@ export interface PortfolioResponse {
       transaction_id: string;
       execution_price: number;
       shares_executed: number;
+      ai_reasoning?: string;
     }>;
     trading_actions: Array<{
       action: "BUY" | "SELL";

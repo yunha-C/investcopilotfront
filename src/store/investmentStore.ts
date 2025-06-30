@@ -85,7 +85,7 @@ export interface Portfolio {
       ticker: string;
       success: boolean;
       total_value: number;
-      ai_reasoning: string;
+      ai_reasoning?: string;
       transaction_id: string;
       execution_price: number;
       shares_executed: number;
@@ -114,7 +114,7 @@ export interface Portfolio {
       ticker: string;
       success: boolean;
       total_value: number;
-      ai_reasoning: string;
+      ai_reasoning?: string;
       transaction_id: string;
       execution_price: number;
       shares_executed: number;
@@ -143,7 +143,7 @@ export interface Portfolio {
       ticker: string;
       success: boolean;
       total_value: number;
-      ai_reasoning: string;
+      ai_reasoning?: string;
       transaction_id: string;
       execution_price: number;
       shares_executed: number;
@@ -159,7 +159,7 @@ export interface Portfolio {
       successful_trades: number;
       total_cash_impact: number;
     };
-  };
+  } | null;
   marketInsightsUpdatedAt?: string;
 }
 
