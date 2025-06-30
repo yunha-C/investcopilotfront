@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import {
   TrendingUp,
   Plus,
-  ExternalLink,
   ArrowLeft,
   Info,
   Shield,
@@ -88,7 +87,7 @@ export const Dashboard: React.FC = () => {
               <span className="text-body-medium">Back to Home</span>
             </button>
 
-            <div className="text-center py-16">
+            <div className="text-center py-8">
               <h1 className="text-headline-large font-headline font-semi-bold text-neutral-900 dark:text-dark-text-primary mb-4">
                 No Portfolio Selected
               </h1>
@@ -98,7 +97,7 @@ export const Dashboard: React.FC = () => {
               </p>
               <button
                 onClick={() => setCurrentStep("home")}
-                className="bg-slate-600 dark:bg-slate-700 text-white py-3 px-6 rounded-lg text-label-large font-medium hover:bg-slate-700 dark:hover:bg-slate-600 transition-colors"
+                className="bg-slate-600 text-white py-3 px-6 rounded-lg text-label-large font-medium hover:bg-slate-700 transition-colors"
               >
                 Go to Home
               </button>
@@ -345,7 +344,7 @@ export const Dashboard: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-white/50 via-white/30 to-white/20 dark:from-gray-900/50 dark:via-gray-800/30 dark:to-gray-900/20">
       <div className="px-4 py-8">
         <div className="max-w-6xl mx-auto">
-          <div className="mb-8">
+          <div className="mb-6">
             <button
               onClick={handleBackToHome}
               className="flex items-center gap-2 text-neutral-900 dark:text-dark-text-primary hover:text-neutral-700 dark:hover:text-gray-300 mb-4 transition-colors"
@@ -367,11 +366,11 @@ export const Dashboard: React.FC = () => {
           </div>
 
           {/* Main Portfolio Overview */}
-          <div className="bg-white dark:bg-dark-surface-primary rounded-lg shadow-elevation-1 dark:shadow-dark-elevation-1 border border-neutral-200 dark:border-dark-border-primary p-8 mb-8">
+          <div className="bg-white dark:bg-dark-surface-primary rounded-lg shadow-elevation-1 dark:shadow-dark-elevation-1 border border-neutral-200 dark:border-dark-border-primary p-6 mb-6">
             <div className="grid lg:grid-cols-2 gap-8">
               {/* Portfolio Value and Performance */}
               <div>
-                <div className="mb-6">
+                <div className="mb-4">
                   {hasValue ? (
                     <>
                       <p className="text-headline-small font-headline font-bold text-neutral-900 dark:text-dark-text-primary">
@@ -424,7 +423,7 @@ export const Dashboard: React.FC = () => {
                       </p>
                       <button
                         onClick={() => setShowAddValueForm(true)}
-                        className="bg-slate-600 dark:bg-slate-700 text-white px-6 py-3 rounded-lg text-label-large font-medium hover:bg-slate-700 dark:hover:bg-slate-600 transition-colors"
+                        className="bg-slate-600 text-white px-6 py-3 rounded-lg text-label-large font-medium hover:bg-slate-700 transition-colors"
                       >
                         Add Virtual Portfolio Value
                       </button>
@@ -511,7 +510,7 @@ export const Dashboard: React.FC = () => {
           </div>
 
           {/* Trade Simulation History */}
-          <div className="bg-white dark:bg-dark-surface-primary rounded-lg shadow-elevation-1 dark:shadow-dark-elevation-1 border border-neutral-200 dark:border-dark-border-primary p-8 mb-8">
+          <div className="bg-white dark:bg-dark-surface-primary rounded-lg shadow-elevation-1 dark:shadow-dark-elevation-1 border border-neutral-200 dark:border-dark-border-primary p-6 mb-6">
             <div className="flex items-center gap-3 mb-4">
               <TrendingUp className="w-5 h-5 text-neutral-700 dark:text-gray-300" />
               <h3 className="text-title-large font-headline font-semi-bold text-neutral-900 dark:text-dark-text-primary">
@@ -589,7 +588,7 @@ export const Dashboard: React.FC = () => {
           </div>
 
           {/* AI Simulation Reasoning */}
-          <div className="bg-white dark:bg-dark-surface-primary rounded-lg shadow-elevation-1 dark:shadow-dark-elevation-1 border border-neutral-200 dark:border-dark-border-primary p-8 mb-8">
+          <div className="bg-white dark:bg-dark-surface-primary rounded-lg shadow-elevation-1 dark:shadow-dark-elevation-1 border border-neutral-200 dark:border-dark-border-primary p-6 mb-6">
             <div className="flex items-center gap-3 mb-4">
               <Shield className="w-5 h-5 text-neutral-700 dark:text-gray-300" />
               <h3 className="text-title-large font-headline font-semi-bold text-neutral-900 dark:text-dark-text-primary">
@@ -597,7 +596,7 @@ export const Dashboard: React.FC = () => {
               </h3>
             </div>
             <div className="space-y-3">
-              <p className="text-body-medium text-neutral-700 dark:text-dark-text-secondary leading-relaxed">
+              <p className="text-body-medium text-neutral-700 dark:text-dark-text-secondary">
                 {portfolio.reasoning}
               </p>
               {/* AI Economic Context Keywords - Muted styling */}
@@ -620,7 +619,7 @@ export const Dashboard: React.FC = () => {
             </div>
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-6 mb-8">
+          <div className="grid lg:grid-cols-2 gap-6 mb-6">
             {/* Fee Breakdown */}
             <div className="bg-white dark:bg-dark-surface-primary rounded-lg shadow-elevation-1 dark:shadow-dark-elevation-1 border border-neutral-200 dark:border-dark-border-primary p-6">
               <div className="flex items-center gap-3 mb-4">
@@ -675,13 +674,13 @@ export const Dashboard: React.FC = () => {
                 </h3>
                 <button
                   onClick={() => setShowInsightForm(true)}
-                  className="p-2 bg-slate-600 dark:bg-slate-700 text-white rounded-lg hover:bg-slate-700 dark:hover:bg-slate-600 transition-colors"
+                  className="p-2 bg-slate-600 rounded-lg hover:bg-slate-700 transition-colors"
                 >
-                  <Plus className="w-4 h-4" />
+                  <Plus className="w-4 h-4 text-white" />
                 </button>
               </div>
 
-              {!activePortfolio?.latestMarketInsights ? (
+              {!activePortfolio?.appliedMarketInsights || activePortfolio.appliedMarketInsights.length === 0 ? (
                 <div className="text-center py-8">
                   <p className="text-body-medium text-neutral-500 dark:text-dark-text-muted mb-4">
                     No market insights available yet
@@ -695,36 +694,37 @@ export const Dashboard: React.FC = () => {
                 </div>
               ) : (
                 <div className="space-y-4 max-h-96 overflow-y-auto">
-                  <div className="border border-neutral-200 dark:border-gray-600 rounded-lg p-4">
-                    <div className="flex items-start justify-between mb-2">
-                      <h4 className="text-label-large font-medium text-neutral-900 dark:text-dark-text-primary">
-                        Latest Market Insight Analysis
-                      </h4>
-                      <span className="text-body-small text-neutral-500 dark:text-dark-text-muted">
-                        {new Date(activePortfolio.latestMarketInsights.executed_at).toLocaleDateString()}
+                  {activePortfolio.appliedMarketInsights.slice(0, 3).map((insight, index) => (
+                    <div key={index} className="border border-neutral-200 dark:border-gray-600 rounded-lg p-4">
+                      <div className="flex items-start justify-between mb-2">
+                        <h4 className="text-label-large font-medium text-neutral-900 dark:text-dark-text-primary">
+                          {insight.url_insights.title}
+                        </h4>
+                        <span className="text-body-small text-neutral-500 dark:text-dark-text-muted">
+                          {new Date(insight.executed_at).toLocaleDateString()}
                         </span>
                       </div>
                       <p className="text-body-small text-neutral-600 dark:text-dark-text-secondary mb-3">
-                        {activePortfolio.latestMarketInsights.url_insights}
+                        {insight.url_insights.description}
                       </p>
                       
                       {/* Trading Actions Summary */}
-                      {activePortfolio.latestMarketInsights.trading_actions && activePortfolio.latestMarketInsights.trading_actions.length > 0 && (
+                      {insight.trading_actions && insight.trading_actions.length > 0 && (
                         <div className="space-y-2 mb-3">
                           <h5 className="text-body-small font-medium text-neutral-800 dark:text-dark-text-primary">
-                            Recommended Actions:
+                            Actions Taken:
                           </h5>
-                          {activePortfolio.latestMarketInsights.trading_actions.slice(0, 3).map((action, index) => (
-                            <div key={index} className="flex items-center justify-between text-body-small">
-                              <span className="text-neutral-700 dark:text-dark-text-secondary">
-                                {action.action} {action.shares} {action.ticker}
-                              </span>
+                          {insight.trading_actions.slice(0, 3).map((action, actionIndex) => (
+                            <div key={actionIndex} className="flex items-center gap-2 text-body-small">
                               <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                                 action.action === 'BUY' ? 'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400' :
                                 action.action === 'SELL' ? 'bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400' :
                                 'bg-neutral-100 text-neutral-700 dark:bg-gray-700 dark:text-gray-300'
                               }`}>
-                                {Math.round(action.confidence * 100)}%
+                                {action.action}
+                              </span>
+                              <span className="text-neutral-700 dark:text-dark-text-secondary">
+                                {action.shares} {action.ticker}
                               </span>
                             </div>
                           ))}
@@ -732,37 +732,25 @@ export const Dashboard: React.FC = () => {
                       )}
                       
                       {/* Execution Summary */}
-                      {activePortfolio.latestMarketInsights.execution_summary && (
+                      {insight.execution_summary && (
                         <div className="mt-3 p-3 bg-neutral-100 dark:bg-gray-700 rounded-lg">
                           <div className="flex justify-between items-center text-body-small">
                             <span className="text-neutral-700 dark:text-gray-300">
-                              Executed: {activePortfolio.latestMarketInsights.execution_summary.successful_trades} trades
+                              Executed: {insight.execution_summary.successful_trades} trades
                             </span>
                             <span className={`font-medium ${
-                              activePortfolio.latestMarketInsights.execution_summary.total_cash_impact >= 0 
+                              insight.execution_summary.total_cash_impact >= 0 
                                 ? 'text-green-600 dark:text-green-400' 
                                 : 'text-red-600 dark:text-red-400'
                             }`}>
-                              {activePortfolio.latestMarketInsights.execution_summary.total_cash_impact >= 0 ? '+' : ''}
-                              ${activePortfolio.latestMarketInsights.execution_summary.total_cash_impact.toFixed(2)}
+                              {insight.execution_summary.total_cash_impact >= 0 ? '+' : ''}
+                              ${insight.execution_summary.total_cash_impact.toFixed(2)}
                             </span>
                           </div>
                         </div>
                       )}
-                      
-                      {activePortfolio.latestMarketInsights.trading_actions && 
-                       activePortfolio.latestMarketInsights.trading_actions.length > 0 && 
-                       activePortfolio.latestMarketInsights.trading_actions[0].source_url && (
-                        <a
-                          href={activePortfolio.latestMarketInsights.trading_actions[0].source_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-1 text-body-small text-neutral-900 dark:text-dark-text-primary hover:text-neutral-700 dark:hover:text-gray-300 mt-3"
-                        >
-                          View Source <ExternalLink className="w-3 h-3" />
-                        </a>
-                      )}
                     </div>
+                  ))}
                 </div>
               )}
             </div>
@@ -815,7 +803,7 @@ export const Dashboard: React.FC = () => {
                     <button
                       type="submit"
                       disabled={isAddingValue}
-                      className="flex-1 bg-slate-600 dark:bg-slate-700 text-white py-3 px-4 rounded-lg text-label-large font-medium hover:bg-slate-700 dark:hover:bg-slate-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                      className="flex-1 bg-slate-600 text-white py-3 px-4 rounded-lg text-label-large font-medium hover:bg-slate-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                     >
                       {isAddingValue && (
                         <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -864,7 +852,7 @@ export const Dashboard: React.FC = () => {
                   <div className="flex gap-3">
                     <button
                       type="submit"
-                      className="flex-1 bg-slate-600 dark:bg-slate-700 text-white py-3 px-4 rounded-lg text-label-large font-medium hover:bg-slate-700 dark:hover:bg-slate-600 transition-colors"
+                      className="flex-1 bg-slate-600 text-white py-3 px-4 rounded-lg text-label-large font-medium hover:bg-slate-700 transition-colors"
                     >
                       Analyze Insight
                     </button>
@@ -907,7 +895,7 @@ export const Dashboard: React.FC = () => {
                     <h4 className="text-label-large font-medium text-neutral-900 dark:text-dark-text-primary mb-2">
                       Detailed Analysis
                     </h4>
-                    <p className="text-body-medium text-neutral-700 dark:text-dark-text-secondary leading-relaxed">
+                    <p className="text-body-medium text-neutral-700 dark:text-dark-text-secondary">
                       {selectedKeyword.details}
                     </p>
                   </div>
@@ -915,7 +903,7 @@ export const Dashboard: React.FC = () => {
                   <div className="pt-4 border-t border-neutral-200 dark:border-gray-600">
                     <button
                       onClick={() => setSelectedKeyword(null)}
-                      className="w-full bg-slate-600 dark:bg-slate-700 text-white py-3 px-4 rounded-lg text-label-large font-medium hover:bg-slate-700 dark:hover:bg-slate-600 transition-colors"
+                      className="w-full bg-slate-600 text-white py-3 px-4 rounded-lg text-label-large font-medium hover:bg-slate-700 transition-colors"
                     >
                       Close
                     </button>

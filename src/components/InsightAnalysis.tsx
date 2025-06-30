@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { ArrowLeft, TrendingUp, AlertTriangle, CheckCircle, ExternalLink, BarChart3 } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { ArrowLeft, TrendingUp, AlertTriangle, CheckCircle, ExternalLink, BarChart3, X } from 'lucide-react';
 import { useInvestmentStore } from '../store/investmentStore';
 import { PortfolioChart } from './PortfolioChart';
 import { ProgressIndicator } from './ProgressIndicator';
@@ -11,20 +11,30 @@ export const InsightAnalysis: React.FC = () => {
   const [analysisResult, setAnalysisResult] = useState<any>(null);
   const [currentStep, setCurrentAnalysisStep] = useState(0);
   const [isExecutingTrades, setIsExecutingTrades] = useState(false);
+  const hasAnalysisStarted = useRef(false);
 
   // Get the URL and make API call
   useEffect(() => {
+    // Prevent duplicate API calls with a simple flag
+    if (hasAnalysisStarted.current) {
+      console.log("⚠️ Analysis already started, skipping duplicate call");
+      return;
+    }
+    
+    hasAnalysisStarted.current = true;
+    
     const analyzeInsight = async () => {
-      setIsAnalyzing(true);
-      setCurrentAnalysisStep(0);
+      console.log("🚀 Starting analysis...");
       
       // Get the URL from localStorage
       const urlToAnalyze = localStorage.getItem("pending_insight_url");
       if (!urlToAnalyze) {
-        console.error("No URL found for analysis");
+        console.error("❌ No URL found for analysis");
         setCurrentStep('dashboard');
         return;
       }
+      
+      console.log("📡 Analyzing URL:", urlToAnalyze);
       
       // Step 1: Content extraction
       await new Promise(resolve => setTimeout(resolve, 800));
@@ -41,36 +51,58 @@ export const InsightAnalysis: React.FC = () => {
       // Step 4: Generate recommendations - Make API call here
       try {
         if (activePortfolio) {
-          console.log("Making API call for market insight...");
+          console.log("📡 Making API call for market insight...");
           const apiResponse = await portfolioService.getMarketInsightRecommendations(
             activePortfolio.id,
             { marketInsightUrl: urlToAnalyze }
           );
+          console.log("✅ API response received:", apiResponse);
 
+        // Check if URL analysis failed
+        if (apiResponse.url_insights.failure) {
+          // Set analysis result to show error using API response information
+          setAnalysisResult({
+            title: apiResponse.url_insights.title || 'Analysis Not Applicable',
+            summary: apiResponse.url_insights.description,
+            impact: 'This content is not suitable for portfolio analysis. Please provide a URL with financial market news, economic analysis, or investment-related content.',
+            confidence: 0,
+            recommendation: 'invalid_url',
+            tradingActions: [],
+            suggestedChanges: [],
+            reasoning: apiResponse.url_insights.description,
+            riskImpact: 'No impact on portfolio',
+            returnImpact: 'No impact on returns',
+            url: urlToAnalyze,
+            fullApiResponse: null,
+            isValidUrl: false
+          });
+        } else {
           // Use API response directly for analysis
           const apiAnalysis = {
-            title: `Market Analysis: ${new URL(urlToAnalyze).hostname}`,
-            summary: apiResponse.url_insights,
-            impact: apiResponse.url_insights,
-            confidence: apiResponse.trading_actions && apiResponse.trading_actions.length > 0 ? 
-              Math.round(apiResponse.trading_actions.reduce((acc, action) => acc + action.confidence, 0) / apiResponse.trading_actions.length * 100) : 75,
+            title: apiResponse.url_insights.title || `Market Analysis: ${new URL(urlToAnalyze).hostname}`,
+            summary: apiResponse.url_insights.description,
+            impact: apiResponse.url_insights.description,
+            confidence: apiResponse.trading_actions && apiResponse.trading_actions.length > 0 ? 85 : 0,
             recommendation: apiResponse.trading_actions && apiResponse.trading_actions.length > 0 ? 'rebalance' : 'save_for_monitoring',
             tradingActions: apiResponse.trading_actions,
             suggestedChanges: [],
             reasoning: apiResponse.trading_actions && apiResponse.trading_actions.length > 0 ? 
-              apiResponse.trading_actions[0].ai_reasoning : 'No specific trading actions recommended at this time.',
+              `Based on the analysis, we recommend ${apiResponse.trading_actions.length} trading action${apiResponse.trading_actions.length > 1 ? 's' : ''}.` : 
+              'No specific trading actions recommended at this time.',
             riskImpact: 'Calculated based on trading actions',
             returnImpact: 'Expected to improve returns based on market analysis',
             url: urlToAnalyze,
-            fullApiResponse: apiResponse // Store full response for execution
+            fullApiResponse: apiResponse, // Store full response for execution
+            isValidUrl: true
           };
           
           setAnalysisResult(apiAnalysis);
-        } else {
-          throw new Error("No active portfolio found");
         }
+      } else {
+        throw new Error("No active portfolio found");
+      }
       } catch (error) {
-        console.error("API call failed:", error);
+        console.error("❌ API call failed:", error);
         // Set analysis result to null to show error state
         setAnalysisResult(null);
       }
@@ -85,16 +117,20 @@ export const InsightAnalysis: React.FC = () => {
   }, []); // Only run once when component mounts
 
   const handleExecuteTrades = async () => {
-    if (!analysisResult || !activePortfolio) return;
+    console.log("💰 handleExecuteTrades called, isExecutingTrades:", isExecutingTrades);
+    if (!analysisResult || !activePortfolio || isExecutingTrades) {
+      console.log("⚠️ Execute trades blocked - conditions not met");
+      return;
+    }
     
     setIsExecutingTrades(true);
     
     try {
       // Execute trading actions via API
       if (analysisResult.fullApiResponse) {
-        console.log("Executing trading actions via API...");
+        console.log("📡 Executing trading actions via API...");
         await portfolioService.executeMarketInsightRecommendations(activePortfolio.id, analysisResult.fullApiResponse);
-        console.log("Trading actions executed successfully");
+        console.log("✅ Trading actions executed successfully");
         
         // Reload user portfolios to get updated data with latestMarketInsights
         const userId = activePortfolio.userId;
@@ -154,7 +190,7 @@ export const InsightAnalysis: React.FC = () => {
 
             <div className="p-8">
               {isAnalyzing ? (
-                <div className="text-center py-16">
+                <div className="text-center py-8">
                   <div className="w-16 h-16 border-4 border-neutral-300 dark:border-gray-600 border-t-neutral-900 dark:border-t-neutral-700 rounded-full animate-spin mx-auto mb-8"></div>
                   <h3 className="text-title-large font-headline font-semi-bold text-neutral-900 dark:text-dark-text-primary mb-2">
                     Analyzing Market Insight
@@ -169,26 +205,26 @@ export const InsightAnalysis: React.FC = () => {
                       totalSteps={4}
                       stepLabels={[
                         'Content Extraction',
-                        'Market Sentiment Analysis', 
-                        'Portfolio Impact Assessment',
+                        'Sentiment Analysis', 
+                        'Impact Assessment',
                         'Generate Recommendations'
                       ]}
                     />
                   </div>
                   
                   <div className="max-w-md mx-auto">
-                    <div className="space-y-2 text-body-small text-neutral-500 dark:text-dark-text-muted">
+                    <div className="space-y-3 text-body-small text-neutral-500 dark:text-dark-text-muted">
                       <p className={currentStep >= 0 ? 'text-neutral-700 dark:text-gray-300' : ''}>
-                        {currentStep >= 0 ? '✓' : '⏳'} Content extraction and analysis
+                        {currentStep >= 0 ? '✓' : '⏳'} Extracting content
                       </p>
                       <p className={currentStep >= 1 ? 'text-neutral-700 dark:text-gray-300' : ''}>
-                        {currentStep >= 1 ? '✓' : '⏳'} Market sentiment evaluation
+                        {currentStep >= 1 ? '✓' : '⏳'} Analyzing sentiment
                       </p>
                       <p className={currentStep >= 2 ? 'text-neutral-700 dark:text-gray-300' : ''}>
-                        {currentStep >= 2 ? '✓' : '⏳'} Portfolio impact assessment
+                        {currentStep >= 2 ? '✓' : '⏳'} Assessing impact
                       </p>
                       <p className={currentStep >= 3 ? 'text-neutral-700 dark:text-gray-300' : ''}>
-                        {currentStep >= 3 ? '✓' : '⏳'} Generating recommendations...
+                        {currentStep >= 3 ? '✓' : '⏳'} Creating recommendations
                       </p>
                     </div>
                   </div>
@@ -199,10 +235,13 @@ export const InsightAnalysis: React.FC = () => {
                   <div className="bg-neutral-100 dark:bg-gray-800 rounded-lg p-6">
                     <div className="flex items-start gap-4 mb-4">
                       <div className={`p-2 rounded-lg ${
+                        analysisResult.isValidUrl === false ? 'bg-red-100 dark:bg-red-900/20' :
                         analysisResult.confidence >= 80 ? 'bg-positive/10' :
                         analysisResult.confidence >= 60 ? 'bg-warning/10' : 'bg-neutral-200 dark:bg-gray-700'
                       }`}>
-                        {analysisResult.confidence >= 80 ? (
+                        {analysisResult.isValidUrl === false ? (
+                          <X className="w-6 h-6 text-red-600 dark:text-red-400" />
+                        ) : analysisResult.confidence >= 80 ? (
                           <CheckCircle className="w-6 h-6 text-positive" />
                         ) : analysisResult.confidence >= 60 ? (
                           <AlertTriangle className="w-6 h-6 text-warning" />
@@ -216,10 +255,11 @@ export const InsightAnalysis: React.FC = () => {
                         </h3>
                         <div className="flex items-center gap-4 mb-3">
                           <span className={`text-body-small font-medium px-2 py-1 rounded-full ${
+                            analysisResult.isValidUrl === false ? 'bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400' :
                             analysisResult.confidence >= 80 ? 'bg-positive/20 text-positive' :
                             analysisResult.confidence >= 60 ? 'bg-warning/20 text-warning' : 'bg-neutral-200 dark:bg-gray-700 text-neutral-700 dark:text-gray-300'
                           }`}>
-                            {analysisResult.confidence}% Confidence
+                            {analysisResult.isValidUrl === false ? 'Not Applicable' : `${analysisResult.confidence}% Confidence`}
                           </span>
                           <a 
                             href={analysisResult.url} 
@@ -274,39 +314,21 @@ export const InsightAnalysis: React.FC = () => {
                       <h4 className="text-title-medium font-headline font-semi-bold text-neutral-900 dark:text-dark-text-primary mb-4">
                         Recommended Trading Actions
                       </h4>
-                      <div className="space-y-4">
+                      <div className="space-y-3">
                         {analysisResult.tradingActions.map((action: any, index: number) => (
                           <div key={index} className="border border-neutral-200 dark:border-gray-600 rounded-lg p-4">
-                            <div className="flex items-center justify-between mb-3">
-                              <div className="flex items-center gap-3">
-                                <span className={`px-2 py-1 rounded-full text-body-small font-medium ${
-                                  action.action === 'BUY' ? 'bg-positive/20 text-positive' : 'bg-warning/20 text-warning'
-                                }`}>
-                                  {action.action}
-                                </span>
-                                <span className="text-title-small font-semibold text-neutral-900 dark:text-dark-text-primary">
-                                  {action.ticker} - {action.shares} shares
-                                </span>
-                              </div>
-                              <span className="text-body-small text-neutral-600 dark:text-dark-text-secondary">
-                                {Math.round(action.confidence * 100)}% confidence
+                            <div className="flex items-center gap-3">
+                              <span className={`px-3 py-1 rounded-full text-body-small font-medium ${
+                                action.action === 'BUY' ? 'bg-positive/20 text-positive' : 'bg-warning/20 text-warning'
+                              }`}>
+                                {action.action}
                               </span>
-                            </div>
-                            <h5 className="text-body-medium font-semibold text-neutral-900 dark:text-dark-text-primary mb-2">
-                              {action.title}
-                            </h5>
-                            <p className="text-body-medium text-neutral-700 dark:text-dark-text-secondary mb-3">
-                              {action.description}
-                            </p>
-                            <div className="grid md:grid-cols-2 gap-4 text-body-small">
-                              <div>
-                                <span className="font-medium text-neutral-600 dark:text-dark-text-secondary">AI Reasoning:</span>
-                                <p className="text-neutral-700 dark:text-dark-text-secondary mt-1">{action.ai_reasoning}</p>
-                              </div>
-                              <div>
-                                <span className="font-medium text-neutral-600 dark:text-dark-text-secondary">Portfolio Impact:</span>
-                                <p className="text-neutral-700 dark:text-dark-text-secondary mt-1">{action.portfolio_impact}</p>
-                              </div>
+                              <span className="text-title-small font-semibold text-neutral-900 dark:text-dark-text-primary">
+                                {action.ticker}
+                              </span>
+                              <span className="text-body-medium text-neutral-600 dark:text-dark-text-secondary">
+                                {action.shares} shares
+                              </span>
                             </div>
                           </div>
                         ))}
@@ -351,7 +373,7 @@ export const InsightAnalysis: React.FC = () => {
 
                   {/* Action Buttons */}
                   <div className="flex gap-4 pt-6 border-t border-neutral-200 dark:border-gray-600">
-                    {analysisResult.tradingActions && analysisResult.tradingActions.length > 0 ? (
+                    {analysisResult.tradingActions && analysisResult.tradingActions.length > 0 && analysisResult.isValidUrl !== false ? (
                       <>
                         <button
                           onClick={handleExecuteTrades}
@@ -359,7 +381,7 @@ export const InsightAnalysis: React.FC = () => {
                           className={`flex-1 py-4 px-6 rounded-lg text-label-large font-medium transition-colors flex items-center justify-center gap-2 ${
                             isExecutingTrades 
                               ? 'bg-gray-400 dark:bg-gray-600 text-gray-200 cursor-not-allowed' 
-                              : 'bg-green-600 dark:bg-green-700 text-white hover:bg-green-700 dark:hover:bg-green-600'
+                              : 'bg-slate-600 text-white hover:bg-slate-700'
                           }`}
                         >
                           {isExecutingTrades ? (
@@ -397,7 +419,7 @@ export const InsightAnalysis: React.FC = () => {
                   </div>
                 </div>
               ) : (
-                <div className="text-center py-16">
+                <div className="text-center py-8">
                   <AlertTriangle className="w-16 h-16 text-warning mx-auto mb-4" />
                   <h3 className="text-title-large font-headline font-semi-bold text-neutral-900 dark:text-dark-text-primary mb-2">
                     Analysis Failed

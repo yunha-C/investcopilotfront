@@ -75,7 +75,11 @@ export interface Portfolio {
   profitLossAmount?: number;
   latestMarketInsights?: {
     executed_at: string;
-    url_insights: string;
+    url_insights: {
+      title: string;
+      description: string;
+      failure: boolean;
+    };
     trade_results: Array<{
       action: "BUY" | "SELL";
       ticker: string;
@@ -87,15 +91,67 @@ export interface Portfolio {
       shares_executed: number;
     }>;
     trading_actions: Array<{
-      title: string;
-      action: "BUY" | "SELL" | "HOLD";
-      shares: number;
+      action: "BUY" | "SELL";
       ticker: string;
-      confidence: number;
-      source_url: string;
+      shares: number;
+    }>;
+    execution_summary: {
+      hold_actions: number;
+      failed_trades: number;
+      successful_trades: number;
+      total_cash_impact: number;
+    };
+  };
+  appliedMarketInsights?: Array<{
+    executed_at: string;
+    url_insights: {
+      title: string;
       description: string;
+      failure: boolean;
+    };
+    trade_results: Array<{
+      action: "BUY" | "SELL";
+      ticker: string;
+      success: boolean;
+      total_value: number;
       ai_reasoning: string;
-      portfolio_impact: string;
+      transaction_id: string;
+      execution_price: number;
+      shares_executed: number;
+    }>;
+    trading_actions: Array<{
+      action: "BUY" | "SELL";
+      ticker: string;
+      shares: number;
+    }>;
+    execution_summary: {
+      hold_actions: number;
+      failed_trades: number;
+      successful_trades: number;
+      total_cash_impact: number;
+    };
+  }>;
+  latestAppliedMarketInsights?: {
+    executed_at: string;
+    url_insights: {
+      title: string;
+      description: string;
+      failure: boolean;
+    };
+    trade_results: Array<{
+      action: "BUY" | "SELL";
+      ticker: string;
+      success: boolean;
+      total_value: number;
+      ai_reasoning: string;
+      transaction_id: string;
+      execution_price: number;
+      shares_executed: number;
+    }>;
+    trading_actions: Array<{
+      action: "BUY" | "SELL";
+      ticker: string;
+      shares: number;
     }>;
     execution_summary: {
       hold_actions: number;

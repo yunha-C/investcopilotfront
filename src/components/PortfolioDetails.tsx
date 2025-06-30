@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowLeft, TrendingUp, Calendar, ExternalLink, Calculator, Info } from 'lucide-react';
+import { ArrowLeft, TrendingUp, Calendar, Calculator, Info } from 'lucide-react';
 import { useInvestmentStore } from '../store/investmentStore';
 import { PortfolioChart } from './PortfolioChart';
 
@@ -28,7 +28,7 @@ export const PortfolioDetails: React.FC = () => {
               <span className="text-body-medium">Back to Dashboard</span>
             </button>
             
-            <div className="text-center py-16">
+            <div className="text-center py-8">
               <h1 className="text-headline-large font-headline font-semi-bold text-neutral-900 dark:text-dark-text-primary mb-4">
                 No Portfolio Selected
               </h1>
@@ -287,7 +287,7 @@ export const PortfolioDetails: React.FC = () => {
 
                 <div>
                   <h3 className="text-title-large font-headline font-semi-bold text-neutral-900 dark:text-dark-text-primary mb-4">Market Insights</h3>
-                  {!portfolio?.latestMarketInsights ? (
+                  {!portfolio?.appliedMarketInsights || portfolio.appliedMarketInsights.length === 0 ? (
                     <div className="bg-neutral-100/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg p-6 text-center">
                       <p className="text-body-medium text-neutral-500 dark:text-dark-text-muted mb-2">No market insights available yet</p>
                       <p className="text-body-small text-neutral-400 dark:text-gray-500">
@@ -296,62 +296,54 @@ export const PortfolioDetails: React.FC = () => {
                     </div>
                   ) : (
                     <div className="space-y-4">
-                      <div className="bg-white/80 dark:bg-dark-surface-secondary/80 backdrop-blur-sm border border-neutral-200 dark:border-gray-600 rounded-lg p-4">
-                        <div className="flex items-start justify-between mb-3">
-                          <h4 className="text-label-large font-medium text-neutral-900 dark:text-dark-text-primary">Latest Market Analysis</h4>
-                          <div className="flex items-center gap-1 text-body-small text-neutral-500 dark:text-dark-text-muted">
-                            <Calendar className="w-3 h-3" />
-                            {new Date(portfolio.latestMarketInsights.executed_at).toLocaleDateString()}
-                          </div>
-                        </div>
-                        <p className="text-body-small text-neutral-600 dark:text-dark-text-secondary mb-3">{portfolio.latestMarketInsights.url_insights}</p>
-                        
-                        {/* Trading Actions Summary */}
-                        {portfolio.latestMarketInsights.trading_actions && portfolio.latestMarketInsights.trading_actions.length > 0 && (
-                          <div className="mb-3">
-                            <h5 className="text-body-small font-medium text-neutral-800 dark:text-dark-text-primary mb-2">
-                              Actions Taken:
-                            </h5>
-                            <div className="space-y-1">
-                              {portfolio.latestMarketInsights.trading_actions.slice(0, 3).map((action, index) => (
-                                <div key={index} className="flex items-center justify-between text-body-small">
-                                  <span className="text-neutral-700 dark:text-dark-text-secondary">
-                                    {action.action} {action.shares} {action.ticker}
-                                  </span>
-                                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                    action.action === 'BUY' ? 'bg-green-100 text-green-700' :
-                                    action.action === 'SELL' ? 'bg-red-100 text-red-700' :
-                                    'bg-neutral-100 text-neutral-700'
-                                  }`}>
-                                    {Math.round(action.confidence * 100)}%
-                                  </span>
-                                </div>
-                              ))}
+                      {portfolio.appliedMarketInsights.slice(0, 5).map((insight, index) => (
+                        <div key={index} className="bg-white/80 dark:bg-dark-surface-secondary/80 backdrop-blur-sm border border-neutral-200 dark:border-gray-600 rounded-lg p-4">
+                          <div className="flex items-start justify-between mb-3">
+                            <h4 className="text-label-large font-medium text-neutral-900 dark:text-dark-text-primary">{insight.url_insights.title}</h4>
+                            <div className="flex items-center gap-1 text-body-small text-neutral-500 dark:text-dark-text-muted">
+                              <Calendar className="w-3 h-3" />
+                              {new Date(insight.executed_at).toLocaleDateString()}
                             </div>
                           </div>
-                        )}
-                        
-                        <div className="flex items-center justify-between">
-                          {portfolio.latestMarketInsights.trading_actions && 
-                           portfolio.latestMarketInsights.trading_actions.length > 0 && 
-                           portfolio.latestMarketInsights.trading_actions[0].source_url && (
-                            <a 
-                              href={portfolio.latestMarketInsights.trading_actions[0].source_url} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="flex items-center gap-1 text-body-small text-neutral-900 dark:text-dark-text-primary hover:text-neutral-700 dark:hover:text-gray-300 transition-colors"
-                            >
-                              View Source <ExternalLink className="w-3 h-3" />
-                            </a>
+                          <p className="text-body-small text-neutral-600 dark:text-dark-text-secondary mb-3">
+                            {insight.url_insights.description}
+                          </p>
+                          
+                          {/* Trading Actions Summary */}
+                          {insight.trading_actions && insight.trading_actions.length > 0 && (
+                            <div className="mb-3">
+                              <h5 className="text-body-small font-medium text-neutral-800 dark:text-dark-text-primary mb-2">
+                                Actions Taken:
+                              </h5>
+                              <div className="space-y-1">
+                                {insight.trading_actions.slice(0, 3).map((action, actionIndex) => (
+                                  <div key={actionIndex} className="flex items-center gap-2 text-body-small">
+                                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                      action.action === 'BUY' ? 'bg-green-100 text-green-700' :
+                                      action.action === 'SELL' ? 'bg-red-100 text-red-700' :
+                                      'bg-neutral-100 text-neutral-700'
+                                    }`}>
+                                      {action.action}
+                                    </span>
+                                    <span className="text-neutral-700 dark:text-dark-text-secondary">
+                                      {action.shares} {action.ticker}
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
                           )}
-                          {portfolio.latestMarketInsights.execution_summary && 
-                           portfolio.latestMarketInsights.execution_summary.successful_trades > 0 && (
-                            <span className="px-2 py-1 bg-positive/10 text-positive text-body-small rounded-full">
-                              {portfolio.latestMarketInsights.execution_summary.successful_trades} Trades Executed
-                            </span>
-                          )}
+                          
+                          <div className="flex items-center justify-end">
+                            {insight.execution_summary && 
+                             insight.execution_summary.successful_trades > 0 && (
+                              <span className="px-2 py-1 bg-positive/10 text-positive text-body-small rounded-full">
+                                {insight.execution_summary.successful_trades} Trades Executed
+                              </span>
+                            )}
+                          </div>
                         </div>
-                      </div>
+                      ))}
                     </div>
                   )}
                 </div>

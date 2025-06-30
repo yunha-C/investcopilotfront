@@ -149,7 +149,11 @@ export interface PortfolioResponse {
   profitLossAmount?: number;
   latestMarketInsights?: {
     executed_at: string;
-    url_insights: string;
+    url_insights: {
+      title: string;
+      description: string;
+      failure: boolean;
+    };
     trade_results: Array<{
       action: "BUY" | "SELL";
       ticker: string;
@@ -161,15 +165,9 @@ export interface PortfolioResponse {
       shares_executed: number;
     }>;
     trading_actions: Array<{
-      title: string;
-      action: "BUY" | "SELL" | "HOLD";
-      shares: number;
+      action: "BUY" | "SELL";
       ticker: string;
-      confidence: number;
-      source_url: string;
-      description: string;
-      ai_reasoning: string;
-      portfolio_impact: string;
+      shares: number;
     }>;
     execution_summary: {
       hold_actions: number;
@@ -234,22 +232,22 @@ export interface TradingAction {
   action: "BUY" | "SELL";
   ticker: string;
   shares: number;
+}
+
+export interface UrlInsights {
   title: string;
   description: string;
-  ai_reasoning: string;
-  portfolio_impact: string;
-  confidence: number;
-  source_url: string;
+  failure: boolean;
 }
 
 export interface MarketInsightResponse {
   trading_actions: TradingAction[];
-  url_insights: string;
+  url_insights: UrlInsights;
 }
 
 export interface ExecuteMarketInsightRequest {
   trading_actions: TradingAction[];
-  url_insights: string;
+  url_insights: UrlInsights;
 }
 
 export interface ApiError {

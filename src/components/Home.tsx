@@ -280,14 +280,14 @@ export const Home: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-white/50 via-white/30 to-white/20 dark:from-gray-900/50 dark:via-gray-800/30 dark:to-gray-900/20">
       {/* Hero Section - Add padding-top to account for fixed header */}
-      <div className="max-w-6xl mx-auto px-4 py-16 pt-24">
+      <div className="max-w-6xl mx-auto px-4 py-8 pt-20">
         {/* Portfolio Value Display - Always show */}
-        <div className="text-center mb-12">
-          <div className="mb-6">
+        <div className="text-center mb-8">
+          <div className="mb-4">
             <p className="text-display-medium font-headline font-bold text-neutral-900 dark:text-dark-text-primary mb-1">
               ${totalValue.toLocaleString()}
             </p>
-            <div className="flex items-center justify-center gap-2 mb-6">
+            <div className="flex items-center justify-center gap-2 mb-4">
               <TrendingUp
                 className={`w-6 h-6 ${getGrowthColor(totalProfitLoss)}`}
               />
@@ -564,12 +564,12 @@ export const Home: React.FC = () => {
       )}
 
       {/* Features Section - No colors, only opacity and blue effects */}
-      <div className="max-w-6xl mx-auto px-4 py-16">
-        <div className="grid md:grid-cols-3 gap-8">
+      <div className="max-w-6xl mx-auto px-4 py-6">
+        <div className="grid md:grid-cols-3 gap-6">
           {/* Portfolio Management */}
           <div className="text-center relative">
             {/* Floating Elements Container */}
-            <div className="relative w-fit mx-auto mb-6 h-24">
+            <div className="relative w-fit mx-auto mb-3 h-20">
               {/* Main Icon Circle - Monochrome with blue accent */}
               <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md border border-neutral-200/50 dark:border-gray-600/50 rounded-full shadow-lg flex items-center justify-center z-10">
                 <div className="w-8 h-8 bg-gradient-to-br from-blue-600/20 to-blue-700/30 dark:from-blue-500/20 dark:to-blue-600/30 rounded-sm flex items-center justify-center">
@@ -587,11 +587,11 @@ export const Home: React.FC = () => {
               </div>
             </div>
 
-            <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 dark:text-dark-text-primary mb-3">
+            <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 dark:text-dark-text-primary mb-2">
               Portfolio Management
             </h3>
             <div className="w-4/5 mx-auto">
-              <p className="text-body-medium text-neutral-600 dark:text-dark-text-secondary font-light text-justify">
+              <p className="text-body-medium text-neutral-600 dark:text-dark-text-secondary font-light text-center">
                 Create and manage diversified investment portfolios based on your preferences and risk tolerance.
               </p>
             </div>
@@ -600,7 +600,7 @@ export const Home: React.FC = () => {
           {/* Your Market Insight */}
           <div className="text-center relative">
             {/* Floating Elements Container */}
-            <div className="relative w-fit mx-auto mb-6 h-24">
+            <div className="relative w-fit mx-auto mb-3 h-20">
               {/* Main Icon Circle - Monochrome with blue accent */}
               <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md border border-neutral-200/50 dark:border-gray-600/50 rounded-full shadow-lg flex items-center justify-center z-10">
                 <div className="w-8 h-8 bg-gradient-to-br from-blue-600/20 to-blue-700/30 dark:from-blue-500/20 dark:to-blue-600/30 rounded-sm flex items-center justify-center">
@@ -618,11 +618,11 @@ export const Home: React.FC = () => {
               </div>
             </div>
 
-            <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 dark:text-dark-text-primary mb-3">
+            <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 dark:text-dark-text-primary mb-2">
               Your Market Insight
             </h3>
             <div className="w-4/5 mx-auto">
-              <p className="text-body-medium text-neutral-600 dark:text-dark-text-secondary font-light text-justify">
+              <p className="text-body-medium text-neutral-600 dark:text-dark-text-secondary font-light text-center">
                 Share market insights and research to influence your AI-powered portfolio decisions and strategies.
               </p>
             </div>
@@ -631,7 +631,7 @@ export const Home: React.FC = () => {
           {/* AI Simulation */}
           <div className="text-center relative">
             {/* Floating Elements Container */}
-            <div className="relative w-fit mx-auto mb-6 h-24">
+            <div className="relative w-fit mx-auto mb-3 h-20">
               {/* Main Icon Circle - Monochrome with blue accent */}
               <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md border border-neutral-200/50 dark:border-gray-600/50 rounded-full shadow-lg flex items-center justify-center z-10">
                 <div className="w-8 h-8 bg-gradient-to-br from-blue-600/20 to-blue-700/30 dark:from-blue-500/20 dark:to-blue-600/30 rounded-sm flex items-center justify-center">
@@ -653,11 +653,11 @@ export const Home: React.FC = () => {
               </div>
             </div>
 
-            <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 dark:text-dark-text-primary mb-3">
+            <h3 className="text-title-medium font-headline font-semi-bold text-neutral-900 dark:text-dark-text-primary mb-2">
               AI Simulation
             </h3>
             <div className="w-4/5 mx-auto">
-              <p className="text-body-medium text-neutral-600 dark:text-dark-text-secondary font-light text-justify">
+              <p className="text-body-medium text-neutral-600 dark:text-dark-text-secondary font-light text-center">
                 Advanced AI algorithms simulate market conditions and optimize your investment strategy for better returns.
               </p>
             </div>
