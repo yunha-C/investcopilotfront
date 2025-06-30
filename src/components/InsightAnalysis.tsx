@@ -487,13 +487,13 @@ export const InsightAnalysis: React.FC = () => {
                           disabled={isExecutingTrades}
                           className={`flex-1 py-4 px-6 rounded-lg text-label-large font-medium transition-colors flex items-center justify-center gap-2 ${
                             isExecutingTrades
-                              ? "bg-gray-400 dark:bg-gray-600 text-gray-200 cursor-not-allowed"
-                              : "bg-neutral-900 text-white hover:bg-neutral-800"
+                              ? "bg-neutral-100 text-neutral-400 cursor-not-allowed"
+                              : "bg-neutral-100 text-black hover:bg-neutral-900 hover:text-white"
                           }`}
                         >
                           {isExecutingTrades ? (
                             <>
-                              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                              <div className="w-5 h-5 border-2 border-neutral-300 border-t-neutral-400 rounded-full animate-spin"></div>
                               Executing Trades...
                             </>
                           ) : (
@@ -508,7 +508,7 @@ export const InsightAnalysis: React.FC = () => {
                           disabled={isExecutingTrades}
                           className={`flex-1 border-2 py-4 px-6 rounded-lg text-label-large font-medium transition-colors ${
                             isExecutingTrades
-                              ? "border-gray-400 dark:border-gray-600 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                              ? "border-neutral-200 text-neutral-400 cursor-not-allowed bg-neutral-50"
                               : "border-neutral-300 dark:border-gray-600 text-neutral-700 dark:text-dark-text-primary hover:bg-neutral-100 dark:hover:bg-gray-700"
                           }`}
                         >
@@ -518,7 +518,12 @@ export const InsightAnalysis: React.FC = () => {
                     ) : (
                       <button
                         onClick={handleDeclineTrades}
-                        className="flex-1 bg-neutral-900 dark:bg-neutral-700 text-white py-4 px-6 rounded-lg text-label-large font-medium hover:bg-neutral-800 dark:hover:bg-neutral-600 transition-colors"
+                        disabled={isExecutingTrades}
+                        className={`flex-1 py-4 px-6 rounded-lg text-label-large font-medium transition-colors ${
+                          isExecutingTrades
+                            ? "bg-neutral-100 text-neutral-400 cursor-not-allowed"
+                            : "bg-neutral-100 text-black hover:bg-neutral-900 hover:text-white"
+                        }`}
                       >
                         Return to Portfolio
                       </button>
@@ -537,7 +542,12 @@ export const InsightAnalysis: React.FC = () => {
                   </p>
                   <button
                     onClick={handleBack}
-                    className="bg-neutral-900 dark:bg-neutral-700 text-white py-3 px-6 rounded-lg text-label-large font-medium hover:bg-neutral-800 dark:hover:bg-neutral-600 transition-colors"
+                    disabled={isAnalyzing}
+                    className={`bg-neutral-100 py-3 px-6 rounded-lg text-label-large font-medium transition-colors ${
+                      isAnalyzing
+                        ? "text-neutral-400 cursor-not-allowed"
+                        : "text-black hover:bg-neutral-900 hover:text-white"
+                    }`}
                   >
                     Back to Dashboard
                   </button>

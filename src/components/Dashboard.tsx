@@ -37,6 +37,7 @@ export const Dashboard: React.FC = () => {
   } | null>(null);
   const [isAddingValue, setIsAddingValue] = useState(false);
   const [showEasterEgg, setShowEasterEgg] = useState(false);
+  const [showAllTrades, setShowAllTrades] = useState(false);
 
   // Use activePortfolio instead of portfolio
   const portfolio = activePortfolio as Portfolio;
@@ -380,7 +381,14 @@ export const Dashboard: React.FC = () => {
                         <TrendingUp
                           className={`w-4 h-4 ${getGrowthColor(
                             portfolio.profitLossPercentage || 0
-                          )}`}
+                          )} transition-transform duration-300`}
+                          style={{
+                            transformOrigin: "50% 50%",
+                            transform:
+                              (portfolio.profitLossPercentage || 0) < 0
+                                ? "scaleY(-1)"
+                                : undefined,
+                          }}
                         />
                         <span
                           className={`${getGrowthColor(
@@ -423,7 +431,7 @@ export const Dashboard: React.FC = () => {
                       </p>
                       <button
                         onClick={() => setShowAddValueForm(true)}
-                        className="bg-slate-600 text-white px-6 py-3 rounded-lg text-label-large font-medium hover:bg-slate-700 transition-colors"
+                        className="bg-neutral-100 text-black px-6 py-3 rounded-lg text-label-large font-medium hover:bg-neutral-900 hover:text-white transition-colors"
                       >
                         Add Virtual Portfolio Value
                       </button>
@@ -511,11 +519,36 @@ export const Dashboard: React.FC = () => {
 
           {/* Trade Simulation History */}
           <div className="bg-white dark:bg-dark-surface-primary rounded-lg shadow-elevation-1 dark:shadow-dark-elevation-1 border border-neutral-200 dark:border-dark-border-primary p-6 mb-6">
-            <div className="flex items-center gap-3 mb-4">
-              <TrendingUp className="w-5 h-5 text-neutral-700 dark:text-gray-300" />
-              <h3 className="text-title-large font-headline font-semi-bold text-neutral-900 dark:text-dark-text-primary">
-                Trade Simulation History
-              </h3>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <TrendingUp className="w-5 h-5 text-neutral-700 dark:text-gray-300" />
+                <h3 className="text-title-large font-headline font-semi-bold text-neutral-900 dark:text-dark-text-primary">
+                  Trade Simulation History
+                </h3>
+              </div>
+              {tradeHistory.length > 4 && (
+                <button
+                  onClick={() => setShowAllTrades((prev) => !prev)}
+                  className="p-2 rounded-full hover:bg-neutral-100 dark:hover:bg-gray-700 transition-colors"
+                  aria-label={showAllTrades ? "Collapse" : "Expand"}
+                >
+                  <svg
+                    className={`w-5 h-5 transition-transform ${
+                      showAllTrades ? "rotate-180" : ""
+                    }`}
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
+              )}
             </div>
             <div className="space-y-3">
               {tradeHistory.length === 0 ? (
@@ -525,63 +558,65 @@ export const Dashboard: React.FC = () => {
                   </p>
                 </div>
               ) : (
-                tradeHistory.map((trade: any) => (
-                  <div
-                    key={trade.id}
-                    className="flex items-start gap-4 p-4 bg-neutral-50 dark:bg-gray-800 rounded-lg"
-                  >
+                (showAllTrades ? tradeHistory : tradeHistory.slice(0, 4)).map(
+                  (trade: any) => (
                     <div
-                      className={`flex-shrink-0 p-2 rounded-full ${
-                        trade.type === "buy"
-                          ? "bg-positive/10"
-                          : trade.type === "sell"
-                          ? "bg-negative/10"
-                          : "bg-blue-100 dark:bg-blue-900/20"
-                      }`}
+                      key={trade.id}
+                      className="flex flex-col gap-1 p-4 bg-neutral-50 dark:bg-gray-800 rounded-lg"
                     >
-                      {trade.type === "buy" ? (
-                        <ArrowUpRight className="w-4 h-4 text-positive" />
-                      ) : trade.type === "sell" ? (
-                        <ArrowDownRight className="w-4 h-4 text-negative" />
-                      ) : (
-                        <Plus className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                      <div className="flex items-center gap-4">
+                        <div className="flex-shrink-0 flex items-center justify-center h-full">
+                          <span
+                            className="inline-block w-2 h-2 rounded-full align-middle"
+                            style={{ backgroundColor: "#616161" }}
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0 flex items-center">
+                          <span
+                            className="text-label-large font-medium align-middle"
+                            style={{ color: "#616161" }}
+                          >
+                            {trade.type === "deposit"
+                              ? "Deposit"
+                              : `${trade.type.toUpperCase()} ${trade.shares} ${
+                                  trade.asset
+                                }`}
+                          </span>
+                          {(trade.type === "buy" || trade.type === "sell") &&
+                            trade.price !== null && (
+                              <span
+                                className="text-body-small font-medium ml-2 align-middle"
+                                style={{ color: "#616161" }}
+                              >
+                                ${trade.price}
+                              </span>
+                            )}
+                          {trade.type === "deposit" &&
+                            trade.amount !== null && (
+                              <span
+                                className="text-body-small font-medium ml-2 align-middle"
+                                style={{ color: "#616161" }}
+                              >
+                                +${trade.amount}
+                              </span>
+                            )}
+                        </div>
+                        <div className="flex-shrink-0 text-right min-w-[80px]">
+                          <p className="text-body-small text-neutral-500 dark:text-dark-text-muted whitespace-nowrap">
+                            {trade.time}
+                          </p>
+                        </div>
+                      </div>
+                      {trade.reason && (
+                        <div className="w-full">
+                          <p className="text-body-small text-neutral-500 dark:text-dark-text-secondary line-clamp-2 ml-6">
+                            {trade.reason}
+                          </p>
+                        </div>
                       )}
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        {trade.type === "deposit" ? (
-                          <span className="text-label-large font-medium text-blue-700 dark:text-blue-400">
-                            Deposit
-                          </span>
-                        ) : (
-                          <span className="text-label-large font-medium text-neutral-900 dark:text-dark-text-primary">
-                            {trade.type.toUpperCase()} {trade.shares}{" "}
-                            {trade.asset}
-                          </span>
-                        )}
-                        {(trade.type === "buy" || trade.type === "sell") &&
-                          trade.price !== null && (
-                            <span className="text-body-small text-neutral-500 dark:text-dark-text-muted">
-                              ${trade.price}
-                            </span>
-                          )}
-                        {trade.type === "deposit" && trade.amount !== null && (
-                          <span className="text-body-small text-blue-700 dark:text-blue-400 font-medium">
-                            +${trade.amount}
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-body-small text-neutral-600 dark:text-dark-text-secondary line-clamp-2">
-                        {trade.reason}
-                      </p>
-                    </div>
-                    <div className="flex-shrink-0 text-right min-w-[80px]">
-                      <p className="text-body-small text-neutral-500 dark:text-dark-text-muted whitespace-nowrap">
-                        {trade.time}
-                      </p>
-                    </div>
-                  </div>
-                ))
+                  )
+                )
               )}
             </div>
           </div>
@@ -767,7 +802,7 @@ export const Dashboard: React.FC = () => {
                     <button
                       type="submit"
                       disabled={isAddingValue}
-                      className="flex-1 bg-slate-600 text-white py-3 px-4 rounded-lg text-label-large font-medium hover:bg-slate-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                      className="flex-1 bg-neutral-100 text-black py-3 px-4 rounded-lg text-label-large font-medium hover:bg-neutral-900 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                     >
                       {isAddingValue && (
                         <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -816,7 +851,7 @@ export const Dashboard: React.FC = () => {
                   <div className="flex gap-3">
                     <button
                       type="submit"
-                      className="flex-1 bg-neutral-900 text-white py-3 px-4 rounded-lg text-label-large font-medium hover:bg-neutral-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                      className="flex-1 bg-neutral-100 text-black py-3 px-4 rounded-lg text-label-large font-medium hover:bg-neutral-900 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                       disabled={isAddingValue}
                     >
                       Analyze Insight
