@@ -529,58 +529,56 @@ export const Dashboard: React.FC = () => {
                 tradeHistory.map((trade: any) => (
                   <div
                     key={trade.id}
-                    className="flex items-center justify-between p-4 bg-neutral-50 dark:bg-gray-800 rounded-lg"
+                    className="flex items-start gap-4 p-4 bg-neutral-50 dark:bg-gray-800 rounded-lg"
                   >
-                    <div className="flex items-center gap-4">
-                      <div
-                        className={`p-2 rounded-full ${
-                          trade.type === "buy"
-                            ? "bg-positive/10"
-                            : trade.type === "sell"
-                            ? "bg-negative/10"
-                            : "bg-blue-100 dark:bg-blue-900/20"
-                        }`}
-                      >
-                        {trade.type === "buy" ? (
-                          <ArrowUpRight className="w-4 h-4 text-positive" />
-                        ) : trade.type === "sell" ? (
-                          <ArrowDownRight className="w-4 h-4 text-negative" />
+                    <div
+                      className={`flex-shrink-0 p-2 rounded-full ${
+                        trade.type === "buy"
+                          ? "bg-positive/10"
+                          : trade.type === "sell"
+                          ? "bg-negative/10"
+                          : "bg-blue-100 dark:bg-blue-900/20"
+                      }`}
+                    >
+                      {trade.type === "buy" ? (
+                        <ArrowUpRight className="w-4 h-4 text-positive" />
+                      ) : trade.type === "sell" ? (
+                        <ArrowDownRight className="w-4 h-4 text-negative" />
+                      ) : (
+                        <Plus className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        {trade.type === "deposit" ? (
+                          <span className="text-label-large font-medium text-blue-700 dark:text-blue-400">
+                            Deposit
+                          </span>
                         ) : (
-                          <Plus className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                          <span className="text-label-large font-medium text-neutral-900 dark:text-dark-text-primary">
+                            {trade.type.toUpperCase()} {trade.shares}{" "}
+                            {trade.asset}
+                          </span>
                         )}
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          {trade.type === "deposit" ? (
-                            <span className="text-label-large font-medium text-blue-700 dark:text-blue-400">
-                              Deposit
-                            </span>
-                          ) : (
-                            <span className="text-label-large font-medium text-neutral-900 dark:text-dark-text-primary">
-                              {trade.type.toUpperCase()} {trade.shares}{" "}
-                              {trade.asset}
+                        {(trade.type === "buy" || trade.type === "sell") &&
+                          trade.price !== null && (
+                            <span className="text-body-small text-neutral-500 dark:text-dark-text-muted">
+                              ${trade.price}
                             </span>
                           )}
-                          {(trade.type === "buy" || trade.type === "sell") &&
-                            trade.price !== null && (
-                              <span className="text-body-small text-neutral-500 dark:text-dark-text-muted">
-                                ${trade.price}
-                              </span>
-                            )}
-                          {trade.type === "deposit" &&
-                            trade.amount !== null && (
-                              <span className="text-body-small text-blue-700 dark:text-blue-400 font-medium">
-                                +${trade.amount}
-                              </span>
-                            )}
-                        </div>
-                        <p className="text-body-small text-neutral-600 dark:text-dark-text-secondary">
-                          {trade.reason}
-                        </p>
+                        {trade.type === "deposit" &&
+                          trade.amount !== null && (
+                            <span className="text-body-small text-blue-700 dark:text-blue-400 font-medium">
+                              +${trade.amount}
+                            </span>
+                          )}
                       </div>
+                      <p className="text-body-small text-neutral-600 dark:text-dark-text-secondary line-clamp-2">
+                        {trade.reason}
+                      </p>
                     </div>
-                    <div className="text-right">
-                      <p className="text-body-small text-neutral-500 dark:text-dark-text-muted">
+                    <div className="flex-shrink-0 text-right min-w-[80px]">
+                      <p className="text-body-small text-neutral-500 dark:text-dark-text-muted whitespace-nowrap">
                         {trade.time}
                       </p>
                     </div>

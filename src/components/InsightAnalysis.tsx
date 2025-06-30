@@ -70,10 +70,9 @@ export const InsightAnalysis: React.FC = () => {
           throw new Error("No active portfolio found");
         }
       } catch (error) {
-        console.error("API call failed, using fallback:", error);
-        // Fallback to mock data
-        const mockAnalysis = generateMockAnalysis();
-        setAnalysisResult(mockAnalysis);
+        console.error("API call failed:", error);
+        // Set analysis result to null to show error state
+        setAnalysisResult(null);
       }
       
       // Clean up localStorage
@@ -85,61 +84,13 @@ export const InsightAnalysis: React.FC = () => {
     analyzeInsight();
   }, []); // Only run once when component mounts
 
-  const generateMockAnalysis = () => {
-    const analyses = [
-      {
-        title: 'Federal Reserve Interest Rate Decision',
-        summary: 'The Federal Reserve has decided to maintain current interest rates at 5.25-5.50%, signaling a pause in the aggressive tightening cycle.',
-        impact: 'Positive for bonds and dividend-paying stocks. Consider increasing bond allocation by 5% and reducing growth stock exposure.',
-        confidence: 85,
-        recommendation: 'rebalance',
-        suggestedChanges: [
-          { from: 'Growth Stocks', to: 'Government Bonds', percentage: 5 },
-          { from: 'Small Cap Stocks', to: 'Corporate Bonds', percentage: 3 }
-        ],
-        reasoning: 'With interest rates stabilizing, bonds become more attractive while growth stocks may face headwinds. This rebalancing would reduce portfolio volatility while maintaining growth potential.',
-        riskImpact: 'Reduces overall portfolio risk by 0.3 points',
-        returnImpact: 'Minimal impact on expected returns (-0.1%)',
-        url: 'https://example.com/fed-decision'
-      },
-      {
-        title: 'Technology Sector Earnings Outlook',
-        summary: 'Major technology companies are reporting strong Q4 earnings with robust AI-driven revenue growth and improved margins.',
-        impact: 'Positive for technology sector. Current allocation appears well-positioned, but consider slight increase in tech exposure.',
-        confidence: 78,
-        recommendation: 'minor_adjustment',
-        suggestedChanges: [
-          { from: 'International Stocks', to: 'Technology Stocks', percentage: 2 }
-        ],
-        reasoning: 'Strong earnings momentum in tech sector suggests continued outperformance. A modest increase in tech allocation could capture this trend while maintaining diversification.',
-        riskImpact: 'Slight increase in portfolio volatility (+0.1 points)',
-        returnImpact: 'Potential upside of +0.3% in expected returns',
-        url: 'https://example.com/tech-earnings'
-      },
-      {
-        title: 'Emerging Markets Recovery Analysis',
-        summary: 'Emerging markets showing signs of economic recovery with improving trade balances and currency stabilization.',
-        impact: 'Emerging markets may outperform developed markets in the coming quarters. Consider increasing EM allocation.',
-        confidence: 72,
-        recommendation: 'save_for_monitoring',
-        suggestedChanges: [],
-        reasoning: 'While the trend is positive, emerging markets remain volatile. This insight should be monitored for confirmation before making allocation changes.',
-        riskImpact: 'No immediate risk impact',
-        returnImpact: 'Potential future opportunity',
-        url: 'https://example.com/em-recovery'
-      }
-    ];
-
-    return analyses[Math.floor(Math.random() * analyses.length)];
-  };
-
   const handleExecuteTrades = async () => {
     if (!analysisResult || !activePortfolio) return;
     
     setIsExecutingTrades(true);
     
     try {
-      // If we have full API response, execute it
+      // Execute trading actions via API
       if (analysisResult.fullApiResponse) {
         console.log("Executing trading actions via API...");
         await portfolioService.executeMarketInsightRecommendations(activePortfolio.id, analysisResult.fullApiResponse);
@@ -150,25 +101,25 @@ export const InsightAnalysis: React.FC = () => {
         if (userId) {
           await loadUserPortfolios(userId);
         }
-      } else if (analysisResult.suggestedChanges && analysisResult.suggestedChanges.length > 0) {
-        // Fallback to old logic for mock data
-        console.log("Portfolio rebalanced based on mock analysis:", analysisResult.title);
+      } else {
+        console.error("No API response data available for execution");
+        throw new Error("No trading actions to execute");
       }
       
-      // Navigate directly to portfolio details to see the updated insights
-      setCurrentStep('portfolio-details');
+      // Navigate directly to dashboard to see the updated insights
+      setCurrentStep('dashboard');
     } catch (error) {
       console.error("Failed to execute trading actions:", error);
       // Still navigate back on error
-      setCurrentStep('portfolio-details');
+      setCurrentStep('dashboard');
     } finally {
       setIsExecutingTrades(false);
     }
   };
 
   const handleDeclineTrades = () => {
-    // Just navigate back to portfolio details without executing trades
-    setCurrentStep('portfolio-details');
+    // Just navigate back to dashboard without executing trades
+    setCurrentStep('dashboard');
   };
 
   // Removed handleSaveForFuture - no longer needed with new button structure
