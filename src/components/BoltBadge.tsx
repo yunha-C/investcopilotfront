@@ -45,20 +45,11 @@ export const BoltBadge: React.FC = () => {
           className="block transition-transform duration-200 hover:scale-110 hover:shadow-lg"
           aria-label="Powered by Bolt.new"
         >
-          <div className="relative">
-            {/* Fallback SVG badge if images don't load */}
-            <div className={`w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center text-white font-bold text-xs sm:text-sm transition-all duration-200 shadow-md hover:shadow-lg ${
-              isDarkMode 
-                ? 'bg-white text-black border-2 border-gray-300' 
-                : 'bg-black text-white border-2 border-gray-700'
-            }`}>
-              <div className="text-center leading-tight">
-                <div className="text-[8px] sm:text-[10px] md:text-xs font-bold">POWERED BY</div>
-                <div className="text-sm sm:text-base md:text-lg font-black">bolt</div>
-                <div className="text-[6px] sm:text-[8px] md:text-[10px] font-medium">NEW MADE IN</div>
-              </div>
-            </div>
-          </div>
+          <img
+            src={isDarkMode ? "/white_circle_360x360.png" : "/black_circle_360x360.png"}
+            alt="Powered by Bolt.new"
+            className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full shadow-md hover:shadow-lg transition-all duration-200"
+          />
         </a>
       </div>
 
