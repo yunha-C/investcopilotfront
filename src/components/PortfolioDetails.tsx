@@ -4,10 +4,16 @@ import { useInvestmentStore } from '../store/investmentStore';
 import { PortfolioChart } from './PortfolioChart';
 
 export const PortfolioDetails: React.FC = () => {
-  const { activePortfolio, insights, setCurrentStep, deletePortfolio } = useInvestmentStore();
+  const { activePortfolio, setCurrentStep, deletePortfolio } = useInvestmentStore();
 
   // Use activePortfolio instead of portfolio
   const portfolio = activePortfolio;
+
+  // Debug: Log market insights data
+  console.log("=== PORTFOLIO DETAILS DEBUG ===");
+  console.log("Portfolio ID:", portfolio?.id);
+  console.log("Has latestMarketInsights:", !!portfolio?.latestMarketInsights);
+  console.log("Market insights data:", portfolio?.latestMarketInsights);
 
   if (!portfolio) {
     return (
@@ -280,43 +286,72 @@ export const PortfolioDetails: React.FC = () => {
                 </div>
 
                 <div>
-                  <h3 className="text-title-large font-headline font-semi-bold text-neutral-900 dark:text-dark-text-primary mb-4">Recent Insights</h3>
-                  {insights.length === 0 ? (
+                  <h3 className="text-title-large font-headline font-semi-bold text-neutral-900 dark:text-dark-text-primary mb-4">Market Insights</h3>
+                  {!portfolio?.latestMarketInsights ? (
                     <div className="bg-neutral-100/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg p-6 text-center">
-                      <p className="text-body-medium text-neutral-500 dark:text-dark-text-muted mb-2">No insights added yet</p>
+                      <p className="text-body-medium text-neutral-500 dark:text-dark-text-muted mb-2">No market insights available yet</p>
                       <p className="text-body-small text-neutral-400 dark:text-gray-500">
                         Add market insights to help AI optimize your portfolio
                       </p>
                     </div>
                   ) : (
-                    <div className="space-y-4 max-h-96 overflow-y-auto">
-                      {insights.map((insight) => (
-                        <div key={insight.id} className="bg-white/80 dark:bg-dark-surface-secondary/80 backdrop-blur-sm border border-neutral-200 dark:border-gray-600 rounded-lg p-4">
-                          <div className="flex items-start justify-between mb-3">
-                            <h4 className="text-label-large font-medium text-neutral-900 dark:text-dark-text-primary">{insight.title}</h4>
-                            <div className="flex items-center gap-1 text-body-small text-neutral-500 dark:text-dark-text-muted">
-                              <Calendar className="w-3 h-3" />
-                              {insight.date}
+                    <div className="space-y-4">
+                      <div className="bg-white/80 dark:bg-dark-surface-secondary/80 backdrop-blur-sm border border-neutral-200 dark:border-gray-600 rounded-lg p-4">
+                        <div className="flex items-start justify-between mb-3">
+                          <h4 className="text-label-large font-medium text-neutral-900 dark:text-dark-text-primary">Latest Market Analysis</h4>
+                          <div className="flex items-center gap-1 text-body-small text-neutral-500 dark:text-dark-text-muted">
+                            <Calendar className="w-3 h-3" />
+                            {new Date(portfolio.latestMarketInsights.executed_at).toLocaleDateString()}
+                          </div>
+                        </div>
+                        <p className="text-body-small text-neutral-600 dark:text-dark-text-secondary mb-3">{portfolio.latestMarketInsights.url_insights}</p>
+                        
+                        {/* Trading Actions Summary */}
+                        {portfolio.latestMarketInsights.trading_actions && portfolio.latestMarketInsights.trading_actions.length > 0 && (
+                          <div className="mb-3">
+                            <h5 className="text-body-small font-medium text-neutral-800 dark:text-dark-text-primary mb-2">
+                              Actions Taken:
+                            </h5>
+                            <div className="space-y-1">
+                              {portfolio.latestMarketInsights.trading_actions.slice(0, 3).map((action, index) => (
+                                <div key={index} className="flex items-center justify-between text-body-small">
+                                  <span className="text-neutral-700 dark:text-dark-text-secondary">
+                                    {action.action} {action.shares} {action.ticker}
+                                  </span>
+                                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                    action.action === 'BUY' ? 'bg-green-100 text-green-700' :
+                                    action.action === 'SELL' ? 'bg-red-100 text-red-700' :
+                                    'bg-neutral-100 text-neutral-700'
+                                  }`}>
+                                    {Math.round(action.confidence * 100)}%
+                                  </span>
+                                </div>
+                              ))}
                             </div>
                           </div>
-                          <p className="text-body-small text-neutral-600 dark:text-dark-text-secondary mb-3">{insight.impact}</p>
-                          <div className="flex items-center justify-between">
+                        )}
+                        
+                        <div className="flex items-center justify-between">
+                          {portfolio.latestMarketInsights.trading_actions && 
+                           portfolio.latestMarketInsights.trading_actions.length > 0 && 
+                           portfolio.latestMarketInsights.trading_actions[0].source_url && (
                             <a 
-                              href={insight.url} 
+                              href={portfolio.latestMarketInsights.trading_actions[0].source_url} 
                               target="_blank" 
                               rel="noopener noreferrer"
                               className="flex items-center gap-1 text-body-small text-neutral-900 dark:text-dark-text-primary hover:text-neutral-700 dark:hover:text-gray-300 transition-colors"
                             >
                               View Source <ExternalLink className="w-3 h-3" />
                             </a>
-                            {insight.portfolioChange && (
-                              <span className="px-2 py-1 bg-positive/10 text-positive text-body-small rounded-full">
-                                Portfolio Updated
-                              </span>
-                            )}
-                          </div>
+                          )}
+                          {portfolio.latestMarketInsights.execution_summary && 
+                           portfolio.latestMarketInsights.execution_summary.successful_trades > 0 && (
+                            <span className="px-2 py-1 bg-positive/10 text-positive text-body-small rounded-full">
+                              {portfolio.latestMarketInsights.execution_summary.successful_trades} Trades Executed
+                            </span>
+                          )}
                         </div>
-                      ))}
+                      </div>
                     </div>
                   )}
                 </div>

@@ -1,4 +1,5 @@
-const API_BASE_URL = 'https://investment-api.duckdns.org';
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:8001";
 
 export interface LoginRequest {
   email: string;
@@ -50,17 +51,20 @@ export interface ApiError {
 
 class AuthService {
   private getAuthHeaders(): Record<string, string> {
-    const token = localStorage.getItem('aivestie_token');
-    const tokenType = localStorage.getItem('aivestie_token_type') || 'Bearer';
+    const token = localStorage.getItem("aivestie_token");
+    const tokenType = localStorage.getItem("aivestie_token_type") || "Bearer";
     return {
-      'Content-Type': 'application/json',
-      ...(token && { 'Authorization': `${tokenType} ${token}` }),
+      "Content-Type": "application/json",
+      ...(token && { Authorization: `${tokenType} ${token}` }),
     };
   }
 
-  private async handleErrorResponse(response: Response, defaultMessage: string): Promise<never> {
+  private async handleErrorResponse(
+    response: Response,
+    defaultMessage: string
+  ): Promise<never> {
     let errorMessage = defaultMessage;
-    
+
     try {
       // First try to parse as JSON
       const errorData = await response.json();
@@ -79,28 +83,34 @@ class AuthService {
         errorMessage = `${defaultMessage} (Status: ${response.status})`;
       }
     }
-    
+
     // Check for token expiry status codes
     if (response.status === 401 || response.status === 403) {
-      if (errorMessage.toLowerCase().includes('token') || 
-          errorMessage.toLowerCase().includes('expired') ||
-          errorMessage.toLowerCase().includes('unauthorized')) {
-        errorMessage = 'Your session has expired. Please log in again.';
+      if (
+        errorMessage.toLowerCase().includes("token") ||
+        errorMessage.toLowerCase().includes("expired") ||
+        errorMessage.toLowerCase().includes("unauthorized")
+      ) {
+        errorMessage = "Your session has expired. Please log in again.";
       }
     }
-    
+
     throw new Error(errorMessage);
   }
 
   // Helper method to wait for a specified time
   private wait(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   // Method to attempt login with retry logic (useful after registration)
-  async loginWithRetry(credentials: LoginRequest, maxRetries: number = 3, delayMs: number = 1000): Promise<AuthResponse> {
+  async loginWithRetry(
+    credentials: LoginRequest,
+    maxRetries: number = 3,
+    delayMs: number = 1000
+  ): Promise<AuthResponse> {
     console.log(`Attempting login with retry (max ${maxRetries} attempts)`);
-    
+
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
         console.log(`Login attempt ${attempt}/${maxRetries}`);
@@ -108,107 +118,130 @@ class AuthService {
         console.log(`Login successful on attempt ${attempt}`);
         return result;
       } catch (error) {
-        console.log(`Login attempt ${attempt} failed:`, error instanceof Error ? error.message : error);
-        
+        console.log(
+          `Login attempt ${attempt} failed:`,
+          error instanceof Error ? error.message : error
+        );
+
         if (attempt === maxRetries) {
-          console.log('All login attempts failed');
+          console.log("All login attempts failed");
           throw error;
         }
-        
+
         console.log(`Waiting ${delayMs}ms before next attempt...`);
         await this.wait(delayMs);
       }
     }
-    
-    throw new Error('Login retry logic failed unexpectedly');
+
+    throw new Error("Login retry logic failed unexpectedly");
   }
 
   async login(credentials: LoginRequest): Promise<AuthResponse> {
     try {
       // Debug: Log the credentials being sent (without password)
-      console.log('=== LOGIN ATTEMPT DEBUG ===');
-      console.log('Login attempt with email:', credentials.email);
-      console.log('Email length:', credentials.email.length);
-      console.log('Email trimmed:', credentials.email.trim());
-      console.log('Password length:', credentials.password.length);
-      console.log('Login API URL:', `${API_BASE_URL}/auth/login`);
-      
+      console.log("=== LOGIN ATTEMPT DEBUG ===");
+      console.log("Login attempt with email:", credentials.email);
+      console.log("Email length:", credentials.email.length);
+      console.log("Email trimmed:", credentials.email.trim());
+      console.log("Password length:", credentials.password.length);
+      console.log("Login API URL:", `${API_BASE_URL}/auth/login`);
+
       const formData = new URLSearchParams({
         email: credentials.email.trim(), // Changed from username to email
         password: credentials.password,
       });
-      
+
       // Debug: Log the form data being sent (without password)
-      console.log('Form data keys:', Array.from(formData.keys()));
-      console.log('Email being sent:', formData.get('email'));
-      console.log('Form data string length:', formData.toString().length);
-      
+      console.log("Form data keys:", Array.from(formData.keys()));
+      console.log("Email being sent:", formData.get("email"));
+      console.log("Form data string length:", formData.toString().length);
+
       const response = await fetch(`${API_BASE_URL}/auth/login`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
+          "Content-Type": "application/x-www-form-urlencoded",
         },
         body: formData,
       });
 
       // Debug: Log response details
-      console.log('Login response status:', response.status);
-      console.log('Login response headers:', Object.fromEntries(response.headers.entries()));
-      
+      console.log("Login response status:", response.status);
+      console.log(
+        "Login response headers:",
+        Object.fromEntries(response.headers.entries())
+      );
+
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ detail: 'Login failed' }));
-        
+        const errorData = await response
+          .json()
+          .catch(() => ({ detail: "Login failed" }));
+
         // Debug: Log the error response
-        console.log('Login error response:', errorData);
-        
+        console.log("Login error response:", errorData);
+
         // Handle token expiry and authentication errors
         if (response.status === 401) {
-          if (errorData.message && errorData.message.toLowerCase().includes('invalid email or password')) {
-            throw new Error(`Invalid email or password. Please check your credentials and try again. (Email: ${credentials.email})`);
-          } else if (errorData.detail && 
-                     (errorData.detail.toLowerCase().includes('token') ||
-                      errorData.detail.toLowerCase().includes('expired') ||
-                      errorData.detail.toLowerCase().includes('unauthorized'))) {
-            throw new Error('Your session has expired. Please log in again.');
+          if (
+            errorData.message &&
+            errorData.message
+              .toLowerCase()
+              .includes("invalid email or password")
+          ) {
+            throw new Error(
+              `Invalid email or password. Please check your credentials and try again. (Email: ${credentials.email})`
+            );
+          } else if (
+            errorData.detail &&
+            (errorData.detail.toLowerCase().includes("token") ||
+              errorData.detail.toLowerCase().includes("expired") ||
+              errorData.detail.toLowerCase().includes("unauthorized"))
+          ) {
+            throw new Error("Your session has expired. Please log in again.");
           }
-          throw new Error(errorData.message || errorData.detail || 'Authentication failed');
+          throw new Error(
+            errorData.message || errorData.detail || "Authentication failed"
+          );
         }
-        
+
         // Fallback to original error handling
-        throw new Error(errorData.detail || errorData.message || 'Login failed');
+        throw new Error(
+          errorData.detail || errorData.message || "Login failed"
+        );
       }
 
       const data = await response.json();
-      
+
       // Debug: Log the actual response structure
-      console.log('Login API Response:', data);
-      
+      console.log("Login API Response:", data);
+
       // Store the token - handle both old and new token formats
       let tokenToStore = null;
       if (data.token && data.token.accessToken) {
         // New token structure
         tokenToStore = data.token.accessToken;
         // Also store token expiry
-        const expiresAt = Date.now() + (data.token.expiresIn * 1000);
-        localStorage.setItem('aivestie_token_expires', expiresAt.toString());
-        localStorage.setItem('aivestie_token_type', data.token.tokenType);
+        const expiresAt = Date.now() + data.token.expiresIn * 1000;
+        localStorage.setItem("aivestie_token_expires", expiresAt.toString());
+        localStorage.setItem("aivestie_token_type", data.token.tokenType);
       } else if (data.access_token) {
         // Old token structure
         tokenToStore = data.access_token;
       }
-      
+
       if (tokenToStore) {
-        localStorage.setItem('aivestie_token', tokenToStore);
-        console.log('Token stored successfully');
+        localStorage.setItem("aivestie_token", tokenToStore);
+        console.log("Token stored successfully");
       } else {
-        console.warn('No token found in login response');
+        console.warn("No token found in login response");
       }
-      
+
       return data;
     } catch (error) {
       // If it's a network error or other issue, provide more context
-      if (error instanceof TypeError && error.message.includes('fetch')) {
-        throw new Error('Unable to connect to server. Please check your internet connection.');
+      if (error instanceof TypeError && error.message.includes("fetch")) {
+        throw new Error(
+          "Unable to connect to server. Please check your internet connection."
+        );
       }
       throw error;
     }
@@ -217,60 +250,80 @@ class AuthService {
   async register(userData: RegisterRequest): Promise<AuthResponse> {
     try {
       // Debug: Log the registration data being sent (without password)
-      console.log('=== REGISTRATION ATTEMPT DEBUG ===');
-      console.log('Register email:', userData.email);
-      console.log('Register email length:', userData.email.length);
-      console.log('Register password length:', userData.password.length);
-      console.log('Register API URL:', `${API_BASE_URL}/auth/register`);
-      
+      console.log("=== REGISTRATION ATTEMPT DEBUG ===");
+      console.log("Register email:", userData.email);
+      console.log("Register email length:", userData.email.length);
+      console.log("Register password length:", userData.password.length);
+      console.log("Register API URL:", `${API_BASE_URL}/auth/register`);
+
       const requestBody = {
         firstName: userData.firstName,
         lastName: userData.lastName,
         email: userData.email.trim(),
         password: userData.password,
       };
-      
-      console.log('Register request body keys:', Object.keys(requestBody));
-      
+
+      console.log("Register request body keys:", Object.keys(requestBody));
+
       const response = await fetch(`${API_BASE_URL}/auth/register`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(requestBody),
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ detail: 'Registration failed' }));
-        
+        const errorData = await response
+          .json()
+          .catch(() => ({ detail: "Registration failed" }));
+
         // Handle specific validation errors
         if (response.status === 422 && errorData.detail) {
           // FastAPI validation errors
           if (Array.isArray(errorData.detail)) {
-            const passwordErrors = errorData.detail.filter((err: any) => 
-              err.loc && err.loc.includes('password')
+            const passwordErrors = errorData.detail.filter(
+              (err: any) => err.loc && err.loc.includes("password")
             );
             if (passwordErrors.length > 0) {
               const passwordError = passwordErrors[0];
-              throw new Error(passwordError.msg || 'Password validation failed');
+              throw new Error(
+                passwordError.msg || "Password validation failed"
+              );
             }
           }
           // Single validation error message
-          if (typeof errorData.detail === 'string' && errorData.detail.toLowerCase().includes('password')) {
+          if (
+            typeof errorData.detail === "string" &&
+            errorData.detail.toLowerCase().includes("password")
+          ) {
             throw new Error(errorData.detail);
           }
         }
-        
+
         // Handle other specific errors
         if (response.status === 400) {
           // Handle the specific response format from your API
-          if (errorData.message && errorData.message.toLowerCase().includes('user with this email already exists')) {
-            throw new Error('An account with this email address already exists. Please sign in instead.');
+          if (
+            errorData.message &&
+            errorData.message
+              .toLowerCase()
+              .includes("user with this email already exists")
+          ) {
+            throw new Error(
+              "An account with this email address already exists. Please sign in instead."
+            );
           }
-          if (errorData.detail && errorData.detail.toLowerCase().includes('email')) {
-            throw new Error('Email address is already registered');
+          if (
+            errorData.detail &&
+            errorData.detail.toLowerCase().includes("email")
+          ) {
+            throw new Error("Email address is already registered");
           }
-          if (errorData.detail && errorData.detail.toLowerCase().includes('password')) {
+          if (
+            errorData.detail &&
+            errorData.detail.toLowerCase().includes("password")
+          ) {
             throw new Error(errorData.detail);
           }
           // Generic 400 error with message field
@@ -278,40 +331,44 @@ class AuthService {
             throw new Error(errorData.message);
           }
         }
-        
-        throw new Error(errorData.detail || 'Registration failed');
+
+        throw new Error(errorData.detail || "Registration failed");
       }
 
       const data = await response.json();
-      
+
       // Debug: Log the actual response structure
-      console.log('Register API Response:', data);
-      
+      console.log("Register API Response:", data);
+
       // Store the token if present
       if (data.access_token) {
-        localStorage.setItem('aivestie_token', data.access_token);
+        localStorage.setItem("aivestie_token", data.access_token);
       } else {
-        console.warn('No access_token in registration response - user may need to login separately');
+        console.warn(
+          "No access_token in registration response - user may need to login separately"
+        );
       }
-      
+
       return data;
     } catch (error) {
       // If it's a network error or other issue, provide more context
-      if (error instanceof TypeError && error.message.includes('fetch')) {
-        throw new Error('Unable to connect to server. Please check your internet connection.');
+      if (error instanceof TypeError && error.message.includes("fetch")) {
+        throw new Error(
+          "Unable to connect to server. Please check your internet connection."
+        );
       }
       throw error;
     }
   }
 
-  async getCurrentUser(): Promise<AuthResponse['user']> {
+  async getCurrentUser(): Promise<AuthResponse["user"]> {
     const response = await fetch(`${API_BASE_URL}/auth/me`, {
-      method: 'GET',
+      method: "GET",
       headers: this.getAuthHeaders(),
     });
 
     if (!response.ok) {
-      await this.handleErrorResponse(response, 'Failed to get user info');
+      await this.handleErrorResponse(response, "Failed to get user info");
     }
 
     return response.json();
@@ -319,36 +376,36 @@ class AuthService {
 
   async refreshToken(): Promise<AuthResponse> {
     const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
-      method: 'POST',
+      method: "POST",
       headers: this.getAuthHeaders(),
     });
 
     if (!response.ok) {
-      await this.handleErrorResponse(response, 'Token refresh failed');
+      await this.handleErrorResponse(response, "Token refresh failed");
     }
 
     const data = await response.json();
-    
+
     // Update the stored token
-    localStorage.setItem('aivestie_token', data.access_token);
-    
+    localStorage.setItem("aivestie_token", data.access_token);
+
     return data;
   }
 
   logout(): void {
-    localStorage.removeItem('aivestie_token');
-    localStorage.removeItem('aivestie_user');
-    localStorage.removeItem('aivestie_token_expires');
-    localStorage.removeItem('aivestie_token_type');
+    localStorage.removeItem("aivestie_token");
+    localStorage.removeItem("aivestie_user");
+    localStorage.removeItem("aivestie_token_expires");
+    localStorage.removeItem("aivestie_token_type");
   }
 
   getStoredToken(): string | null {
-    return localStorage.getItem('aivestie_token');
+    return localStorage.getItem("aivestie_token");
   }
 
   isTokenExpired(token: string): boolean {
     try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
+      const payload = JSON.parse(atob(token.split(".")[1]));
       const currentTime = Date.now() / 1000;
       return payload.exp < currentTime;
     } catch {
@@ -359,32 +416,37 @@ class AuthService {
   async updateInvestmentProfileStatus(completed: boolean): Promise<void> {
     try {
       const response = await fetch(`${API_BASE_URL}/user/investment-profile`, {
-        method: 'PATCH',
+        method: "PATCH",
         headers: this.getAuthHeaders(),
         body: JSON.stringify({
-          hasCompletedInvestmentProfile: completed
+          hasCompletedInvestmentProfile: completed,
         }),
       });
 
       if (!response.ok) {
-        await this.handleErrorResponse(response, 'Failed to update investment profile status');
+        await this.handleErrorResponse(
+          response,
+          "Failed to update investment profile status"
+        );
       }
 
       // Update the stored user data
-      const storedUser = localStorage.getItem('aivestie_user');
+      const storedUser = localStorage.getItem("aivestie_user");
       if (storedUser) {
         try {
           const userData = JSON.parse(storedUser);
           userData.hasCompletedInvestmentProfile = completed;
-          localStorage.setItem('aivestie_user', JSON.stringify(userData));
+          localStorage.setItem("aivestie_user", JSON.stringify(userData));
         } catch (error) {
-          console.warn('Failed to update stored user data:', error);
+          console.warn("Failed to update stored user data:", error);
         }
       }
     } catch (error) {
       // If it's a network error or other issue, provide more context
-      if (error instanceof TypeError && error.message.includes('fetch')) {
-        throw new Error('Unable to connect to server. Please check your internet connection.');
+      if (error instanceof TypeError && error.message.includes("fetch")) {
+        throw new Error(
+          "Unable to connect to server. Please check your internet connection."
+        );
       }
       throw error;
     }

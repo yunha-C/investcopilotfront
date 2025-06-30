@@ -1,5 +1,5 @@
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "https://investment-api.duckdns.org";
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:8001";
 
 export interface CreatePortfolioRequest {
   accountId?: string;
@@ -147,6 +147,38 @@ export interface PortfolioResponse {
   transactions?: any[];
   profitLossPercentage?: number;
   profitLossAmount?: number;
+  latestMarketInsights?: {
+    executed_at: string;
+    url_insights: string;
+    trade_results: Array<{
+      action: "BUY" | "SELL";
+      ticker: string;
+      success: boolean;
+      total_value: number;
+      ai_reasoning: string;
+      transaction_id: string;
+      execution_price: number;
+      shares_executed: number;
+    }>;
+    trading_actions: Array<{
+      title: string;
+      action: "BUY" | "SELL" | "HOLD";
+      shares: number;
+      ticker: string;
+      confidence: number;
+      source_url: string;
+      description: string;
+      ai_reasoning: string;
+      portfolio_impact: string;
+    }>;
+    execution_summary: {
+      hold_actions: number;
+      failed_trades: number;
+      successful_trades: number;
+      total_cash_impact: number;
+    };
+  };
+  marketInsightsUpdatedAt?: string;
 }
 
 export interface QuestionnaireAnalysisRequest {
@@ -192,6 +224,32 @@ export interface QuestionnaireAnalysisResponse {
     };
     strategy_rationale: string;
   };
+}
+
+export interface MarketInsightRequest {
+  marketInsightUrl: string;
+}
+
+export interface TradingAction {
+  action: "BUY" | "SELL";
+  ticker: string;
+  shares: number;
+  title: string;
+  description: string;
+  ai_reasoning: string;
+  portfolio_impact: string;
+  confidence: number;
+  source_url: string;
+}
+
+export interface MarketInsightResponse {
+  trading_actions: TradingAction[];
+  url_insights: string;
+}
+
+export interface ExecuteMarketInsightRequest {
+  trading_actions: TradingAction[];
+  url_insights: string;
 }
 
 export interface ApiError {
@@ -567,6 +625,98 @@ class PortfolioService {
       return data;
     } catch (error) {
       console.error("Rebalance portfolio error:", error);
+      if (error instanceof TypeError && error.message.includes("fetch")) {
+        throw new Error(
+          "Unable to connect to server. Please check your internet connection."
+        );
+      }
+      throw error;
+    }
+  }
+
+  async getMarketInsightRecommendations(
+    portfolioId: string,
+    request: MarketInsightRequest
+  ): Promise<MarketInsightResponse> {
+    try {
+      console.log("=== MARKET INSIGHT API CALL ===");
+      console.log("Portfolio ID:", portfolioId);
+      console.log("Market insight URL:", request.marketInsightUrl);
+      console.log(
+        "API URL:",
+        `${API_BASE_URL}/portfolios/${portfolioId}/market-insight-recommendations`
+      );
+
+      const response = await fetch(
+        `${API_BASE_URL}/portfolios/${portfolioId}/market-insight-recommendations`,
+        {
+          method: "POST",
+          headers: this.getAuthHeaders(),
+          body: JSON.stringify(request),
+        }
+      );
+
+      console.log("Market insight response status:", response.status);
+
+      if (!response.ok) {
+        await this.handleErrorResponse(
+          response,
+          "Failed to get market insight recommendations"
+        );
+      }
+
+      const data = await response.json();
+      console.log("Market insight API response:", data);
+
+      return data;
+    } catch (error) {
+      console.error("Market insight error:", error);
+      if (error instanceof TypeError && error.message.includes("fetch")) {
+        throw new Error(
+          "Unable to connect to server. Please check your internet connection."
+        );
+      }
+      throw error;
+    }
+  }
+
+  async executeMarketInsightRecommendations(
+    portfolioId: string,
+    request: ExecuteMarketInsightRequest
+  ): Promise<PortfolioResponse> {
+    try {
+      console.log("=== EXECUTE MARKET INSIGHT API CALL ===");
+      console.log("Portfolio ID:", portfolioId);
+      console.log("Executing recommendations:", request);
+      console.log(
+        "API URL:",
+        `${API_BASE_URL}/portfolios/${portfolioId}/execute-market-insight-recommendations`
+      );
+
+      const response = await fetch(
+        `${API_BASE_URL}/portfolios/${portfolioId}/execute-market-insight-recommendations`,
+        {
+          method: "POST",
+          headers: this.getAuthHeaders(),
+          body: JSON.stringify(request),
+        }
+      );
+
+      console.log("Execute market insight response status:", response.status);
+
+      if (!response.ok) {
+        await this.handleErrorResponse(
+          response,
+          "Failed to execute market insight recommendations"
+        );
+      }
+
+      const data = await response.json();
+      console.log("Execute market insight API response:", data);
+
+      return data;
+    } catch (error) {
+      console.error("Execute market insight error:", error);
       if (error instanceof TypeError && error.message.includes("fetch")) {
         throw new Error(
           "Unable to connect to server. Please check your internet connection."

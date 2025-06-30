@@ -73,19 +73,41 @@ export interface Portfolio {
   transactions?: Transaction[];
   profitLossPercentage?: number;
   profitLossAmount?: number;
+  latestMarketInsights?: {
+    executed_at: string;
+    url_insights: string;
+    trade_results: Array<{
+      action: "BUY" | "SELL";
+      ticker: string;
+      success: boolean;
+      total_value: number;
+      ai_reasoning: string;
+      transaction_id: string;
+      execution_price: number;
+      shares_executed: number;
+    }>;
+    trading_actions: Array<{
+      title: string;
+      action: "BUY" | "SELL" | "HOLD";
+      shares: number;
+      ticker: string;
+      confidence: number;
+      source_url: string;
+      description: string;
+      ai_reasoning: string;
+      portfolio_impact: string;
+    }>;
+    execution_summary: {
+      hold_actions: number;
+      failed_trades: number;
+      successful_trades: number;
+      total_cash_impact: number;
+    };
+  };
+  marketInsightsUpdatedAt?: string;
 }
 
-export interface Insight {
-  id: string;
-  url: string;
-  title: string;
-  impact: string;
-  date: string;
-  portfolioChange?: {
-    before: Portfolio["allocation"];
-    after: Portfolio["allocation"];
-  };
-}
+// Removed old Insight interface - now using latestMarketInsights on Portfolio
 
 interface InvestmentState {
   currentStep:
@@ -100,7 +122,6 @@ interface InvestmentState {
   portfolio: Portfolio | null;
   activePortfolio: Portfolio | null; // Currently selected portfolio for dashboard
   portfolios: Portfolio[];
-  insights: Insight[];
   isLoading: boolean;
   error: string | null;
 
@@ -110,7 +131,6 @@ interface InvestmentState {
   generatePortfolio: (answers: QuestionnaireAnswers) => Promise<void>;
   savePortfolioToDatabase: (portfolio: Portfolio) => Promise<Portfolio>;
   loadUserPortfolios: (userId: string) => Promise<void>;
-  addInsight: (url: string) => void;
   updatePortfolioBalance: (
     portfolioId: string,
     amount: number
@@ -130,7 +150,6 @@ export const useInvestmentStore = create<InvestmentState>((set, get) => ({
   portfolio: null,
   activePortfolio: null,
   portfolios: [],
-  insights: [],
   isLoading: false,
   error: null,
 
@@ -439,13 +458,25 @@ export const useInvestmentStore = create<InvestmentState>((set, get) => ({
 
       console.log("All converted portfolios:", portfolios);
 
-      // Set the first portfolio as active if we don't have one
-      const currentPortfolio = get().portfolio;
-      const activePortfolio = currentPortfolio || portfolios[0] || null;
+      // Update active portfolio if it exists in the new data
+      const { activePortfolio: currentActivePortfolio } = get();
+      let updatedActivePortfolio = currentActivePortfolio;
+      
+      if (currentActivePortfolio) {
+        // Find the updated version of the current active portfolio
+        const updatedPortfolio = portfolios.find(p => p.id === currentActivePortfolio.id);
+        if (updatedPortfolio) {
+          updatedActivePortfolio = updatedPortfolio;
+        }
+      } else if (portfolios.length > 0) {
+        // Set the first portfolio as active if we don't have one
+        updatedActivePortfolio = portfolios[0];
+      }
 
       set({
         portfolios,
-        portfolio: activePortfolio,
+        portfolio: updatedActivePortfolio,
+        activePortfolio: updatedActivePortfolio,
         isLoading: false,
         error: null,
       });
@@ -457,34 +488,6 @@ export const useInvestmentStore = create<InvestmentState>((set, get) => ({
         isLoading: false,
         error: errorMessage,
       });
-    }
-  },
-
-  addInsight: (url) => {
-    const { insights, activePortfolio } = get();
-    const newInsight = generateInsightFromUrl(url, activePortfolio);
-    const updatedInsights = [...insights, newInsight];
-
-    // If the insight suggests rebalancing, update the active portfolio
-    if (newInsight.portfolioChange && activePortfolio) {
-      const updatedPortfolio = {
-        ...activePortfolio,
-        allocation: newInsight.portfolioChange.after,
-      };
-
-      // Update both activePortfolio and the portfolio in portfolios array
-      const { portfolios } = get();
-      const updatedPortfolios = portfolios.map((p) =>
-        p.id === activePortfolio.id ? updatedPortfolio : p
-      );
-
-      set({
-        insights: updatedInsights,
-        activePortfolio: updatedPortfolio,
-        portfolios: updatedPortfolios,
-      });
-    } else {
-      set({ insights: updatedInsights });
     }
   },
 
@@ -1127,6 +1130,8 @@ function convertApiResponseToPortfolio(
     transactions: apiResponse.transactions || [],
     profitLossPercentage: apiResponse.profitLossPercentage,
     profitLossAmount: apiResponse.profitLossAmount,
+    latestMarketInsights: apiResponse.latestMarketInsights,
+    marketInsightsUpdatedAt: apiResponse.marketInsightsUpdatedAt,
   };
 }
 
@@ -1335,100 +1340,4 @@ function parseAllocationFromAnalysis(
   }
 }
 
-function generateInsightFromUrl(
-  url: string,
-  portfolio: Portfolio | null
-): Insight {
-  // Simulate AI analysis of the URL
-  const insights = [
-    {
-      title: "Federal Reserve Interest Rate Decision",
-      impact:
-        "The Fed's decision to maintain current rates suggests continued economic stability. Consider increasing bond allocation by 3% to capitalize on current yields while maintaining growth exposure.",
-      shouldRebalance: true,
-    },
-    {
-      title: "Technology Sector Earnings Outlook",
-      impact:
-        "Strong Q4 earnings projections for major tech companies indicate robust growth potential. Current technology allocation appears well-positioned for this trend, no immediate changes recommended.",
-      shouldRebalance: false,
-    },
-    {
-      title: "Emerging Markets Geopolitical Analysis",
-      impact:
-        "Rising geopolitical tensions in key emerging markets suggest reducing exposure by 2% and reallocating to developed international markets for better risk-adjusted returns.",
-      shouldRebalance: true,
-    },
-    {
-      title: "ESG Investment Performance Study",
-      impact:
-        "New research shows ESG-focused investments outperforming traditional benchmarks over 5-year periods. Current ESG allocation aligns well with this trend.",
-      shouldRebalance: false,
-    },
-    {
-      title: "Real Estate Market Outlook",
-      impact:
-        "Commercial real estate showing signs of recovery with improved occupancy rates. Consider increasing REIT allocation by 2% to capitalize on this trend.",
-      shouldRebalance: true,
-    },
-  ];
-
-  const randomInsight = insights[Math.floor(Math.random() * insights.length)];
-
-  let portfolioChange;
-  if (randomInsight.shouldRebalance && portfolio) {
-    // Create a modified allocation based on the insight
-    const newAllocation = [...portfolio.allocation];
-    if (newAllocation.length >= 2) {
-      // Simulate intelligent rebalancing based on insight type
-      if (
-        randomInsight.title.includes("Fed") ||
-        randomInsight.title.includes("Interest")
-      ) {
-        // Increase bond allocation
-        const bondIndex = newAllocation.findIndex((asset) =>
-          asset.name.toLowerCase().includes("bond")
-        );
-        const stockIndex = newAllocation.findIndex(
-          (asset) =>
-            asset.name.toLowerCase().includes("stock") ||
-            asset.name.toLowerCase().includes("growth")
-        );
-        if (bondIndex !== -1 && stockIndex !== -1) {
-          newAllocation[bondIndex].percentage += 3;
-          newAllocation[stockIndex].percentage -= 3;
-        }
-      } else if (randomInsight.title.includes("Emerging")) {
-        // Reduce emerging markets exposure
-        const emIndex = newAllocation.findIndex((asset) =>
-          asset.name.toLowerCase().includes("emerging")
-        );
-        const intlIndex = newAllocation.findIndex((asset) =>
-          asset.name.toLowerCase().includes("international")
-        );
-        if (emIndex !== -1 && intlIndex !== -1) {
-          newAllocation[emIndex].percentage -= 2;
-          newAllocation[intlIndex].percentage += 2;
-        }
-      } else {
-        // General rebalancing
-        newAllocation[0].percentage -= 2;
-        newAllocation[1].percentage += 2;
-      }
-    }
-
-    portfolioChange = {
-      before: portfolio.allocation,
-      after: newAllocation,
-    };
-  }
-
-  return {
-    id: Date.now().toString(),
-    url,
-    title: randomInsight.title,
-    impact: randomInsight.impact,
-    date: new Date().toLocaleDateString(),
-    portfolioChange,
-  };
-}
+// Removed generateInsightFromUrl function - no longer needed with API integration

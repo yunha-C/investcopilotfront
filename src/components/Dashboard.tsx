@@ -22,7 +22,6 @@ import { EasterEggPlayer } from "./EasterEggPlayer";
 export const Dashboard: React.FC = () => {
   const {
     activePortfolio,
-    insights,
     setCurrentStep,
     deletePortfolio,
     updatePortfolioBalance,
@@ -121,6 +120,9 @@ export const Dashboard: React.FC = () => {
         return;
       }
       
+      // Set the URL for analysis and navigate immediately
+      // The API call will happen in the InsightAnalysis component
+      localStorage.setItem("pending_insight_url", insightUrl.trim());
       setCurrentStep("insight-analysis");
       setInsightUrl("");
       setShowInsightForm(false);
@@ -681,10 +683,10 @@ export const Dashboard: React.FC = () => {
                 </button>
               </div>
 
-              {insights.length === 0 ? (
+              {!activePortfolio?.latestMarketInsights ? (
                 <div className="text-center py-8">
                   <p className="text-body-medium text-neutral-500 dark:text-dark-text-muted mb-4">
-                    No insights added yet
+                    No market insights available yet
                   </p>
                   <button
                     onClick={() => setShowInsightForm(true)}
@@ -695,37 +697,74 @@ export const Dashboard: React.FC = () => {
                 </div>
               ) : (
                 <div className="space-y-4 max-h-96 overflow-y-auto">
-                  {insights.map((insight) => (
-                    <div
-                      key={insight.id}
-                      className="border border-neutral-200 dark:border-gray-600 rounded-lg p-4"
-                    >
-                      <div className="flex items-start justify-between mb-2">
-                        <h4 className="text-label-large font-medium text-neutral-900 dark:text-dark-text-primary">
-                          {insight.title}
-                        </h4>
-                        <span className="text-body-small text-neutral-500 dark:text-dark-text-muted">
-                          {insight.date}
+                  <div className="border border-neutral-200 dark:border-gray-600 rounded-lg p-4">
+                    <div className="flex items-start justify-between mb-2">
+                      <h4 className="text-label-large font-medium text-neutral-900 dark:text-dark-text-primary">
+                        Latest Market Insight Analysis
+                      </h4>
+                      <span className="text-body-small text-neutral-500 dark:text-dark-text-muted">
+                        {new Date(activePortfolio.latestMarketInsights.executed_at).toLocaleDateString()}
                         </span>
                       </div>
-                      <p className="text-body-small text-neutral-600 dark:text-dark-text-secondary mb-2">
-                        {insight.impact}
+                      <p className="text-body-small text-neutral-600 dark:text-dark-text-secondary mb-3">
+                        {activePortfolio.latestMarketInsights.url_insights}
                       </p>
-                      <a
-                        href={insight.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-1 text-body-small text-neutral-900 dark:text-dark-text-primary hover:text-neutral-700 dark:hover:text-gray-300"
-                      >
-                        View Source <ExternalLink className="w-3 h-3" />
-                      </a>
-                      {insight.portfolioChange && (
-                        <div className="mt-2 p-2 bg-neutral-100 dark:bg-gray-700 rounded text-body-small text-neutral-700 dark:text-gray-300">
-                          Portfolio rebalanced based on this insight
+                      
+                      {/* Trading Actions Summary */}
+                      {activePortfolio.latestMarketInsights.trading_actions && activePortfolio.latestMarketInsights.trading_actions.length > 0 && (
+                        <div className="space-y-2 mb-3">
+                          <h5 className="text-body-small font-medium text-neutral-800 dark:text-dark-text-primary">
+                            Recommended Actions:
+                          </h5>
+                          {activePortfolio.latestMarketInsights.trading_actions.slice(0, 3).map((action, index) => (
+                            <div key={index} className="flex items-center justify-between text-body-small">
+                              <span className="text-neutral-700 dark:text-dark-text-secondary">
+                                {action.action} {action.shares} {action.ticker}
+                              </span>
+                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                action.action === 'BUY' ? 'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400' :
+                                action.action === 'SELL' ? 'bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400' :
+                                'bg-neutral-100 text-neutral-700 dark:bg-gray-700 dark:text-gray-300'
+                              }`}>
+                                {Math.round(action.confidence * 100)}%
+                              </span>
+                            </div>
+                          ))}
                         </div>
                       )}
+                      
+                      {/* Execution Summary */}
+                      {activePortfolio.latestMarketInsights.execution_summary && (
+                        <div className="mt-3 p-3 bg-neutral-100 dark:bg-gray-700 rounded-lg">
+                          <div className="flex justify-between items-center text-body-small">
+                            <span className="text-neutral-700 dark:text-gray-300">
+                              Executed: {activePortfolio.latestMarketInsights.execution_summary.successful_trades} trades
+                            </span>
+                            <span className={`font-medium ${
+                              activePortfolio.latestMarketInsights.execution_summary.total_cash_impact >= 0 
+                                ? 'text-green-600 dark:text-green-400' 
+                                : 'text-red-600 dark:text-red-400'
+                            }`}>
+                              {activePortfolio.latestMarketInsights.execution_summary.total_cash_impact >= 0 ? '+' : ''}
+                              ${activePortfolio.latestMarketInsights.execution_summary.total_cash_impact.toFixed(2)}
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {activePortfolio.latestMarketInsights.trading_actions && 
+                       activePortfolio.latestMarketInsights.trading_actions.length > 0 && 
+                       activePortfolio.latestMarketInsights.trading_actions[0].source_url && (
+                        <a
+                          href={activePortfolio.latestMarketInsights.trading_actions[0].source_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1 text-body-small text-neutral-900 dark:text-dark-text-primary hover:text-neutral-700 dark:hover:text-gray-300 mt-3"
+                        >
+                          View Source <ExternalLink className="w-3 h-3" />
+                        </a>
+                      )}
                     </div>
-                  ))}
                 </div>
               )}
             </div>

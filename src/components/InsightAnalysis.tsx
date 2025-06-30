@@ -2,28 +2,88 @@ import React, { useState, useEffect } from 'react';
 import { ArrowLeft, TrendingUp, AlertTriangle, CheckCircle, ExternalLink, BarChart3 } from 'lucide-react';
 import { useInvestmentStore } from '../store/investmentStore';
 import { PortfolioChart } from './PortfolioChart';
+import { ProgressIndicator } from './ProgressIndicator';
+import { portfolioService } from '../services/portfolioService';
 
 export const InsightAnalysis: React.FC = () => {
-  const { portfolio, setCurrentStep, addInsight } = useInvestmentStore();
+  const { portfolio, setCurrentStep, activePortfolio, loadUserPortfolios } = useInvestmentStore();
   const [isAnalyzing, setIsAnalyzing] = useState(true);
   const [analysisResult, setAnalysisResult] = useState<any>(null);
+  const [currentStep, setCurrentAnalysisStep] = useState(0);
+  const [isExecutingTrades, setIsExecutingTrades] = useState(false);
 
-  // Simulate AI analysis
+  // Get the URL and make API call
   useEffect(() => {
     const analyzeInsight = async () => {
       setIsAnalyzing(true);
+      setCurrentAnalysisStep(0);
       
-      // Simulate analysis delay
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      // Get the URL from localStorage
+      const urlToAnalyze = localStorage.getItem("pending_insight_url");
+      if (!urlToAnalyze) {
+        console.error("No URL found for analysis");
+        setCurrentStep('dashboard');
+        return;
+      }
       
-      // Generate mock analysis result
-      const mockAnalysis = generateMockAnalysis();
-      setAnalysisResult(mockAnalysis);
+      // Step 1: Content extraction
+      await new Promise(resolve => setTimeout(resolve, 800));
+      setCurrentAnalysisStep(1);
+      
+      // Step 2: Market sentiment analysis
+      await new Promise(resolve => setTimeout(resolve, 800));
+      setCurrentAnalysisStep(2);
+      
+      // Step 3: Portfolio impact assessment
+      await new Promise(resolve => setTimeout(resolve, 800));
+      setCurrentAnalysisStep(3);
+      
+      // Step 4: Generate recommendations - Make API call here
+      try {
+        if (activePortfolio) {
+          console.log("Making API call for market insight...");
+          const apiResponse = await portfolioService.getMarketInsightRecommendations(
+            activePortfolio.id,
+            { marketInsightUrl: urlToAnalyze }
+          );
+
+          // Use API response directly for analysis
+          const apiAnalysis = {
+            title: `Market Analysis: ${new URL(urlToAnalyze).hostname}`,
+            summary: apiResponse.url_insights,
+            impact: apiResponse.url_insights,
+            confidence: apiResponse.trading_actions && apiResponse.trading_actions.length > 0 ? 
+              Math.round(apiResponse.trading_actions.reduce((acc, action) => acc + action.confidence, 0) / apiResponse.trading_actions.length * 100) : 75,
+            recommendation: apiResponse.trading_actions && apiResponse.trading_actions.length > 0 ? 'rebalance' : 'save_for_monitoring',
+            tradingActions: apiResponse.trading_actions,
+            suggestedChanges: [],
+            reasoning: apiResponse.trading_actions && apiResponse.trading_actions.length > 0 ? 
+              apiResponse.trading_actions[0].ai_reasoning : 'No specific trading actions recommended at this time.',
+            riskImpact: 'Calculated based on trading actions',
+            returnImpact: 'Expected to improve returns based on market analysis',
+            url: urlToAnalyze,
+            fullApiResponse: apiResponse // Store full response for execution
+          };
+          
+          setAnalysisResult(apiAnalysis);
+        } else {
+          throw new Error("No active portfolio found");
+        }
+      } catch (error) {
+        console.error("API call failed, using fallback:", error);
+        // Fallback to mock data
+        const mockAnalysis = generateMockAnalysis();
+        setAnalysisResult(mockAnalysis);
+      }
+      
+      // Clean up localStorage
+      localStorage.removeItem("pending_insight_url");
+      
       setIsAnalyzing(false);
     };
 
     analyzeInsight();
-  }, []);
+  }, []); // Only run once when component mounts
 
   const generateMockAnalysis = () => {
     const analyses = [
@@ -73,54 +133,45 @@ export const InsightAnalysis: React.FC = () => {
     return analyses[Math.floor(Math.random() * analyses.length)];
   };
 
-  const handleRebalance = () => {
-    if (!analysisResult || !portfolio) return;
+  const handleExecuteTrades = async () => {
+    if (!analysisResult || !activePortfolio) return;
     
-    // Apply the suggested changes to create new allocation
-    const newAllocation = [...portfolio.allocation];
+    setIsExecutingTrades(true);
     
-    analysisResult.suggestedChanges.forEach((change: any) => {
-      const fromIndex = newAllocation.findIndex(asset => asset.name.includes(change.from.split(' ')[0]));
-      const toIndex = newAllocation.findIndex(asset => asset.name.includes(change.to.split(' ')[0]));
+    try {
+      // If we have full API response, execute it
+      if (analysisResult.fullApiResponse) {
+        console.log("Executing trading actions via API...");
+        await portfolioService.executeMarketInsightRecommendations(activePortfolio.id, analysisResult.fullApiResponse);
+        console.log("Trading actions executed successfully");
+        
+        // Reload user portfolios to get updated data with latestMarketInsights
+        const userId = activePortfolio.userId;
+        if (userId) {
+          await loadUserPortfolios(userId);
+        }
+      } else if (analysisResult.suggestedChanges && analysisResult.suggestedChanges.length > 0) {
+        // Fallback to old logic for mock data
+        console.log("Portfolio rebalanced based on mock analysis:", analysisResult.title);
+      }
       
-      if (fromIndex !== -1 && toIndex !== -1) {
-        newAllocation[fromIndex].percentage -= change.percentage;
-        newAllocation[toIndex].percentage += change.percentage;
-      }
-    });
-
-    // Add insight with portfolio change
-    const insight = {
-      id: Date.now().toString(),
-      url: analysisResult.url,
-      title: analysisResult.title,
-      impact: analysisResult.impact,
-      date: new Date().toLocaleDateString(),
-      portfolioChange: {
-        before: portfolio.allocation,
-        after: newAllocation,
-      }
-    };
-
-    addInsight(insight.url);
-    setCurrentStep('dashboard');
+      // Navigate directly to portfolio details to see the updated insights
+      setCurrentStep('portfolio-details');
+    } catch (error) {
+      console.error("Failed to execute trading actions:", error);
+      // Still navigate back on error
+      setCurrentStep('portfolio-details');
+    } finally {
+      setIsExecutingTrades(false);
+    }
   };
 
-  const handleSaveForFuture = () => {
-    if (!analysisResult) return;
-    
-    // Add insight without portfolio change
-    const insight = {
-      id: Date.now().toString(),
-      url: analysisResult.url,
-      title: analysisResult.title,
-      impact: analysisResult.impact,
-      date: new Date().toLocaleDateString(),
-    };
-
-    addInsight(insight.url);
-    setCurrentStep('dashboard');
+  const handleDeclineTrades = () => {
+    // Just navigate back to portfolio details without executing trades
+    setCurrentStep('portfolio-details');
   };
+
+  // Removed handleSaveForFuture - no longer needed with new button structure
 
   const handleBack = () => {
     setCurrentStep('dashboard');
@@ -153,19 +204,41 @@ export const InsightAnalysis: React.FC = () => {
             <div className="p-8">
               {isAnalyzing ? (
                 <div className="text-center py-16">
-                  <div className="w-16 h-16 border-4 border-neutral-300 dark:border-gray-600 border-t-neutral-900 dark:border-t-neutral-700 rounded-full animate-spin mx-auto mb-6"></div>
+                  <div className="w-16 h-16 border-4 border-neutral-300 dark:border-gray-600 border-t-neutral-900 dark:border-t-neutral-700 rounded-full animate-spin mx-auto mb-8"></div>
                   <h3 className="text-title-large font-headline font-semi-bold text-neutral-900 dark:text-dark-text-primary mb-2">
                     Analyzing Market Insight
                   </h3>
-                  <p className="text-body-medium text-neutral-600 dark:text-dark-text-secondary mb-4">
+                  <p className="text-body-medium text-neutral-600 dark:text-dark-text-secondary mb-8">
                     Our AI is processing the content and evaluating potential portfolio impacts...
                   </p>
+                  
+                  <div className="max-w-2xl mx-auto mb-8">
+                    <ProgressIndicator
+                      currentStep={currentStep}
+                      totalSteps={4}
+                      stepLabels={[
+                        'Content Extraction',
+                        'Market Sentiment Analysis', 
+                        'Portfolio Impact Assessment',
+                        'Generate Recommendations'
+                      ]}
+                    />
+                  </div>
+                  
                   <div className="max-w-md mx-auto">
                     <div className="space-y-2 text-body-small text-neutral-500 dark:text-dark-text-muted">
-                      <p>✓ Content extraction and analysis</p>
-                      <p>✓ Market sentiment evaluation</p>
-                      <p>✓ Portfolio impact assessment</p>
-                      <p className="opacity-50">⏳ Generating recommendations...</p>
+                      <p className={currentStep >= 0 ? 'text-neutral-700 dark:text-gray-300' : ''}>
+                        {currentStep >= 0 ? '✓' : '⏳'} Content extraction and analysis
+                      </p>
+                      <p className={currentStep >= 1 ? 'text-neutral-700 dark:text-gray-300' : ''}>
+                        {currentStep >= 1 ? '✓' : '⏳'} Market sentiment evaluation
+                      </p>
+                      <p className={currentStep >= 2 ? 'text-neutral-700 dark:text-gray-300' : ''}>
+                        {currentStep >= 2 ? '✓' : '⏳'} Portfolio impact assessment
+                      </p>
+                      <p className={currentStep >= 3 ? 'text-neutral-700 dark:text-gray-300' : ''}>
+                        {currentStep >= 3 ? '✓' : '⏳'} Generating recommendations...
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -244,8 +317,54 @@ export const InsightAnalysis: React.FC = () => {
                     </div>
                   </div>
 
+                  {/* Trading Actions */}
+                  {analysisResult.tradingActions && analysisResult.tradingActions.length > 0 && (
+                    <div className="bg-white dark:bg-dark-surface-secondary border border-neutral-200 dark:border-gray-600 rounded-lg p-6">
+                      <h4 className="text-title-medium font-headline font-semi-bold text-neutral-900 dark:text-dark-text-primary mb-4">
+                        Recommended Trading Actions
+                      </h4>
+                      <div className="space-y-4">
+                        {analysisResult.tradingActions.map((action: any, index: number) => (
+                          <div key={index} className="border border-neutral-200 dark:border-gray-600 rounded-lg p-4">
+                            <div className="flex items-center justify-between mb-3">
+                              <div className="flex items-center gap-3">
+                                <span className={`px-2 py-1 rounded-full text-body-small font-medium ${
+                                  action.action === 'BUY' ? 'bg-positive/20 text-positive' : 'bg-warning/20 text-warning'
+                                }`}>
+                                  {action.action}
+                                </span>
+                                <span className="text-title-small font-semibold text-neutral-900 dark:text-dark-text-primary">
+                                  {action.ticker} - {action.shares} shares
+                                </span>
+                              </div>
+                              <span className="text-body-small text-neutral-600 dark:text-dark-text-secondary">
+                                {Math.round(action.confidence * 100)}% confidence
+                              </span>
+                            </div>
+                            <h5 className="text-body-medium font-semibold text-neutral-900 dark:text-dark-text-primary mb-2">
+                              {action.title}
+                            </h5>
+                            <p className="text-body-medium text-neutral-700 dark:text-dark-text-secondary mb-3">
+                              {action.description}
+                            </p>
+                            <div className="grid md:grid-cols-2 gap-4 text-body-small">
+                              <div>
+                                <span className="font-medium text-neutral-600 dark:text-dark-text-secondary">AI Reasoning:</span>
+                                <p className="text-neutral-700 dark:text-dark-text-secondary mt-1">{action.ai_reasoning}</p>
+                              </div>
+                              <div>
+                                <span className="font-medium text-neutral-600 dark:text-dark-text-secondary">Portfolio Impact:</span>
+                                <p className="text-neutral-700 dark:text-dark-text-secondary mt-1">{action.portfolio_impact}</p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
                   {/* Suggested Changes */}
-                  {analysisResult.suggestedChanges.length > 0 && (
+                  {analysisResult.suggestedChanges && analysisResult.suggestedChanges.length > 0 && (
                     <div className="bg-white dark:bg-dark-surface-secondary border border-neutral-200 dark:border-gray-600 rounded-lg p-6">
                       <h4 className="text-title-medium font-headline font-semi-bold text-neutral-900 dark:text-dark-text-primary mb-4">
                         Suggested Portfolio Changes
@@ -281,28 +400,47 @@ export const InsightAnalysis: React.FC = () => {
 
                   {/* Action Buttons */}
                   <div className="flex gap-4 pt-6 border-t border-neutral-200 dark:border-gray-600">
-                    {analysisResult.suggestedChanges.length > 0 ? (
+                    {analysisResult.tradingActions && analysisResult.tradingActions.length > 0 ? (
                       <>
                         <button
-                          onClick={handleRebalance}
-                          className="flex-1 bg-neutral-900 dark:bg-neutral-700 text-white py-4 px-6 rounded-lg text-label-large font-medium hover:bg-neutral-800 dark:hover:bg-neutral-600 transition-colors flex items-center justify-center gap-2"
+                          onClick={handleExecuteTrades}
+                          disabled={isExecutingTrades}
+                          className={`flex-1 py-4 px-6 rounded-lg text-label-large font-medium transition-colors flex items-center justify-center gap-2 ${
+                            isExecutingTrades 
+                              ? 'bg-gray-400 dark:bg-gray-600 text-gray-200 cursor-not-allowed' 
+                              : 'bg-green-600 dark:bg-green-700 text-white hover:bg-green-700 dark:hover:bg-green-600'
+                          }`}
                         >
-                          <TrendingUp className="w-5 h-5" />
-                          Apply Rebalancing
+                          {isExecutingTrades ? (
+                            <>
+                              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                              Executing Trades...
+                            </>
+                          ) : (
+                            <>
+                              <TrendingUp className="w-5 h-5" />
+                              Execute Trading Actions
+                            </>
+                          )}
                         </button>
                         <button
-                          onClick={handleSaveForFuture}
-                          className="flex-1 border-2 border-neutral-300 dark:border-gray-600 text-neutral-700 dark:text-dark-text-primary py-4 px-6 rounded-lg text-label-large font-medium hover:bg-neutral-100 dark:hover:bg-gray-700 transition-colors"
+                          onClick={handleDeclineTrades}
+                          disabled={isExecutingTrades}
+                          className={`flex-1 border-2 py-4 px-6 rounded-lg text-label-large font-medium transition-colors ${
+                            isExecutingTrades
+                              ? 'border-gray-400 dark:border-gray-600 text-gray-400 dark:text-gray-500 cursor-not-allowed'
+                              : 'border-neutral-300 dark:border-gray-600 text-neutral-700 dark:text-dark-text-primary hover:bg-neutral-100 dark:hover:bg-gray-700'
+                          }`}
                         >
-                          Save for Future Reference
+                          Decline & Return to Portfolio
                         </button>
                       </>
                     ) : (
                       <button
-                        onClick={handleSaveForFuture}
+                        onClick={handleDeclineTrades}
                         className="flex-1 bg-neutral-900 dark:bg-neutral-700 text-white py-4 px-6 rounded-lg text-label-large font-medium hover:bg-neutral-800 dark:hover:bg-neutral-600 transition-colors"
                       >
-                        Save Insight for Monitoring
+                        Return to Portfolio
                       </button>
                     )}
                   </div>
