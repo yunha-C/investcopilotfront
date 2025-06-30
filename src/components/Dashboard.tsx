@@ -7,8 +7,6 @@ import {
   Shield,
   Calculator,
   Trash2,
-  ArrowUpRight,
-  ArrowDownRight,
   X,
 } from "lucide-react";
 import {
