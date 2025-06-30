@@ -235,7 +235,7 @@ export const Home: React.FC = () => {
     const fillColor = isPositive ? "#6B9AE0" : "#f44336";
 
     return (
-      <div className="h-32 bg-gradient-to-b from-neutral-50/20 to-neutral-100/20 dark:from-gray-800/20 dark:to-gray-900/20 rounded-lg p-4 relative overflow-hidden">
+      <div className="h-32 bg-gradient-to-b from-neutral-50/20 to-neutral-100/20 dark:from-gray-800/0 dark:to-gray-900/0 rounded-lg p-4 relative overflow-hidden">
         <svg
           className="absolute inset-0 w-full h-full"
           viewBox="0 0 400 128"

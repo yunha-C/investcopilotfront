@@ -180,7 +180,7 @@ export const Dashboard: React.FC = () => {
     const isPositive = growth >= 0;
 
     return (
-      <div className="h-20 bg-gradient-to-b from-neutral-50/20 to-neutral-100/20 dark:from-gray-800/20 dark:to-gray-900/20 rounded-sm p-3 relative overflow-hidden mb-4">
+      <div className="h-20 bg-gradient-to-b from-neutral-50/20 to-neutral-100/20 dark:from-gray-800/0 dark:to-gray-900/0 rounded-sm p-3 relative overflow-hidden mb-4">
         <svg
           className="absolute inset-0 w-full h-full"
           viewBox="0 0 300 80"
@@ -340,7 +340,7 @@ export const Dashboard: React.FC = () => {
   const aiKeywords = generateAIReasoningKeywords();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white/50 via-white/30 to-white/20 dark:from-gray-900/50 dark:via-gray-800/30 dark:to-gray-900/20">
+    <div className="min-h-screen bg-transparent from-white/50 via-white/30 to-white/20 dark:from-gray-900/50 dark:via-gray-800/30 dark:to-gray-900/20">
       <div className="px-4 py-8">
         <div className="max-w-6xl mx-auto">
           <div className="mb-6">
