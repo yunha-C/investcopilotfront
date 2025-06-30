@@ -564,16 +564,10 @@ export const Dashboard: React.FC = () => {
                     >
                       <div className="flex items-center gap-4">
                         <div className="flex-shrink-0 flex items-center justify-center h-full">
-                          <span
-                            className="inline-block w-2 h-2 rounded-full align-middle"
-                            style={{ backgroundColor: "#232826" }}
-                          />
+                          <span className="inline-block w-2 h-2 rounded-full align-middle bg-neutral-800 dark:bg-gray-100" />
                         </div>
                         <div className="flex-1 min-w-0 flex items-center">
-                          <span
-                            className="text-label-large font-medium align-middle"
-                            style={{ color: "#232826" }}
-                          >
+                          <span className="text-label-large font-medium align-middle text-neutral-900 dark:text-gray-100">
                             {trade.type === "deposit"
                               ? "Deposit"
                               : `${trade.type.toUpperCase()} ${trade.shares} ${
@@ -582,19 +576,13 @@ export const Dashboard: React.FC = () => {
                           </span>
                           {(trade.type === "buy" || trade.type === "sell") &&
                             trade.price !== null && (
-                              <span
-                                className="text-body-small font-medium ml-2 align-middle"
-                                style={{ color: "#232826" }}
-                              >
+                              <span className="text-body-small font-medium ml-2 align-middle text-neutral-900 dark:text-gray-100">
                                 ${trade.price}
                               </span>
                             )}
                           {trade.type === "deposit" &&
                             trade.amount !== null && (
-                              <span
-                                className="text-body-small font-medium ml-2 align-middle"
-                                style={{ color: "#232826" }}
-                              >
+                              <span className="text-body-small font-medium ml-2 align-middle text-neutral-900 dark:text-gray-100">
                                 +${trade.amount}
                               </span>
                             )}
