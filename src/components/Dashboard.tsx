@@ -566,13 +566,13 @@ export const Dashboard: React.FC = () => {
                         <div className="flex-shrink-0 flex items-center justify-center h-full">
                           <span
                             className="inline-block w-2 h-2 rounded-full align-middle"
-                            style={{ backgroundColor: "#616161" }}
+                            style={{ backgroundColor: "#232826" }}
                           />
                         </div>
                         <div className="flex-1 min-w-0 flex items-center">
                           <span
                             className="text-label-large font-medium align-middle"
-                            style={{ color: "#616161" }}
+                            style={{ color: "#232826" }}
                           >
                             {trade.type === "deposit"
                               ? "Deposit"
@@ -584,7 +584,7 @@ export const Dashboard: React.FC = () => {
                             trade.price !== null && (
                               <span
                                 className="text-body-small font-medium ml-2 align-middle"
-                                style={{ color: "#616161" }}
+                                style={{ color: "#232826" }}
                               >
                                 ${trade.price}
                               </span>
@@ -593,7 +593,7 @@ export const Dashboard: React.FC = () => {
                             trade.amount !== null && (
                               <span
                                 className="text-body-small font-medium ml-2 align-middle"
-                                style={{ color: "#616161" }}
+                                style={{ color: "#232826" }}
                               >
                                 +${trade.amount}
                               </span>
@@ -641,7 +641,7 @@ export const Dashboard: React.FC = () => {
                     <button
                       key={index}
                       onClick={() => setSelectedKeyword(keyword)}
-                      className="px-3 py-1 rounded-full text-body-small font-medium bg-neutral-200 dark:bg-gray-700 hover:bg-neutral-300 dark:hover:bg-gray-600 text-neutral-700 dark:text-gray-300 hover:text-neutral-800 dark:hover:text-gray-200 transition-colors cursor-pointer border border-neutral-300 dark:border-gray-600"
+                      className="px-3 py-1 rounded-full text-body-small font-medium bg-neutral-300 text-neutral-800 hover:bg-neutral-400 hover:text-neutral-900 transition-colors cursor-pointer border border-neutral-300"
                     >
                       {keyword.term}
                     </button>
@@ -901,7 +901,7 @@ export const Dashboard: React.FC = () => {
                   <div className="pt-4 border-t border-neutral-200 dark:border-gray-600">
                     <button
                       onClick={() => setSelectedKeyword(null)}
-                      className="w-full bg-slate-600 text-white py-3 px-4 rounded-lg text-label-large font-medium hover:bg-slate-700 transition-colors"
+                      className="w-full bg-neutral-100 text-black py-3 px-4 rounded-lg text-label-large font-medium hover:bg-neutral-900 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       Close
                     </button>
