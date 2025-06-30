@@ -517,10 +517,12 @@ export const useInvestmentStore = create<InvestmentState>((set, get) => ({
       // Update active portfolio if it exists in the new data
       const { activePortfolio: currentActivePortfolio } = get();
       let updatedActivePortfolio = currentActivePortfolio;
-      
+
       if (currentActivePortfolio) {
         // Find the updated version of the current active portfolio
-        const updatedPortfolio = portfolios.find(p => p.id === currentActivePortfolio.id);
+        const updatedPortfolio = portfolios.find(
+          (p) => p.id === currentActivePortfolio.id
+        );
         if (updatedPortfolio) {
           updatedActivePortfolio = updatedPortfolio;
         }
@@ -1187,6 +1189,11 @@ function convertApiResponseToPortfolio(
     profitLossPercentage: apiResponse.profitLossPercentage,
     profitLossAmount: apiResponse.profitLossAmount,
     latestMarketInsights: apiResponse.latestMarketInsights,
+    appliedMarketInsights: Array.isArray(apiResponse.appliedMarketInsights)
+      ? apiResponse.appliedMarketInsights
+      : [],
+    latestAppliedMarketInsights:
+      apiResponse.latestAppliedMarketInsights || null,
     marketInsightsUpdatedAt: apiResponse.marketInsightsUpdatedAt,
   };
 }

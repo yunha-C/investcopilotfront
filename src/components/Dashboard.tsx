@@ -112,13 +112,13 @@ export const Dashboard: React.FC = () => {
     e.preventDefault();
     if (insightUrl.trim()) {
       // Check for easter egg
-      if (insightUrl.toLowerCase().includes('aivestie.com')) {
+      if (insightUrl.toLowerCase().includes("aivestie.com")) {
         setShowEasterEgg(true);
         setInsightUrl("");
         setShowInsightForm(false);
         return;
       }
-      
+
       // Set the URL for analysis and navigate immediately
       // The API call will happen in the InsightAnalysis component
       localStorage.setItem("pending_insight_url", insightUrl.trim());
@@ -565,12 +565,11 @@ export const Dashboard: React.FC = () => {
                               ${trade.price}
                             </span>
                           )}
-                        {trade.type === "deposit" &&
-                          trade.amount !== null && (
-                            <span className="text-body-small text-blue-700 dark:text-blue-400 font-medium">
-                              +${trade.amount}
-                            </span>
-                          )}
+                        {trade.type === "deposit" && trade.amount !== null && (
+                          <span className="text-body-small text-blue-700 dark:text-blue-400 font-medium">
+                            +${trade.amount}
+                          </span>
+                        )}
                       </div>
                       <p className="text-body-small text-neutral-600 dark:text-dark-text-secondary line-clamp-2">
                         {trade.reason}
@@ -674,13 +673,14 @@ export const Dashboard: React.FC = () => {
                 </h3>
                 <button
                   onClick={() => setShowInsightForm(true)}
-                  className="p-2 bg-slate-600 rounded-lg hover:bg-slate-700 transition-colors"
+                  className="p-2 bg-neutral-100 text-neutral-600 rounded-full hover:bg-neutral-200 transition-colors"
                 >
-                  <Plus className="w-4 h-4 text-white" />
+                  <Plus className="w-4 h-4" />
                 </button>
               </div>
 
-              {!activePortfolio?.appliedMarketInsights || activePortfolio.appliedMarketInsights.length === 0 ? (
+              {!portfolio.appliedMarketInsights ||
+              portfolio.appliedMarketInsights.length === 0 ? (
                 <div className="text-center py-8">
                   <p className="text-body-medium text-neutral-500 dark:text-dark-text-muted mb-4">
                     No market insights available yet
@@ -694,61 +694,24 @@ export const Dashboard: React.FC = () => {
                 </div>
               ) : (
                 <div className="space-y-4 max-h-96 overflow-y-auto">
-                  {activePortfolio.appliedMarketInsights.slice(0, 3).map((insight, index) => (
-                    <div key={index} className="border border-neutral-200 dark:border-gray-600 rounded-lg p-4">
+                  {portfolio.appliedMarketInsights.map((insight, index) => (
+                    <div
+                      key={index}
+                      className="border border-neutral-200 dark:border-gray-600 rounded-lg p-4"
+                    >
                       <div className="flex items-start justify-between mb-2">
                         <h4 className="text-label-large font-medium text-neutral-900 dark:text-dark-text-primary">
                           {insight.url_insights.title}
                         </h4>
                         <span className="text-body-small text-neutral-500 dark:text-dark-text-muted">
-                          {new Date(insight.executed_at).toLocaleDateString()}
+                          {insight.executed_at
+                            ? new Date(insight.executed_at).toLocaleDateString()
+                            : ""}
                         </span>
                       </div>
                       <p className="text-body-small text-neutral-600 dark:text-dark-text-secondary mb-3">
                         {insight.url_insights.description}
                       </p>
-                      
-                      {/* Trading Actions Summary */}
-                      {insight.trading_actions && insight.trading_actions.length > 0 && (
-                        <div className="space-y-2 mb-3">
-                          <h5 className="text-body-small font-medium text-neutral-800 dark:text-dark-text-primary">
-                            Actions Taken:
-                          </h5>
-                          {insight.trading_actions.slice(0, 3).map((action, actionIndex) => (
-                            <div key={actionIndex} className="flex items-center gap-2 text-body-small">
-                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                action.action === 'BUY' ? 'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400' :
-                                action.action === 'SELL' ? 'bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400' :
-                                'bg-neutral-100 text-neutral-700 dark:bg-gray-700 dark:text-gray-300'
-                              }`}>
-                                {action.action}
-                              </span>
-                              <span className="text-neutral-700 dark:text-dark-text-secondary">
-                                {action.shares} {action.ticker}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                      
-                      {/* Execution Summary */}
-                      {insight.execution_summary && (
-                        <div className="mt-3 p-3 bg-neutral-100 dark:bg-gray-700 rounded-lg">
-                          <div className="flex justify-between items-center text-body-small">
-                            <span className="text-neutral-700 dark:text-gray-300">
-                              Executed: {insight.execution_summary.successful_trades} trades
-                            </span>
-                            <span className={`font-medium ${
-                              insight.execution_summary.total_cash_impact >= 0 
-                                ? 'text-green-600 dark:text-green-400' 
-                                : 'text-red-600 dark:text-red-400'
-                            }`}>
-                              {insight.execution_summary.total_cash_impact >= 0 ? '+' : ''}
-                              ${insight.execution_summary.total_cash_impact.toFixed(2)}
-                            </span>
-                          </div>
-                        </div>
-                      )}
                     </div>
                   ))}
                 </div>
@@ -796,7 +759,8 @@ export const Dashboard: React.FC = () => {
                       />
                     </div>
                     <p className="text-body-small text-neutral-500 dark:text-dark-text-muted mt-1">
-                      Enter the virtual amount you want to simulate investing in this portfolio
+                      Enter the virtual amount you want to simulate investing in
+                      this portfolio
                     </p>
                   </div>
                   <div className="flex gap-3">
@@ -852,7 +816,8 @@ export const Dashboard: React.FC = () => {
                   <div className="flex gap-3">
                     <button
                       type="submit"
-                      className="flex-1 bg-slate-600 text-white py-3 px-4 rounded-lg text-label-large font-medium hover:bg-slate-700 transition-colors"
+                      className="flex-1 bg-neutral-900 text-white py-3 px-4 rounded-lg text-label-large font-medium hover:bg-neutral-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                      disabled={isAddingValue}
                     >
                       Analyze Insight
                     </button>
@@ -914,11 +879,11 @@ export const Dashboard: React.FC = () => {
           )}
         </div>
       </div>
-      
+
       {/* Easter Egg Player */}
-      <EasterEggPlayer 
-        isVisible={showEasterEgg} 
-        onClose={() => setShowEasterEgg(false)} 
+      <EasterEggPlayer
+        isVisible={showEasterEgg}
+        onClose={() => setShowEasterEgg(false)}
       />
     </div>
   );

@@ -176,6 +176,64 @@ export interface PortfolioResponse {
       total_cash_impact: number;
     };
   };
+  appliedMarketInsights?: Array<{
+    executed_at: string;
+    url_insights: {
+      title: string;
+      description: string;
+      failure: boolean;
+    };
+    trade_results: Array<{
+      action: "BUY" | "SELL";
+      ticker: string;
+      success: boolean;
+      description?: string;
+      total_value: number;
+      transaction_id: string;
+      execution_price: number;
+      shares_executed: number;
+    }>;
+    trading_actions: Array<{
+      action: "BUY" | "SELL";
+      shares: number;
+      ticker: string;
+    }>;
+    execution_summary: {
+      hold_actions: number;
+      failed_trades: number;
+      successful_trades: number;
+      total_cash_impact: number;
+    };
+  }>;
+  latestAppliedMarketInsights?: {
+    executed_at: string;
+    url_insights: {
+      title: string;
+      description: string;
+      failure: boolean;
+    };
+    trade_results: Array<{
+      action: "BUY" | "SELL";
+      ticker: string;
+      success: boolean;
+      description?: string;
+      total_value: number;
+      transaction_id: string;
+      execution_price: number;
+      shares_executed: number;
+    }>;
+    trading_actions: Array<{
+      action: "BUY" | "SELL";
+      shares: number;
+      ticker: string;
+    }>;
+    execution_summary: {
+      hold_actions: number;
+      failed_trades: number;
+      successful_trades: number;
+      total_cash_impact: number;
+    };
+  };
   marketInsightsUpdatedAt?: string;
 }
 
